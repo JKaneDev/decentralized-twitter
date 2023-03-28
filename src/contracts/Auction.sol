@@ -2,13 +2,17 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
+import "./Twitter.sol";
+
 contract Auction is ReentrancyGuard {
     address payable public tweetOwner;
     uint256 public nftId;
     uint256 public startingPrice;
     uint256 public auctionEndTime;
     address public nftContractAddress;
+    Twitter private twitterContract;
     TweetNFT private nftContract;
+
 
     address public highestBidder;
     uint256 public highestBid;
@@ -18,13 +22,15 @@ contract Auction is ReentrancyGuard {
     event HighestBidIncreased(address indexed bidder, uint256 amount);
     event AuctionEnded(address indexed winner, uint256 amount);
 
-    constructor(address payable _tweetOwner, uint256 _nftId, uint256 _startingPrice, uint256 _auctionDuration, address _nftContractAddress) {
+    constructor(address payable _tweetOwner, uint256 _nftId, uint256 _startingPrice, uint256 _auctionDuration, address _nftContractAddress, address payable _twitterContractAddress) {
         tweetOwner = _tweetOwner;
         nftId = _nftId;
         startingPrice = _startingPrice;
         auctionEndTime = block.timestamp + _auctionDuration;
         nftContractAddress = _nftContractAddress;
         nftContract = _nftContract;
+        twitterContractAddress = _twitterContractAddress;
+        twitterContract = Twitter(_twitterContractAddress);
     }
 
     function bid() public payable nonReentrant {
@@ -51,7 +57,12 @@ contract Auction is ReentrancyGuard {
         ended = true;
         emit AuctionEnded(highestBidder, highestBid);
 
+        uint256 twitterFee = (highestBid * 5) / 100;
+        uint256 tweetOwnerShare = highestBid - twitterFee;
+
         tweetOwner.transfer(highestBid);
+        twitterContract.receiveFunds{value: twitterFee}();
+        
         nftContract.safeTransferFrom(tweetOwner, highestBidder, nftId);
     }
 }
