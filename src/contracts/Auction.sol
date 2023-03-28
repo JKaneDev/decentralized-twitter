@@ -31,10 +31,10 @@ contract Auction is ReentrancyGuard {
         require(msg.sender != tweetOwner, "Tweet owner cannot bid on their own auction");
         require(msg.value >= startingPrice, "Bid should be equal or greater than starting price");
         require(msg.sender != highestBidder, "You are already the highest bidder");
-        require(msg.value  > highestBid, "There already is a higher bid, increase bid amount");
+        require(msg.value > highestBid, "There already is a higher bid, increase bid amount");
         require(block.timestamp <= auctionEndTime, "Auction already ended");
 
-        if (highestBig != 0) {
+        if (highestBid != 0) {
             highestBid.transfer(highestBid);
         }
 
@@ -44,7 +44,7 @@ contract Auction is ReentrancyGuard {
     }
 
     function endAuction() public nonReentrant {
-        require(msg.sender === tweetOwner, "Only owner can end auction");
+        require(msg.sender == tweetOwner, "Only owner can end auction");
         require(block.timestamp >= auctionEndTime, "Auction has not ended");
         require(!ended, "Auction has already been called");
 

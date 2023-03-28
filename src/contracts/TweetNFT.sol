@@ -20,7 +20,6 @@ contract TweetNFT is ERC721, ERC721URIStorage {
         // Only 1 mint per tweet
         require(!_tweetMinted[tokenURI], "Tweet has already been minted");
     
-
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         _mint(recipient, newItemId);
