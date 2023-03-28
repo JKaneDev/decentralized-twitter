@@ -30,7 +30,7 @@ contract TweetNFT is ERC721, ERC721URIStorage {
         _tokenOwners[tokenURI] = recipient;
 
         // Create a new auction for the NFT
-        Auction newAuction = new Auction(recipient, newItemId, price, address(this));
+        Auction newAuction = new Auction(recipient, newItemId, price, auctionDuration, address(this));
         // Approve the auction contract to manage the NFT
         _approve(address(newAuction), newItemId);
 
