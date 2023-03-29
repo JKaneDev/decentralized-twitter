@@ -9,6 +9,7 @@ contract Twitter {
     }
 
     struct User {
+        bytes32 id;
         string name;
         string bio;
         string profilePictureURL;
@@ -21,13 +22,16 @@ contract Twitter {
         // Check if user doesn't alreadty exist
         require(!users[msg.sender].exists, "User already exists");
 
+        bytes32 _userID = keccak256(abi.encodePacked(msg.sender, block.timestamp));
+
         // Create a new user and store it in the mapping
         users[msg.sender] = User({
-            name: _name.
+            id: _userID,
+            name: _name,
             bio: _bio,
             profilePictureURL: _profilePictureURL,
             exists: true,
-        })
+        });
     }
 
     function updateName(string memory _name) public {
