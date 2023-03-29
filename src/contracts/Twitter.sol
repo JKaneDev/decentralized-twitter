@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import './Token.sol';
+
 contract Twitter {
     address payable public owner;
 
-    constructor(address payable _owner) {
+    constructor(address payable _owner, address, _tweetTokenAddress) {
         owner = _owner;
+        tweetToken = Token(_tweetTokenAddress);
     }
 
     struct User {
@@ -13,6 +16,17 @@ contract Twitter {
         string name;
         string bio;
         string profilePictureURL;
+        bool exists;
+    }
+
+    struct Tweet {
+        uint256 id;
+        address creator;
+        string content;
+        uint256 likeCount;
+        uint256 retweetCount;
+        uint256[] tips;
+        uint256 tipCount = 0;
         bool exists;
     }
 
@@ -24,6 +38,10 @@ contract Twitter {
     mapping(address => mapping(address => bool)) public _following; 
     // Store the index of the follower in the _followers array (user => (follower => index))
     mapping(address => mapping(address => uint256)) private _followerIndices; 
+    // Tweet ID index counter
+    uint256 private nextTweetId = 1;
+    // Store tweets
+    mapping(uint256 => Tweet) public tweets;
 
 
     function createAccount(string memory _name, string memory _bio, string memory _profilePictureURL) public {
@@ -96,7 +114,37 @@ contract Twitter {
     function getFollowerAddresses(address user) public view returns (address[] memory) {
     require(users[user].exists, "User does not exist");
     return _followers[user];
-}
+    }
+
+    function createTweet(string memory _content) public {
+        require(users[msg.sender].exists, "User does not exist");
+
+        tweets[nextTweetId] = Tweet({
+            id: nextTweetId,
+            creator: msg.sender,
+            content: _content,
+            likeCount: 0,
+            retweetCount: 0,
+            tips: new uint256[](0),
+            exists: true,
+        });
+
+        newTweetId++;
+    }
+
+    function likeTweet(uint256 _tweetId) public {
+        tweets[_tweetId].likeCount++;
+    }
+
+    function retweet(uint256 _tweetId) public {
+        tweets[tweetId].retweetCount++;
+    }
+
+    function tipUser(uint256 _tweetId, uint256 _amount) public {
+        require(tweetToken.transferFrom(msg.sender, tweets[_tweetId].creator, _amount), "Transfer failed");
+        tweets[_tweetId].tips.push(_amount);
+        tweets[_tweetId].tipCount++;
+    }
 
     function receiveFunds() external payable {
         // Funds will be received and stored in the contract
