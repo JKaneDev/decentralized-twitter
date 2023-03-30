@@ -59,7 +59,7 @@ contract Twitter {
     event Tweet(bytes32 id, address creator, string content, uint256 likeCount, uint256, retweetCount, uint256[] tips, bool exists);
     event TweetLiked(bytes32 tweetId, uint256 likeCount);
     event ReTweeted(bytes32 tweetId, uint256 retweetCount);
-    event UserTipped(bytes32 tweetId, address creator, address tipper, string tipperName, uint256 tipCount);
+    event UserTipped(uint256 amount, bytes32 tweetId, address creator, address tipper, string tipperName, uint256 tipCount);
     event TwitterReceivedFunds(address contractFrom, address contractFromAmount);
     event FundsWithdrawn(address destinationWallet, uint256 balance);
 
@@ -199,7 +199,7 @@ contract Twitter {
         tweets[_tweetId].tips.push(_amount);
         tweets[_tweetId].tipCount++;
 
-        emit UserTipped(_tweetId, tweets[tweetId].creator, msg.sender, users[msg.sender].name, tweets[tweetId].tipCount);
+        emit UserTipped(_amount, _tweetId, tweets[tweetId].creator, msg.sender, users[msg.sender].name, tweets[tweetId].tipCount);
     }
 
     function receiveFunds() external payable {
