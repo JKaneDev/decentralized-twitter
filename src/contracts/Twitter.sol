@@ -122,23 +122,15 @@ contract Twitter {
         return _followers[user];
     }
 
-    function createTweet(string memory _content, uint256 _startingPrice, uint256 _auctionDuration) public {
+    function createTweet(string memory _content) public {
         require(users[msg.sender].exists, "User does not exist");
 
         uint256 _tweetId = nextTweetId;
 
-        // Create Tweet NFT
-        uint256 nftId = tweetNFT.mintTweetNFT(payable(msg.sender), _content, _startingPrice);
+        bytes32 uid = keccak256(abi.encodePacked(_content));
 
-        // Create the Auction instance for this tweet
-        Auction auction = new Auction(
-            payable(msg.sender),
-            _nftId,
-            _startingPrice,
-            _auctionDuration,
-            address(tweetNFT),
-            payable(owner),
-        );
+        // Create Tweet NFT
+        uint256 nftId = tweetNFT.mintTweetNFT(payable(msg.sender), uid);
 
         tweets[nextTweetId] = Tweet({
             id: nextTweetId,
