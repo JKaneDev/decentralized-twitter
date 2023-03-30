@@ -16,7 +16,7 @@ contract TweetNFT is ERC721, ERC721URIStorage {
 
     constructor() ERC721("TweetNFT", "TWNFT") {}
 
-    function mintTweetNFT(address payable recipient, string memory tokenURI, uint256) public returns (uint256) {
+    function mintTweetNFT(address payable recipient, string memory tokenURI, uint256 price) public returns (uint256) {
         // Only 1 mint per tweet
         require(!_tweetMinted[tokenURI], "Tweet has already been minted");
     

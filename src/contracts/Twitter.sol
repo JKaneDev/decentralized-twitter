@@ -2,13 +2,16 @@
 pragma solidity ^0.8.19;
 
 import './Token.sol';
+import './TweetNFT.sol';
+import './Auction.sol';
 
 contract Twitter {
     address payable public owner;
 
-    constructor(address payable _owner, address, _tweetTokenAddress) {
+    constructor(address payable _owner, address, _tweetTokenAddress, address _nftAddress) {
         owner = _owner;
         tweetToken = Token(_tweetTokenAddress);
+        tweetNFT = TweetNFT(_tweetNFTAddress);
     }
 
     struct User {
@@ -28,6 +31,7 @@ contract Twitter {
         uint256[] tips;
         uint256 tipCount = 0;
         bool exists;
+        address auction;
     }
 
     // Store users
@@ -42,6 +46,8 @@ contract Twitter {
     uint256 private nextTweetId = 1;
     // Store tweets
     mapping(uint256 => Tweet) public tweets;
+    // Store auction addresses
+    mapping(uint256 => address) public tweetAuctions;
 
 
     function createAccount(string memory _name, string memory _bio, string memory _profilePictureURL) public {
@@ -112,12 +118,27 @@ contract Twitter {
     }
 
     function getFollowerAddresses(address user) public view returns (address[] memory) {
-    require(users[user].exists, "User does not exist");
-    return _followers[user];
+        require(users[user].exists, "User does not exist");
+        return _followers[user];
     }
 
-    function createTweet(string memory _content) public {
+    function createTweet(string memory _content, uint256 _startingPrice, uint256 _auctionDuration) public {
         require(users[msg.sender].exists, "User does not exist");
+
+        uint256 _tweetId = nextTweetId;
+
+        // Create Tweet NFT
+        uint256 nftId = tweetNFT.mintTweetNFT(payable(msg.sender), _content, _startingPrice);
+
+        // Create the Auction instance for this tweet
+        Auction auction = new Auction(
+            payable(msg.sender),
+            _nftId,
+            _startingPrice,
+            _auctionDuration,
+            address(tweetNFT),
+            payable(owner),
+        );
 
         tweets[nextTweetId] = Tweet({
             id: nextTweetId,
@@ -129,7 +150,7 @@ contract Twitter {
             exists: true,
         });
 
-        newTweetId++;
+        nextTweetId++;
     }
 
     function likeTweet(uint256 _tweetId) public {
