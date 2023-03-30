@@ -49,6 +49,19 @@ contract Twitter {
     // Store auction addresses
     mapping(uint256 => address) public tweetAuctions;
 
+    event AccountCreated(bytes32 id, string name, string bio, string profilePictureURL, bool exists);
+    event NameUpdated(address indexed user, string newName);
+    event BioUpdated(address indexed user, string newBio);
+    event ProfilePictureUpdated(address indexed user, string url);
+    event AccountDeleted(string name, address user);
+    event FollowerAdded(string user, string follower);
+    event FollowerRemoved(string user, string follower);
+    event Tweet(bytes32 id, address creator, string content, uint256 likeCount, uint256, retweetCount, uint256[] tips, bool exists);
+    event TweetLiked(bytes32 tweetId, uint256 likeCount);
+    event ReTweeted(bytes32 tweetId, uint256 retweetCount);
+    event UserTipped(bytes32 tweetId, address creator, address tipper, string tipperName, uint256 tipCount);
+    event TwitterReceivedFunds(address contractFrom, address contractFromAmount);
+    event FundsWithdrawn(address destinationWallet, uint256 balance);
 
     function createAccount(string memory _name, string memory _bio, string memory _profilePictureURL) public {
         // Check if user doesn't alreadty exist
@@ -64,26 +77,36 @@ contract Twitter {
             profilePictureURL: _profilePictureURL,
             exists: true,
         });
+
+        emit AccountCreated(users[msg.sender].id, _name, _bio, _profilePictureURL, users[msg.sender].exists);
     }
 
     function updateName(string memory _name) public {
         require(users[msg.sender].exists, "User does not exist");
         users[msg.sender].name = _name;
+
+        emit NameUpdated(msg.sender, _name);
     }
 
     function updateBio(string memory _bio) public {
         require(users[msg.sender].exists, "User does not exist");
         users[msg.sender].bio = _bio;
+
+        emit BioUpdated(msg.sender, bio);
     }
 
     function updateProfilePicture(string memory _url) public {
         require(users[msg.sender].exists, "User does not exist");
         users[msg.sender].profilePictureURL = _url;
+
+        emit ProfilePictureUpdated(msg.sender, _url);
     }
 
     function removeUser() public {
         require(users[msg.sender].exists, "User does not exist");
         delete users[msg.sender];
+
+        emit AccountDeleted(users[msg.sender].name, msg.sender);
     }
 
     function addFollower(address user, address follower) public {
@@ -95,6 +118,8 @@ contract Twitter {
         uint256 index = _followers[user].length - 1; // get index for follower
         _following[follower][user] = true; // set following status to true
         _followerIndices[user][follower] = index; // store index for follower
+
+        emit FollowerAdded(users[user].name, users[follower].name);
     }
 
     function removeFollower(address user, address follower) public {
@@ -115,6 +140,8 @@ contract Twitter {
         _followers[user].pop();
         _following[follower][user] = false;
         delete _followerIndices[user][follower];
+
+        emit FollowerRemoved(users[user].name, users[follower].name);
     }
 
     function getFollowerAddresses(address user) public view returns (address[] memory) {
@@ -142,29 +169,48 @@ contract Twitter {
             exists: true,
         });
 
+        emit Tweet(
+            tweets[nextTweetId].id, 
+            tweets[nextTweetId].creator, 
+            tweets[nextTweetId].content, 
+            tweets[nextTweetId].likeCount, 
+            tweets[nextTweetId].retweetCount, 
+            tweets[nextTweetId].tips, 
+            tweets[nextTweetId].exists, 
+            );
+
         nextTweetId++;
     }
 
     function likeTweet(uint256 _tweetId) public {
         tweets[_tweetId].likeCount++;
+
+        emit TweetLiked(_tweetId, tweets[tweetId].likeCount);
     }
 
     function retweet(uint256 _tweetId) public {
-        tweets[tweetId].retweetCount++;
+        tweets[_tweetId].retweetCount++;
+
+        emit ReTweeted(bytes32 _tweetId, tweets[tweetId].retweetCount);
     }
 
     function tipUser(uint256 _tweetId, uint256 _amount) public {
         require(tweetToken.transferFrom(msg.sender, tweets[_tweetId].creator, _amount), "Transfer failed");
         tweets[_tweetId].tips.push(_amount);
         tweets[_tweetId].tipCount++;
+
+        emit UserTipped(_tweetId, tweets[tweetId].creator, msg.sender, users[msg.sender].name, tweets[tweetId].tipCount);
     }
 
     function receiveFunds() external payable {
         // Funds will be received and stored in the contract
+        emit TwitterReceivedFunds(msg.sender, msg.value);
     }
 
     function withdraw() external {
         require(msg.sender == owner, "Only the owner can withdraw funds");
         owner.transfer(address(this).balance);
+
+        emit FundsWithdrawn(msg.sender, address(this).balance);
     }
 }
