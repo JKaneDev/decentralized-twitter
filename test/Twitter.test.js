@@ -9,16 +9,16 @@ contract('Twitter', ([deployer]) => {
 	let nft;
 
 	beforeEach(async () => {
-        tweetToken = await TweetToken.new();
+		tweetToken = await TweetToken.new();
 		nft = await TweetNFT.new();
 		twitter = await Twitter.new(deployer, tweetToken.address, nft.address);
-        await nft.setTwitterContractAddress(twitter.address);
+		await nft.setTwitterContractAddress(twitter.address);
 	});
 
-	describe('deployment', () => {
-        it('tracks the twitter contract owner', () => {
-            const result = await twitter.owner();
-            result.should.equal(deployer);
-        })
-    });
+	describe('deployment', async () => {
+		it('tracks the twitter contract owner', async () => {
+			const result = await twitter.owner();
+			result.should.equal(deployer);
+		});
+	});
 });

@@ -54,6 +54,7 @@ contract Twitter {
         uint256[] tips;
         uint256 tipCount;
         bool exists;
+        string imageUrl;
     }
 
     event AccountCreated(bytes32 id, string name, string bio, string profilePictureURL, bool exists);
@@ -161,8 +162,8 @@ contract Twitter {
 
         uint256 _tweetId = nextTweetId;
 
-        tweets[nextTweetId] = Tweet({
-            id: nextTweetId,
+        tweets[_tweetId] = Tweet({
+            id: _tweetId,
             creator: msg.sender,
             content: _content,
             likeCount: 0,
@@ -174,15 +175,15 @@ contract Twitter {
         });
 
         emit TweetCreated(
-            tweets[nextTweetId].id, 
-            tweets[nextTweetId].creator, 
-            tweets[nextTweetId].content, 
-            tweets[nextTweetId].likeCount, 
-            tweets[nextTweetId].retweetCount, 
-            tweets[nextTweetId].tips,
-            tweets[nextTweetId].tipCount, 
-            tweets[nextTweetId].exists,
-            tweets[nextTweetId].imageUrl
+            tweets[_tweetId].id, 
+            tweets[_tweetId].creator, 
+            tweets[_tweetId].content, 
+            tweets[_tweetId].likeCount, 
+            tweets[_tweetId].retweetCount, 
+            tweets[_tweetId].tips,
+            tweets[_tweetId].tipCount, 
+            tweets[_tweetId].exists,
+            tweets[_tweetId].imageUrl
         );
 
         nextTweetId++;
