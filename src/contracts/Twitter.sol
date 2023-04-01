@@ -4,6 +4,7 @@ pragma solidity ^0.8.19;
 import './TweetToken.sol';
 import './TweetNFT.sol';
 import './Auction.sol';
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Twitter {
 
@@ -29,6 +30,9 @@ contract Twitter {
     mapping(uint256 => Tweet) public tweets;
     // Store auction addresses
     mapping(uint256 => address) public tweetAuctions;
+    // Store account IDs
+    using Counters for Counters.Counter;
+    Counters.Counter private accountIds;
 
     constructor(address payable _owner, address _tweetTokenAddress, address _nftAddress) {
         owner = _owner;
@@ -38,7 +42,7 @@ contract Twitter {
     }
 
     struct User {
-        bytes32 id;
+        uint256 id;
         string name;
         string bio;
         string profilePictureURL;
@@ -57,7 +61,7 @@ contract Twitter {
         string imageUrl;
     }
 
-    event AccountCreated(bytes32 id, string name, string bio, string profilePictureURL, bool exists);
+    event AccountCreated(uint256 id, string name, string bio, string profilePictureURL, bool exists);
     event NameUpdated(address indexed user, string newName);
     event BioUpdated(address indexed user, string newBio);
     event ProfilePictureUpdated(address indexed user, string url);
@@ -75,11 +79,11 @@ contract Twitter {
         // Check if user doesn't alreadty exist
         require(!users[msg.sender].exists, "User already exists");
 
-        bytes32 _userID = keccak256(abi.encodePacked(msg.sender, block.timestamp));
+        uint256 userId = accountIds.current();
 
         // Create a new user and store it in the mapping
         users[msg.sender] = User({
-            id: _userID,
+            id: userId,
             name: _name,
             bio: _bio,
             profilePictureURL: _profilePictureURL,
@@ -87,6 +91,7 @@ contract Twitter {
         });
 
         emit AccountCreated(users[msg.sender].id, _name, _bio, _profilePictureURL, users[msg.sender].exists);
+        accountIds.increment();
     }
 
     function updateName(string memory _name) public {
