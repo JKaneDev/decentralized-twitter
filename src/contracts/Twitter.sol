@@ -13,6 +13,8 @@ contract Twitter {
     TweetToken public tweetToken;
     // Tweet NFT contract
     TweetNFT public tweetNFT;
+    // Store baseURI for NFT (IPFS);
+    string public baseURI;
     // Store users
     mapping(address => User) public users; 
     // Store followers for each user
@@ -32,6 +34,7 @@ contract Twitter {
         owner = _owner;
         tweetToken = TweetToken(_tweetTokenAddress);
         tweetNFT = TweetNFT(_nftAddress);
+        baseURI = "https://ipfs.io/ipfs/";
     }
 
     struct User {
@@ -60,7 +63,7 @@ contract Twitter {
     event AccountDeleted(string name, address user);
     event FollowerAdded(string user, string follower);
     event FollowerRemoved(string user, string follower);
-    event TweetCreated(uint256 id, address creator, string content, uint256 likeCount, uint256 retweetCount, uint256[] tips, uint256 tipCount, bool exists);
+    event TweetCreated(uint256 id, address creator, string content, uint256 likeCount, uint256 retweetCount, uint256[] tips, uint256 tipCount, bool exists, string imageUrl);
     event TweetLiked(uint256 tweetId, uint256 likeCount);
     event ReTweeted(uint256 tweetId, uint256 retweetCount);
     event UserTipped(uint256 amount, uint256 tweetId, address creator, address tipper, string tipperName, uint256 tipCount);
@@ -153,15 +156,10 @@ contract Twitter {
         return followers[user];
     }
 
-    function createTweet(string memory _content) public {
+    function createTweet(string memory _content, string _imageUrl) public {
         require(users[msg.sender].exists, "User does not exist");
 
         uint256 _tweetId = nextTweetId;
-
-        bytes32 uid = keccak256(abi.encodePacked(_content));
-
-        // Create Tweet NFT
-        uint256 nftId = tweetNFT.mintTweetNFT(payable(msg.sender), uid);
 
         tweets[nextTweetId] = Tweet({
             id: nextTweetId,
@@ -172,6 +170,7 @@ contract Twitter {
             tips: new uint256[](0),
             tipCount: 0,
             exists: true
+            imageUrl: _imageUrl,
         });
 
         emit TweetCreated(
@@ -183,6 +182,7 @@ contract Twitter {
             tweets[nextTweetId].tips,
             tweets[nextTweetId].tipCount, 
             tweets[nextTweetId].exists
+            tweets[nextTweetId].imageUrl
         );
 
         nextTweetId++;

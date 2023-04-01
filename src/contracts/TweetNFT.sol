@@ -19,8 +19,14 @@ contract TweetNFT is ERC721, ERC721URIStorage {
     address twitterContractAddress;
     // Track if the Twitter contract address has been set
     bool private twitterContractSet;
+    // Base URI for nft
+    stirng public baseURI;
 
     constructor() ERC721("TweetNFT", "TWNFT") {}
+
+    function setBaseURI(string memory baseURI) external {
+        baseURI = _baseURI;
+    }
 
     function setTwitterContractAddress(address _twitterContractAddress) external {
         require(!twitterContractSet, "Twitter contract address has already been set");
@@ -34,14 +40,17 @@ contract TweetNFT is ERC721, ERC721URIStorage {
         _approve(address(newAuction), _nftId);
     }
 
-    function mintTweetNFT(address payable recipient, string memory tokenURI) public returns (uint256) {
+    function mintTweetNFT(address payable recipient, string memory content) public returns (uint256) {
         // Only 1 mint per tweet
-        require(!_tweetMinted[tokenURI], "Tweet has already been minted");
+        require(!_tweetMinted[content], "Tweet has already been minted");
     
         _nftIDs.increment();
         uint256 newItemId = _nftIDs.current();
         _mint(recipient, newItemId);
-        _setTokenURI(newItemId, tokenURI);
+
+        // Create the full tokenURI
+        string memory fullURI = string(abi.encodePacked(baseURI, content));
+        _setTokenURI(newItemId, fullURI);
 
         _tweetMinted[tokenURI] = true;
         _originalOwners[tokenURI] = recipient;
