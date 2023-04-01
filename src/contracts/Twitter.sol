@@ -1,17 +1,37 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import './Token.sol';
+import './TweetToken.sol';
 import './TweetNFT.sol';
 import './Auction.sol';
 
 contract Twitter {
-    address payable public owner;
 
-    constructor(address payable _owner, address, _tweetTokenAddress, address _nftAddress) {
+    // Contract owner address
+    address payable public owner;
+    // Tweet Token contract
+    TweetToken public tweetToken;
+    // Tweet NFT contract
+    TweetNFT public tweetNFT;
+    // Store users
+    mapping(address => User) public users; 
+    // Store followers for each user
+    mapping(address => address[]) public followers; 
+    // Store user's following relationships 
+    mapping(address => mapping(address => bool)) public _following; 
+    // Store the index of the follower in the _followers array (user => (follower => index))
+    mapping(address => mapping(address => uint256)) private _followerIndices; 
+    // Tweet ID index counter
+    uint256 private nextTweetId = 1;
+    // Store tweets
+    mapping(uint256 => Tweet) public tweets;
+    // Store auction addresses
+    mapping(uint256 => address) public tweetAuctions;
+
+    constructor(address payable _owner, address _tweetTokenAddress, address _nftAddress) {
         owner = _owner;
-        tweetToken = Token(_tweetTokenAddress);
-        tweetNFT = TweetNFT(_tweetNFTAddress);
+        tweetToken = TweetToken(_tweetTokenAddress);
+        tweetNFT = TweetNFT(_nftAddress);
     }
 
     struct User {
@@ -29,25 +49,9 @@ contract Twitter {
         uint256 likeCount;
         uint256 retweetCount;
         uint256[] tips;
-        uint256 tipCount = 0;
+        uint256 tipCount;
         bool exists;
-        address auction;
     }
-
-    // Store users
-    mapping(address => User) public users; 
-    // Store followers for each user
-    mapping(address => address[]) public followers; 
-    // Store user's following relationships 
-    mapping(address => mapping(address => bool)) public _following; 
-    // Store the index of the follower in the _followers array (user => (follower => index))
-    mapping(address => mapping(address => uint256)) private _followerIndices; 
-    // Tweet ID index counter
-    uint256 private nextTweetId = 1;
-    // Store tweets
-    mapping(uint256 => Tweet) public tweets;
-    // Store auction addresses
-    mapping(uint256 => address) public tweetAuctions;
 
     event AccountCreated(bytes32 id, string name, string bio, string profilePictureURL, bool exists);
     event NameUpdated(address indexed user, string newName);
@@ -56,11 +60,11 @@ contract Twitter {
     event AccountDeleted(string name, address user);
     event FollowerAdded(string user, string follower);
     event FollowerRemoved(string user, string follower);
-    event Tweet(bytes32 id, address creator, string content, uint256 likeCount, uint256, retweetCount, uint256[] tips, bool exists);
-    event TweetLiked(bytes32 tweetId, uint256 likeCount);
-    event ReTweeted(bytes32 tweetId, uint256 retweetCount);
-    event UserTipped(uint256 amount, bytes32 tweetId, address creator, address tipper, string tipperName, uint256 tipCount);
-    event TwitterReceivedFunds(address contractFrom, address contractFromAmount);
+    event TweetCreated(uint256 id, address creator, string content, uint256 likeCount, uint256 retweetCount, uint256[] tips, uint256 tipCount, bool exists);
+    event TweetLiked(uint256 tweetId, uint256 likeCount);
+    event ReTweeted(uint256 tweetId, uint256 retweetCount);
+    event UserTipped(uint256 amount, uint256 tweetId, address creator, address tipper, string tipperName, uint256 tipCount);
+    event TwitterReceivedFunds(address contractFrom, uint256 contractFromAmount);
     event FundsWithdrawn(address destinationWallet, uint256 balance);
 
     function createAccount(string memory _name, string memory _bio, string memory _profilePictureURL) public {
@@ -75,7 +79,7 @@ contract Twitter {
             name: _name,
             bio: _bio,
             profilePictureURL: _profilePictureURL,
-            exists: true,
+            exists: true
         });
 
         emit AccountCreated(users[msg.sender].id, _name, _bio, _profilePictureURL, users[msg.sender].exists);
@@ -92,7 +96,7 @@ contract Twitter {
         require(users[msg.sender].exists, "User does not exist");
         users[msg.sender].bio = _bio;
 
-        emit BioUpdated(msg.sender, bio);
+        emit BioUpdated(msg.sender, _bio);
     }
 
     function updateProfilePicture(string memory _url) public {
@@ -114,8 +118,8 @@ contract Twitter {
         require(users[follower].exists, "Follower does not exist");
         require(_following[follower][user], "Not following");
 
-        _followers[user].push(follower); // add follower to followers array for that user
-        uint256 index = _followers[user].length - 1; // get index for follower
+        followers[user].push(follower); // add follower to followers array for that user
+        uint256 index = followers[user].length - 1; // get index for follower
         _following[follower][user] = true; // set following status to true
         _followerIndices[user][follower] = index; // store index for follower
 
@@ -128,16 +132,16 @@ contract Twitter {
         require(!_following[follower][user], "Already following");
 
         uint256 index = _followerIndices[user][follower];
-        uint256 lastIndex = _followers[user].length - 1;
+        uint256 lastIndex = followers[user].length - 1;
 
         // Move the last follower to the index of the follower being removed
-        _followers[user][index] = _followers[user][lastIndex];
+        followers[user][index] = followers[user][lastIndex];
 
         // Update the index of the moved follower
-        _followerIndices[user][_followers[user][index]] = index;
+        _followerIndices[user][followers[user][index]] = index;
 
         // Remove the last follower and update the _following mapping
-        _followers[user].pop();
+        followers[user].pop();
         _following[follower][user] = false;
         delete _followerIndices[user][follower];
 
@@ -146,7 +150,7 @@ contract Twitter {
 
     function getFollowerAddresses(address user) public view returns (address[] memory) {
         require(users[user].exists, "User does not exist");
-        return _followers[user];
+        return followers[user];
     }
 
     function createTweet(string memory _content) public {
@@ -166,18 +170,20 @@ contract Twitter {
             likeCount: 0,
             retweetCount: 0,
             tips: new uint256[](0),
-            exists: true,
+            tipCount: 0,
+            exists: true
         });
 
-        emit Tweet(
+        emit TweetCreated(
             tweets[nextTweetId].id, 
             tweets[nextTweetId].creator, 
             tweets[nextTweetId].content, 
             tweets[nextTweetId].likeCount, 
             tweets[nextTweetId].retweetCount, 
-            tweets[nextTweetId].tips, 
-            tweets[nextTweetId].exists, 
-            );
+            tweets[nextTweetId].tips,
+            tweets[nextTweetId].tipCount, 
+            tweets[nextTweetId].exists
+        );
 
         nextTweetId++;
     }
@@ -185,13 +191,13 @@ contract Twitter {
     function likeTweet(uint256 _tweetId) public {
         tweets[_tweetId].likeCount++;
 
-        emit TweetLiked(_tweetId, tweets[tweetId].likeCount);
+        emit TweetLiked(_tweetId, tweets[_tweetId].likeCount);
     }
 
     function retweet(uint256 _tweetId) public {
         tweets[_tweetId].retweetCount++;
 
-        emit ReTweeted(bytes32 _tweetId, tweets[tweetId].retweetCount);
+        emit ReTweeted(_tweetId, tweets[_tweetId].retweetCount);
     }
 
     function tipUser(uint256 _tweetId, uint256 _amount) public {
@@ -199,7 +205,7 @@ contract Twitter {
         tweets[_tweetId].tips.push(_amount);
         tweets[_tweetId].tipCount++;
 
-        emit UserTipped(_amount, _tweetId, tweets[tweetId].creator, msg.sender, users[msg.sender].name, tweets[tweetId].tipCount);
+        emit UserTipped(_amount, _tweetId, tweets[_tweetId].creator, msg.sender, users[msg.sender].name, tweets[_tweetId].tipCount);
     }
 
     function receiveFunds() external payable {

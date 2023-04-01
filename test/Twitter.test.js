@@ -4,15 +4,21 @@ const TweetToken = artifacts.require('./TweetToken');
 const TweetNFT = artifacts.require('./TweetNFT');
 
 contract('Twitter', ([deployer]) => {
-	let contract;
+	let twitter;
 	let tweetToken;
 	let nft;
 
 	beforeEach(async () => {
-		contract = await Twitter.new();
-		tweetToken = await TweetToken.new();
+        tweetToken = await TweetToken.new();
 		nft = await TweetNFT.new();
+		twitter = await Twitter.new(deployer, tweetToken.address, nft.address);
+        await nft.setTwitterContractAddress(twitter.address);
 	});
 
-	describe('deployment', () => {});
+	describe('deployment', () => {
+        it('tracks the twitter contract owner', () => {
+            const result = await twitter.owner();
+            result.should.equal(deployer);
+        })
+    });
 });
