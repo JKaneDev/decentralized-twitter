@@ -156,7 +156,7 @@ contract Twitter {
         return followers[user];
     }
 
-    function createTweet(string memory _content, string _imageUrl) public {
+    function createTweet(string memory _content, string memory _imageUrl) public {
         require(users[msg.sender].exists, "User does not exist");
 
         uint256 _tweetId = nextTweetId;
@@ -169,8 +169,8 @@ contract Twitter {
             retweetCount: 0,
             tips: new uint256[](0),
             tipCount: 0,
-            exists: true
-            imageUrl: _imageUrl,
+            exists: true,
+            imageUrl: _imageUrl
         });
 
         emit TweetCreated(
@@ -181,7 +181,7 @@ contract Twitter {
             tweets[nextTweetId].retweetCount, 
             tweets[nextTweetId].tips,
             tweets[nextTweetId].tipCount, 
-            tweets[nextTweetId].exists
+            tweets[nextTweetId].exists,
             tweets[nextTweetId].imageUrl
         );
 
