@@ -42,6 +42,7 @@ contract Twitter {
     }
 
     struct User {
+        address userAddress;
         uint256 id;
         string name;
         string bio;
@@ -61,12 +62,12 @@ contract Twitter {
         string imageUrl;
     }
 
-    event AccountCreated(uint256 id, string name, string bio, string profilePictureURL, bool exists);
+    event AccountCreated(address userAddress, uint256 id, string name, string bio, string profilePictureURL, bool exists);
     event NameUpdated(address indexed user, string newName);
     event BioUpdated(address indexed user, string newBio);
     event ProfilePictureUpdated(address indexed user, string url);
     event AccountDeleted(string name, address user);
-    event FollowerAdded(string user, string follower);
+    event FollowerAdded(address userAddress, string user, string follower, address followerAddress);
     event FollowerRemoved(string user, string follower);
     event TweetCreated(uint256 id, address creator, string content, uint256 likeCount, uint256 retweetCount, uint256[] tips, uint256 tipCount, bool exists, string imageUrl);
     event TweetLiked(uint256 tweetId, uint256 likeCount);
@@ -83,6 +84,7 @@ contract Twitter {
 
         // Create a new user and store it in the mapping
         users[msg.sender] = User({
+            userAddress: msg.sender,
             id: userId,
             name: _name,
             bio: _bio,
@@ -90,7 +92,7 @@ contract Twitter {
             exists: true
         });
 
-        emit AccountCreated(users[msg.sender].id, _name, _bio, _profilePictureURL, users[msg.sender].exists);
+        emit AccountCreated(msg.sender, users[msg.sender].id, _name, _bio, _profilePictureURL, users[msg.sender].exists);
         accountIds.increment();
     }
 
@@ -122,23 +124,31 @@ contract Twitter {
         emit AccountDeleted(users[msg.sender].name, msg.sender);
     }
 
-    function addFollower(address user, address follower) public {
+    function isFollowing(address user, address follower) public view returns (bool) {
+        return _following[follower][user];
+    }
+
+
+    function getFollowerIndex(address user, address follower) public view returns (uint) {
+        return _followerIndices[user][follower];
+    }
+
+    function becomeFollower(address user, address follower) public {
         require(users[user].exists, "User does not exist");
         require(users[follower].exists, "Follower does not exist");
-        require(_following[follower][user], "Not following");
+        require(!_following[follower][user], "Not following");
 
         followers[user].push(follower); // add follower to followers array for that user
         uint256 index = followers[user].length - 1; // get index for follower
         _following[follower][user] = true; // set following status to true
         _followerIndices[user][follower] = index; // store index for follower
 
-        emit FollowerAdded(users[user].name, users[follower].name);
+        emit FollowerAdded(users[user].userAddress, users[user].name, users[follower].name, users[follower].userAddress);
     }
 
     function removeFollower(address user, address follower) public {
-        require(users[user].exists, "User does not exist");
-        require(users[follower].exists, "Follower does not exist");
-        require(!_following[follower][user], "Already following");
+        require(msg.sender == user || msg.sender == follower, "User does not have correct permissions");
+        require(!_following[follower][user], "Not following");
 
         uint256 index = _followerIndices[user][follower];
         uint256 lastIndex = followers[user].length - 1;
