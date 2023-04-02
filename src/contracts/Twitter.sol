@@ -21,9 +21,9 @@ contract Twitter {
     // Store followers for each user
     mapping(address => address[]) public followers; 
     // Store user's following relationships 
-    mapping(address => mapping(address => bool)) public _following; 
+    mapping(address => mapping(address => bool)) public following; 
     // Store the index of the follower in the _followers array (user => (follower => index))
-    mapping(address => mapping(address => uint256)) private _followerIndices; 
+    mapping(address => mapping(address => uint256)) private followerIndices; 
     // Tweet ID index counter
     uint256 private nextTweetId = 1;
     // Store tweets
@@ -68,7 +68,7 @@ contract Twitter {
     event ProfilePictureUpdated(address indexed user, string url);
     event AccountDeleted(string name, address user);
     event FollowerAdded(address userAddress, string user, string follower, address followerAddress);
-    event FollowerRemoved(string user, string follower);
+    event Unfollowed(string user, string follower);
     event TweetCreated(uint256 id, address creator, string content, uint256 likeCount, uint256 retweetCount, uint256[] tips, uint256 tipCount, bool exists, string imageUrl);
     event TweetLiked(uint256 tweetId, uint256 likeCount);
     event ReTweeted(uint256 tweetId, uint256 retweetCount);
@@ -125,46 +125,50 @@ contract Twitter {
     }
 
     function isFollowing(address user, address follower) public view returns (bool) {
-        return _following[follower][user];
+        return following[follower][user];
     }
 
 
     function getFollowerIndex(address user, address follower) public view returns (uint) {
-        return _followerIndices[user][follower];
+        return followerIndices[user][follower];
     }
 
     function becomeFollower(address user, address follower) public {
+        require(msg.sender == follower, "User Cannot Force Followers");
         require(users[user].exists, "User does not exist");
         require(users[follower].exists, "Follower does not exist");
-        require(!_following[follower][user], "Not following");
+        require(!following[follower][user], "Not following");
 
         followers[user].push(follower); // add follower to followers array for that user
         uint256 index = followers[user].length - 1; // get index for follower
-        _following[follower][user] = true; // set following status to true
-        _followerIndices[user][follower] = index; // store index for follower
+        following[follower][user] = true; // set following status to true
+        followerIndices[user][follower] = index; // store index for follower
 
         emit FollowerAdded(users[user].userAddress, users[user].name, users[follower].name, users[follower].userAddress);
     }
 
-    function removeFollower(address user, address follower) public {
-        require(msg.sender == user || msg.sender == follower, "User does not have correct permissions");
-        require(!_following[follower][user], "Not following");
+    function unfollow(address _user, address _follower) public {
+        require(msg.sender == _follower, "Only the follower can remove themselves");
+        require(following[_follower][_user], "Not following");
 
-        uint256 index = _followerIndices[user][follower];
-        uint256 lastIndex = followers[user].length - 1;
+        uint256 index = followerIndices[_user][_follower];
+        uint256 lastIndex = followers[_user].length - 1;
 
         // Move the last follower to the index of the follower being removed
-        followers[user][index] = followers[user][lastIndex];
+        followers[_user][index] = followers[_user][lastIndex];
 
         // Update the index of the moved follower
-        _followerIndices[user][followers[user][index]] = index;
+        followerIndices[_user][followers[_user][index]] = index;
 
-        // Remove the last follower and update the _following mapping
-        followers[user].pop();
-        _following[follower][user] = false;
-        delete _followerIndices[user][follower];
+        // Remove the last follower and update the following mapping
+        followers[_user].pop();
+        following[_follower][_user] = false;
+        delete followerIndices[_user][_follower];
 
-        emit FollowerRemoved(users[user].name, users[follower].name);
+        require(!following[_user][_follower], "Failed to remove the follower");
+
+
+        emit Unfollowed(users[_user].name, users[_follower].name);
     }
 
     function getFollowerAddresses(address user) public view returns (address[] memory) {
