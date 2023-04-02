@@ -132,42 +132,46 @@ contract('Twitter', (accounts) => {
 			user2Event = user2Log.args;
 		});
 
-		it('Allows user to follow another user', async () => {
-			await twitter.becomeFollower(user1, user2);
-			const user1Followers = await twitter.followers(user1, 0);
-			assert.include(user1Followers, user2);
+		describe('Success', () => {
+			it('Allows user to follow another user', async () => {
+				await twitter.becomeFollower(user1, user2);
+				const user1Followers = await twitter.followers(user1, 0);
+				assert.include(user1Followers, user2);
+			});
+
+			it('updates following status to true', async () => {
+				await twitter.becomeFollower(user1, user2);
+				const followingStatus = await twitter.isFollowing(user1, user2);
+				assert.isTrue(followingStatus);
+			});
+
+			it('stores the index of the follower for a specific user', async () => {
+				await twitter.becomeFollower(user1, user2);
+				const followerIndex = await twitter.getFollowerIndex(user1, user2);
+				followerIndex.toString().should.equal('0');
+			});
+
+			it('emits follower added event', async () => {
+				const followerAdded = await twitter.becomeFollower(user1, user2);
+				const followerAddedLog = followerAdded.logs[0];
+				const followerAddedEvent = followerAddedLog.args;
+				followerAddedEvent.userAddress.toString().should.equal(user1.toString());
+				followerAddedEvent.user.toString().should.equal('jtkanedev');
+				followerAddedEvent.followerAddress.toString().should.equal(user2.toString());
+				followerAddedEvent.follower.toString().should.equal('Heraclitus');
+			});
+
+			it.only('allows user to unfollow another user', async () => {
+				await twitter.becomeFollower(user1, user2);
+				let user1Followers = await twitter.followers(user1, 0);
+				assert.include(user1Followers, user2);
+				await twitter.removeFollower(user1, user2, { from: user1 });
+				user1Followers = await twitter.followers(user1, 0);
+				assert.notInclude(user1Followers, user2);
+			});
 		});
 
-		it('updates following status to true', async () => {
-			await twitter.becomeFollower(user1, user2);
-			const followingStatus = await twitter.isFollowing(user1, user2);
-			assert.isTrue(followingStatus);
-		});
-
-		it('stores the index of the follower for a specific user', async () => {
-			await twitter.becomeFollower(user1, user2);
-			const followerIndex = await twitter.getFollowerIndex(user1, user2);
-			followerIndex.toString().should.equal('0');
-		});
-
-		it.only('emits follower added event', async () => {
-			const followerAdded = await twitter.becomeFollower(user1, user2);
-			const followerAddedLog = followerAdded.logs[0];
-			const followerAddedEvent = followerAddedLog.args;
-			followerAddedEvent.userAddress.toString().should.equal(user1.toString());
-			followerAddedEvent.user.toString().should.equal('jtkanedev');
-			followerAddedEvent.followerAddress.toString().should.equal(user2.toString());
-			followerAddedEvent.follower.toString().should.equal('Heraclitus');
-		});
-
-		// it.only('allows user to unfollow another user', async () => {
-		// 	await twitter.becomeFollower(user1, user2);
-		// 	let user1Followers = await twitter.followers(user1, 0);
-		// 	assert.include(user1Followers, user2);
-		// 	await twitter.removeFollower(user1, user2, { from: user1 });
-		// 	user1Followers = await twitter.followers(user1, 0);
-		// 	assert.notInclude(user1Followers, user2);
-		// });
+		describe('Failure', () => {});
 	});
 });
 
