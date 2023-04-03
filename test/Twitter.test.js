@@ -1,4 +1,4 @@
-const { assert } = require('chai');
+const { assert, expect } = require('chai');
 const { assertArgument } = require('ethers');
 const { before } = require('lodash');
 const helpers = require('./helpers');
@@ -231,22 +231,144 @@ contract('Twitter', (accounts) => {
 	});
 
 	describe('Creating Tweets, Re-Tweeting & Liking Tweets', () => {
-		beforeEach(async () => {});
+		let user1Account;
+		let user2Account;
 
-		describe('Success', () => {
-			it('allows user to create a tweet', async () => {});
+		beforeEach(async () => {
+			// Create First Account
+			user1Account = await twitter.createAccount(
+				'jtkanedev',
+				'26 Year Old Ethereum DApp Developer From The UK.',
+				'https://www.dreamstime.com/businessman-icon-image-male-avatar-profile-vector-glasses-beard-hairstyle-image179728610',
+				{ from: user1 },
+			);
 
-			it('emits a Tweet event', async () => {});
+			// Create Second Account
+			user2Account = await twitter.createAccount(
+				'Heraclitus',
+				'Greek Philosopher from the 5th - 6th Century BC. "You Cannot Step Into The Same River Twice"',
+				'https://www.dreamstime.com/businessman-icon-image-male-avatar-profile-vector-glasses-beard-hairstyle-image179728610',
+				{ from: user2 },
+			);
 
-			it('allows user to like a tweet', async () => {});
-
-			it('emits a TweetLiked event', async () => {});
-
-			it('allows user to retweet', async () => {});
-
-			it('emits a Retweeted event', async () => {});
+			// User2 follows user1
+			await twitter.becomeFollower(user1, user2, { from: user2 });
 		});
 
-		describe('Failure', () => {});
+		describe('Success', () => {
+			it('allows user to create a tweet', async () => {
+				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+					from: user1,
+				});
+				let log = result.logs[0];
+				let event = log.args;
+				let id = event.id;
+				let tweet = await twitter.getTweet(id);
+				tweet.id.toString().should.equal(id.toString());
+				tweet.creator.toString().should.equal(user1.toString());
+				tweet.content.should.equal('Hello everyone! Good to be here :)');
+			});
+
+			it('emits a Tweet event', async () => {
+				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+					from: user1,
+				});
+				let log = result.logs[0];
+				let event = log.args;
+				let id = event.id;
+				event.id.toString().should.equal(id.toString());
+				event.creator.toString().should.equal(user1.toString());
+				event.content.should.equal('Hello everyone! Good to be here :)');
+				event.likeCount.toString().should.equal('0');
+				event.retweetCount.toString().should.equal('0');
+				expect(event.tips.length).to.equal(0);
+				event.tipCount.toString().should.equal('0');
+				assert.isTrue(event.exists);
+				event.imageUrl.should.equal('https://tweetimageurl.com');
+			});
+
+			it('allows user to like a tweet', async () => {
+				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+					from: user1,
+				});
+				let log = result.logs[0];
+				let event = log.args;
+				let id = event.id;
+				await twitter.likeTweet(id);
+				let tweet = await twitter.getTweet(id);
+				tweet.likeCount.toString().should.equal('1');
+			});
+
+			it('emits a TweetLiked event', async () => {
+				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+					from: user1,
+				});
+				let log = result.logs[0];
+				let event = log.args;
+				let id = event.id;
+				let like = await twitter.likeTweet(id);
+				let likeLog = like.logs[0];
+				let likeEvent = likeLog.args;
+				likeEvent.tweetId.toString().should.equal(id.toString());
+				likeEvent.likeCount.toString().should.equal('1');
+			});
+
+			it('allows user to retweet', async () => {
+				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+					from: user1,
+				});
+				let log = result.logs[0];
+				let event = log.args;
+				let id = event.id;
+				await twitter.retweet(id);
+				let tweet = await twitter.getTweet(id);
+				tweet.retweetCount.toString().should.equal('1');
+			});
+
+			it('emits a Retweeted event', async () => {
+				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+					from: user1,
+				});
+				let log = result.logs[0];
+				let event = log.args;
+				let id = event.id;
+				let retweet = await twitter.retweet(id);
+				let retweetLog = retweet.logs[0];
+				let retweetEvent = retweetLog.args;
+				retweetEvent.tweetId.toString().should.equal(id.toString());
+				retweetEvent.retweetCount.toString().should.equal('1');
+			});
+		});
+
+		describe('Failure', () => {
+			it('does not allow non-users to tweet', async () => {
+				await twitter
+					.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+						from: owner,
+					})
+					.should.be.rejectedWith(helpers.EVM_REVERT);
+			});
+
+			it('does not allow the user to like the same tweet more than once', async () => {
+				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+					from: user1,
+				});
+				let log = result.logs[0];
+				let event = log.args;
+				let id = event.id;
+				let like = await twitter.likeTweet(id);
+				await twitter.likeTweet(id).should.be.rejectedWith(helpers.EVM_REVERT);
+			});
+
+			it.only('does not allow non-users to retweet', async () => {
+				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+					from: user1,
+				});
+				let log = result.logs[0];
+				let event = log.args;
+				let id = event.id;
+				await twitter.retweet(id, { from: owner }).should.be.rejectedWith(helpers.EVM_REVERT);
+			});
+		});
 	});
 });

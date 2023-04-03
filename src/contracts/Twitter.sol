@@ -28,6 +28,8 @@ contract Twitter {
     uint256 private nextTweetId = 1;
     // Store tweets
     mapping(uint256 => Tweet) public tweets;
+    // Store liked tweets
+    mapping(address => mapping(uint256 => bool)) private likedTweets;
     // Store auction addresses
     mapping(uint256 => address) public tweetAuctions;
     // Store account IDs
@@ -176,6 +178,11 @@ contract Twitter {
         return followers[user];
     }
 
+    function getTweet(uint256 id) public view returns (Tweet memory) {
+        Tweet memory tweet = tweets[id];
+        return tweet;
+    }
+
     function createTweet(string memory _content, string memory _imageUrl) public {
         require(users[msg.sender].exists, "User does not exist");
 
@@ -209,12 +216,16 @@ contract Twitter {
     }
 
     function likeTweet(uint256 _tweetId) public {
+        require(!likedTweets[msg.sender][_tweetId], "You have already liked this tweet");
+        
         tweets[_tweetId].likeCount++;
+        likedTweets[msg.sender][_tweetId] = true;
 
         emit TweetLiked(_tweetId, tweets[_tweetId].likeCount);
     }
 
     function retweet(uint256 _tweetId) public {
+        require(users[msg.sender].exists, "User does not exist");
         tweets[_tweetId].retweetCount++;
 
         emit ReTweeted(_tweetId, tweets[_tweetId].retweetCount);
