@@ -137,25 +137,25 @@ contract('Twitter', (accounts) => {
 		describe('Success', () => {
 			describe('Becoming Follower', () => {
 				it('Allows user to follow another user', async () => {
-					await twitter.becomeFollower(user1, user2);
+					await twitter.becomeFollower(user1, user2, { from: user2 });
 					const user1Followers = await twitter.followers(user1, 0);
 					assert.include(user1Followers, user2);
 				});
 
 				it('updates following status to true', async () => {
-					await twitter.becomeFollower(user1, user2);
+					await twitter.becomeFollower(user1, user2, { from: user2 });
 					const followingStatus = await twitter.isFollowing(user1, user2);
 					assert.isTrue(followingStatus);
 				});
 
 				it('stores the index of the follower for a specific user', async () => {
-					await twitter.becomeFollower(user1, user2);
+					await twitter.becomeFollower(user1, user2, { from: user2 });
 					const followerIndex = await twitter.getFollowerIndex(user1, user2);
 					followerIndex.toString().should.equal('0');
 				});
 
 				it('emits follower added event', async () => {
-					const followerAdded = await twitter.becomeFollower(user1, user2);
+					const followerAdded = await twitter.becomeFollower(user1, user2, { from: user2 });
 					const followerAddedLog = followerAdded.logs[0];
 					const followerAddedEvent = followerAddedLog.args;
 					followerAddedEvent.userAddress.toString().should.equal(user1.toString());
@@ -165,9 +165,9 @@ contract('Twitter', (accounts) => {
 				});
 			});
 
-			describe('Unfollowing', () => {
+			describe('Unfollow', () => {
 				it('allows user to unfollow another user', async () => {
-					await twitter.becomeFollower(user1, user2);
+					await twitter.becomeFollower(user1, user2, { from: user2 });
 					await twitter.unfollow(user1, user2, { from: user2 });
 					const user1Followers = await twitter.getFollowerAddresses(user1);
 					user1Followers.toString().should.equal('');
@@ -178,7 +178,7 @@ contract('Twitter', (accounts) => {
 				});
 
 				it('emits unfollow event', async () => {
-					await twitter.becomeFollower(user1, user2);
+					await twitter.becomeFollower(user1, user2, { from: user2 });
 					const unfollowed = await twitter.unfollow(user1, user2, { from: user2 });
 					const log = unfollowed.logs[0];
 					const event = log.args;
@@ -228,5 +228,25 @@ contract('Twitter', (accounts) => {
 				});
 			});
 		});
+	});
+
+	describe('Creating Tweets, Re-Tweeting & Liking Tweets', () => {
+		beforeEach(async () => {});
+
+		describe('Success', () => {
+			it('allows user to create a tweet', async () => {});
+
+			it('emits a Tweet event', async () => {});
+
+			it('allows user to like a tweet', async () => {});
+
+			it('emits a TweetLiked event', async () => {});
+
+			it('allows user to retweet', async () => {});
+
+			it('emits a Retweeted event', async () => {});
+		});
+
+		describe('Failure', () => {});
 	});
 });
