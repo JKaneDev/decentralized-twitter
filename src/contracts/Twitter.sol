@@ -130,7 +130,6 @@ contract Twitter {
         return following[follower][user];
     }
 
-
     function getFollowerIndex(address user, address follower) public view returns (uint) {
         return followerIndices[user][follower];
     }
@@ -232,6 +231,7 @@ contract Twitter {
     }
 
     function tipUser(uint256 _tweetId, uint256 _amount) public {
+        require(_amount > 0, "Amount should be greater than 0");
         require(tweetToken.transferFrom(msg.sender, tweets[_tweetId].creator, _amount), "Transfer failed");
         tweets[_tweetId].tips.push(_amount);
         tweets[_tweetId].tipCount++;

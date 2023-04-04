@@ -1,6 +1,4 @@
 const { assert, expect } = require('chai');
-const { assertArgument } = require('ethers');
-const { before } = require('lodash');
 const helpers = require('./helpers');
 require('chai').use(require('chai-as-promised')).should();
 const Twitter = artifacts.require('./Twitter');
@@ -360,7 +358,7 @@ contract('Twitter', (accounts) => {
 				await twitter.likeTweet(id).should.be.rejectedWith(helpers.EVM_REVERT);
 			});
 
-			it.only('does not allow non-users to retweet', async () => {
+			it('does not allow non-users to retweet', async () => {
 				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
 					from: user1,
 				});
@@ -368,6 +366,76 @@ contract('Twitter', (accounts) => {
 				let event = log.args;
 				let id = event.id;
 				await twitter.retweet(id, { from: owner }).should.be.rejectedWith(helpers.EVM_REVERT);
+			});
+		});
+	});
+
+	describe('User can tip & receive tips on tweets', () => {
+		let result;
+		let log;
+		let event;
+		let id;
+		beforeEach(async () => {
+			// Create First Account
+			user1Account = await twitter.createAccount(
+				'jtkanedev',
+				'26 Year Old Ethereum DApp Developer From The UK.',
+				'https://www.dreamstime.com/businessman-icon-image-male-avatar-profile-vector-glasses-beard-hairstyle-image179728610',
+				{ from: user1 },
+			);
+
+			// Create Second Account
+			user2Account = await twitter.createAccount(
+				'Heraclitus',
+				'Greek Philosopher from the 5th - 6th Century BC. "You Cannot Step Into The Same River Twice"',
+				'https://www.dreamstime.com/businessman-icon-image-male-avatar-profile-vector-glasses-beard-hairstyle-image179728610',
+				{ from: user2 },
+			);
+
+			// User2 follows user1
+			await twitter.becomeFollower(user1, user2, { from: user2 });
+
+			// Create Tweet & get ID
+			result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+				from: user1,
+			});
+			log = result.logs[0];
+			event = log.args;
+			id = event.id;
+		});
+
+		describe('Success', () => {
+			it('allows the user to tip another user with tweetToken', async () => {
+				await tweetToken.approve(twitter.address, 100, { from: user2 });
+				await twitter.tipUser(1, 10, { from: user2 });
+				let tweet = await twitter.getTweet(id);
+				assert.include(tweet.tips, '10');
+				tweet.tipCount.toString().should.equal('1');
+			});
+
+			it('emits a UserTipped event', async () => {
+				await tweetToken.approve(twitter.address, 100, { from: user2 });
+				let tip = await twitter.tipUser(1, 10, { from: user2 });
+				let tipLog = tip.logs[0];
+				let tipEvent = tipLog.args;
+				tipEvent.amount.toString().should.equal('10');
+				tipEvent.tweetId.toString().should.equal('1');
+				tipEvent.creator.should.equal(user1);
+				tipEvent.tipper.should.equal(user2);
+				tipEvent.tipperName.should.equal('Heraclitus');
+				tipEvent.tipCount.toString().should.equal('1');
+			});
+		});
+
+		describe('Failure', () => {
+			it('disallows unapproved users from tipping', async () => {
+				await tweetToken.approve(twitter.address, 100, { from: user1 });
+				await twitter.tipUser(1, 10, { from: user2 }).should.be.rejectedWith(helpers.EVM_REVERT);
+			});
+
+			it('users must tip more than 0', async () => {
+				await tweetToken.approve(twitter.address, 100, { from: user2 });
+				await twitter.tipUser(1, 0, { from: user2 }).should.be.rejectedWith(helpers.EVM_REVERT);
 			});
 		});
 	});
