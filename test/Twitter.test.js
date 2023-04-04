@@ -1,6 +1,4 @@
-const Web3 = require('web3');
 const { assert, expect } = require('chai');
-const _ = require('lodash');
 const helpers = require('./helpers');
 require('chai').use(require('chai-as-promised')).should();
 const Twitter = artifacts.require('./Twitter');

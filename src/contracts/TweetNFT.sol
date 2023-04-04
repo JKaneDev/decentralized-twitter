@@ -22,6 +22,16 @@ contract TweetNFT is ERC721, ERC721URIStorage {
     string public baseURI;
 
     constructor() ERC721("TweetNFT", "TWNFT") {}
+    
+    event NFTMinted(uint256 nftId, address owner, string baseURI);
+
+    function isTweetMinted(uint256 nftId) public view returns (bool) {
+        return _tweetMinted[nftId];
+    }
+
+    function getOriginalOwner(uint256 nftId) public view returns (address) {
+        return _originalOwners[nftId];
+    }
 
     function setBaseURI(string memory _baseURI) external {
         baseURI = _baseURI;
@@ -66,6 +76,8 @@ contract TweetNFT is ERC721, ERC721URIStorage {
         _originalOwners[nftId] = owner;
 
         _nftIDs.increment();
+
+        emit NFTMinted(nftId, owner, fullURI);
 
         return nftId;
     }
