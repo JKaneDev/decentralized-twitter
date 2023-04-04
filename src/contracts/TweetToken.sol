@@ -24,6 +24,26 @@ contract TweetToken {
         balanceOf[msg.sender] = totalSupply;
     }
 
+    function getName() public view returns (string memory) {
+        return name;
+    }
+
+    function getSymbol() public view returns (string memory) {
+        return symbol;
+    }
+
+    function getDecimals() public view returns (uint256) {
+        return decimals;
+    }
+
+    function getTotalSupply() public view returns (uint256) {
+        return totalSupply;
+    }
+
+    function getBalanceOf(address _owner) public view returns (uint256 balance) {
+        return balanceOf[_owner];
+    }
+
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(balanceOf[msg.sender] >= _value);
         _transfer(msg.sender, _to, _value);

@@ -1,5 +1,4 @@
 const { assert, expect } = require('chai');
-const { assetPrefix } = require('../next.config');
 const helpers = require('./helpers');
 require('chai').use(require('chai-as-promised')).should();
 const Twitter = artifacts.require('./Twitter');
