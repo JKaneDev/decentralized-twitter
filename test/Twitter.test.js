@@ -98,7 +98,6 @@ contract('Twitter', (accounts) => {
 			let result = await twitter.removeUser({ from: user1 });
 			let log = result.logs[0];
 			let event = log.args;
-			console.log('Event: ', event);
 		});
 	});
 
@@ -315,10 +314,8 @@ contract('Twitter', (accounts) => {
 				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
 					from: user1,
 				});
-				let log = result.logs[0];
-				let event = log.args;
-				let id = event.id;
-				await twitter.retweet(id);
+				let id = result.logs[0].args.id;
+				await twitter.retweet(id, { from: user2 });
 				let tweet = await twitter.getTweet(id);
 				tweet.retweetCount.toString().should.equal('1');
 			});
@@ -330,7 +327,7 @@ contract('Twitter', (accounts) => {
 				let log = result.logs[0];
 				let event = log.args;
 				let id = event.id;
-				let retweet = await twitter.retweet(id);
+				let retweet = await twitter.retweet(id, { from: user2 });
 				let retweetLog = retweet.logs[0];
 				let retweetEvent = retweetLog.args;
 				retweetEvent.tweetId.toString().should.equal(id.toString());
