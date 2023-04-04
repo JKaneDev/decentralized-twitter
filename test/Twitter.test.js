@@ -1,4 +1,6 @@
+const Web3 = require('web3');
 const { assert, expect } = require('chai');
+const _ = require('lodash');
 const helpers = require('./helpers');
 require('chai').use(require('chai-as-promised')).should();
 const Twitter = artifacts.require('./Twitter');
@@ -437,6 +439,43 @@ contract('Twitter', (accounts) => {
 				await tweetToken.approve(twitter.address, 100, { from: user2 });
 				await twitter.tipUser(1, 0, { from: user2 }).should.be.rejectedWith(helpers.EVM_REVERT);
 			});
+		});
+	});
+
+	describe('Twitter contract can receive ETH & contract deployer can withdraw', () => {
+		it('should receive ETH and contract deployer can withdraw', async () => {
+			// Send 1 Ether to user1
+			await web3.eth.sendTransaction({
+				from: owner,
+				to: user1,
+				value: web3.utils.toWei('1', 'ether'),
+			});
+
+			// Send 0.5 Ether back to the contract
+			await twitter.receiveFunds({
+				from: user1,
+				to: twitter.address,
+				value: web3.utils.toWei('0.5', 'ether'),
+			});
+
+			// Check the contract's balance
+			const contractBalance = await web3.eth.getBalance(twitter.address);
+			assert.equal(contractBalance, web3.utils.toWei('0.5', 'ether'));
+
+			// Withdraw funds to the contract deployer's account
+			const initialBalance = await web3.eth.getBalance(owner);
+			const withdrawReceipt = await twitter.withdraw({ from: owner });
+			const gasUsed = withdrawReceipt.receipt.gasUsed;
+			const tx = await web3.eth.getTransaction(withdrawReceipt.tx);
+			const gasPrice = tx.gasPrice;
+			const gasCost = new web3.utils.BN(gasUsed).mul(new web3.utils.BN(gasPrice));
+			const finalBalance = await web3.eth.getBalance(owner);
+
+			// Check that the contract deployer received the correct amount of Ether
+			const expectedBalance = new web3.utils.BN(initialBalance)
+				.add(new web3.utils.BN(web3.utils.toWei('0.5', 'ether')))
+				.sub(gasCost);
+			assert.equal(finalBalance.toString(), expectedBalance.toString());
 		});
 	});
 });
