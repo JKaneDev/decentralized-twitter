@@ -47,6 +47,27 @@ contract Auction is ReentrancyGuard {
             twitterContract = Twitter(_twitterContractAddress);
     }
 
+    function getStartingPrice() public view returns (uint256) {
+        return startingPrice;
+    }
+
+    function getAuctionEndTime() public view returns (uint256) {
+        return auctionEndTime;
+    }
+
+    function getHighestBidder() public view returns (address payable) {
+        return highestBidder;
+    }
+
+    function getHighestBid() public view returns (uint256) {
+        return highestBid;
+    }
+
+    function getEnded() public view returns (bool) {
+        return ended;
+    }
+
+
     function bid() public payable nonReentrant {
         require(msg.sender != seller, "Tweet owner cannot bid on their own auction");
         require(msg.value >= startingPrice, "Bid should be equal or greater than starting price");
@@ -67,7 +88,10 @@ contract Auction is ReentrancyGuard {
         require(msg.sender == seller, "Only seller can end auction");
         require(block.timestamp >= auctionEndTime, "Auction has not ended");
         require(!ended, "Auction has already been called");
+        
+        require(highestBid >= startingPrice, "No valid bid received");
 
+        
         uint256 twitterFee = (highestBid * 5) / 100;
         uint256 royaltyAmount = (highestBid * royaltyPercentage) / 100;
         uint256 sellerShare = highestBid - royaltyAmount - twitterFee;

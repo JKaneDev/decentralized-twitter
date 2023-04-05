@@ -44,6 +44,11 @@ contract TweetToken {
         return balanceOf[_owner];
     }
 
+    function getAllowance(address owner, address spender) public view returns (uint256) {
+        return allowance[owner][spender];
+    }
+
+
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(balanceOf[msg.sender] >= _value);
         _transfer(msg.sender, _to, _value);
