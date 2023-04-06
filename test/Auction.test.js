@@ -13,6 +13,7 @@ contract('Auction', ([owner, user1, user2]) => {
 	let nft;
 	let twitter;
 	let auction;
+	let nftId;
 
 	beforeEach(async () => {
 		// Initialize contracts
@@ -20,7 +21,7 @@ contract('Auction', ([owner, user1, user2]) => {
 		nft = await TweetNFT.new();
 		twitter = await Twitter.new(owner, tweetToken.address, nft.address);
 		// Mint NFT
-		await nft.mintTweetNFT(owner, { from: owner });
+		nftId = await nft.mintTweetNFT(owner, { from: owner });
 		// Initialize auction
 		auction = await Auction.new(owner, owner, 0, web3.utils.toWei('1', 'ether'), 3600, nft.address, twitter.address);
 		// Approve auction contract to transfer nft ownership
@@ -89,7 +90,7 @@ contract('Auction', ([owner, user1, user2]) => {
 
 	describe('Ending Auction', () => {
 		describe('Success', () => {
-			it.only('updates balances of seller & twitter contract successfully', async () => {
+			it('updates balances of seller & twitter contract successfully', async () => {
 				// Get initial balances
 				let initialOriginalOwnerBalance = web3.utils.toBN(await web3.eth.getBalance(owner));
 				let initialTwitterContractBalance = web3.utils.toBN(await web3.eth.getBalance(twitter.address));
@@ -126,11 +127,14 @@ contract('Auction', ([owner, user1, user2]) => {
 				expect(finalTwitterContractBalance.toString()).to.eql(initialTwitterContractBalance.add(twitterFee).toString());
 			});
 
-			it('transfers sale share to seller', async () => {});
-
-			it('transfers sale fee to twitter contract', async () => {});
-
-			it('transfers nft ownership to highest bidder', async () => {});
+			it('transfers nft ownership to highest bidder', async () => {
+				await auction.bid({ from: user1, value: web3.utils.toWei('2', 'ether') });
+				await time.increase(time.duration.hours(1));
+				const event = await auction.endAuction({ from: owner });
+				const highestBidder = event.logs[0].args.winner;
+				const newOwner = await nft.ownerOf(0);
+				highestBidder.should.equal(newOwner);
+			});
 
 			it('declares auction as ended', async () => {});
 
