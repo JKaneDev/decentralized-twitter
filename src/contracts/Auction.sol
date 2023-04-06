@@ -88,8 +88,6 @@ contract Auction is ReentrancyGuard {
         require(block.timestamp >= auctionEndTime, "Auction has not ended");
         require(!ended, "Auction has already been called");
         
-        require(highestBid >= startingPrice, "No valid bid received");
-        
         uint256 twitterFee = (highestBid * 5) / 100;
         uint256 royaltyAmount = (highestBid * royaltyPercentage) / 100;
         uint256 sellerShare = highestBid - royaltyAmount - twitterFee;
@@ -103,7 +101,13 @@ contract Auction is ReentrancyGuard {
             twitterContract.receiveFunds{value: twitterFee}();
         }
         // Transfer NFT ownership to highest bidder
-        nftContract.safeTransferFrom(seller, highestBidder, nftId);
+        if (highestBid >= startingPrice) {
+            nftContract.safeTransferFrom(seller, highestBidder, nftId);
+        } else {
+            ended = true;
+            return;
+        }
+            
 
         ended = true;
         emit AuctionEnded(highestBidder, highestBid, royaltyAmount, twitterFee, sellerShare);

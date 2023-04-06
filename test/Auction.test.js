@@ -81,6 +81,7 @@ contract('Auction', ([owner, user1, user2]) => {
 
 			it('does now allow bids after the auction end time', async () => {
 				await time.increase(time.duration.hours(1));
+				await auction.endAuction({ from: owner });
 				await auction
 					.bid({ from: user1, value: web3.utils.toWei('2', 'ether') })
 					.should.be.rejectedWith(helpers.EVM_REVERT);
@@ -163,11 +164,23 @@ contract('Auction', ([owner, user1, user2]) => {
 		});
 
 		describe('Failure', () => {
-			it('only allows nft seller to end auction', async () => {});
+			it('only allows nft seller to end auction', async () => {
+				await auction.bid({ from: user1, value: web3.utils.toWei('2', 'ether') });
+				await time.increase(time.duration.hours(1));
+				await auction.endAuction({ from: user2 }).should.be.rejectedWith(helpers.EVM_REVERT);
+			});
 
-			it('only allows the auction to be ended at or after the specified end time', async () => {});
+			it('only allows the auction to be ended at or after the specified end time', async () => {
+				await auction.bid({ from: user1, value: web3.utils.toWei('2', 'ether') });
+				await auction.endAuction({ from: owner }).should.be.rejectedWith(helpers.EVM_REVERT);
+			});
 
-			it('only allows auction to be ended if it is in progress', async () => {});
+			it('only allows auction to be ended if it is in progress', async () => {
+				await auction.bid({ from: user1, value: web3.utils.toWei('2', 'ether') });
+				await time.increase(time.duration.hours(1));
+				await auction.endAuction({ from: owner });
+				await auction.endAuction({ from: user1 }).should.be.rejectedWith(helpers.EVM_REVERT);
+			});
 		});
 	});
 });
