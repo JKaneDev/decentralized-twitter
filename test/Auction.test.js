@@ -1,4 +1,6 @@
 const { time } = require('@openzeppelin/test-helpers');
+const { web3 } = require('@openzeppelin/test-helpers/src/setup');
+const { expect } = require('chai');
 const helpers = require('./helpers');
 require('chai').use(require('chai-as-promised')).should();
 const TweetToken = artifacts.require('./TweetToken');
@@ -11,7 +13,6 @@ contract('Auction', ([owner, user1, user2]) => {
 	let nft;
 	let twitter;
 	let auction;
-	let startTime;
 
 	beforeEach(async () => {
 		// Initialize contracts
@@ -22,7 +23,8 @@ contract('Auction', ([owner, user1, user2]) => {
 		await nft.mintTweetNFT(owner, { from: owner });
 		// Initialize auction
 		auction = await Auction.new(owner, owner, 0, web3.utils.toWei('1', 'ether'), 3600, nft.address, twitter.address);
-		startTime = await time.latest();
+		// Approve auction contract to transfer nft ownership
+		await nft.approve(auction.address, 0, { from: owner });
 	});
 
 	describe('Bidding', () => {
@@ -76,7 +78,7 @@ contract('Auction', ([owner, user1, user2]) => {
 					.should.be.rejectedWith(helpers.EVM_REVERT);
 			});
 
-			it.only('does now allow bids after the auction end time', async () => {
+			it('does now allow bids after the auction end time', async () => {
 				await time.increase(time.duration.hours(1));
 				await auction
 					.bid({ from: user1, value: web3.utils.toWei('2', 'ether') })
@@ -87,7 +89,42 @@ contract('Auction', ([owner, user1, user2]) => {
 
 	describe('Ending Auction', () => {
 		describe('Success', () => {
-			it('transfers royalty to the original owner', async () => {});
+			it.only('updates balances of seller & twitter contract successfully', async () => {
+				// Get initial balances
+				let initialOriginalOwnerBalance = web3.utils.toBN(await web3.eth.getBalance(owner));
+				let initialTwitterContractBalance = web3.utils.toBN(await web3.eth.getBalance(twitter.address));
+
+				// Bid
+				await auction.bid({ from: user1, value: web3.utils.toWei('2', 'ether') });
+
+				// End the auction
+				await time.increase(time.duration.hours(1));
+				const event = await auction.endAuction({ from: owner });
+
+				// Get transaction hash and fetch receipt to get gas
+				const txHash = event.tx;
+				const receipt = await web3.eth.getTransactionReceipt(txHash);
+
+				// Fetch gas used and calculate price
+				const gasUsed = web3.utils.toBN(receipt.gasUsed);
+				const gasPrice = web3.utils.toBN(await web3.eth.getGasPrice());
+				const gasFee = gasUsed.mul(gasPrice);
+
+				// Calculate the expected additions and deductions for each account
+				let royaltyAmount = web3.utils.toBN(event.logs[0].args.royaltyAmount);
+				let twitterFee = web3.utils.toBN(event.logs[0].args.twitterFee);
+				let sellerShare = web3.utils.toBN(event.logs[0].args.sellerShare);
+
+				// Get final balances
+				let finalOriginalOwnerBalance = web3.utils.toBN(await web3.eth.getBalance(owner));
+				let finalTwitterContractBalance = web3.utils.toBN(await web3.eth.getBalance(twitter.address));
+
+				// Check if balances are updated correctly
+				expect(finalOriginalOwnerBalance.toString()).to.eql(
+					initialOriginalOwnerBalance.add(sellerShare).add(royaltyAmount).sub(gasFee).toString(),
+				);
+				expect(finalTwitterContractBalance.toString()).to.eql(initialTwitterContractBalance.add(twitterFee).toString());
+			});
 
 			it('transfers sale share to seller', async () => {});
 

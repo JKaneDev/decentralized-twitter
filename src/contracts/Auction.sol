@@ -25,8 +25,7 @@ contract Auction is ReentrancyGuard {
     bool public ended;
 
     event HighestBidIncreased(address indexed bidder, uint256 amount);
-    event AuctionEnded(address indexed winner, uint256 amount);
-    event FundsReturned(address indexed bidder, uint256 amount);
+    event AuctionEnded(address indexed winner, uint256 amount, uint256 royaltyAmount, uint256 twitterFee, uint256 sellerShare);
 
     constructor(
         address payable _originalOwner, 
@@ -90,20 +89,23 @@ contract Auction is ReentrancyGuard {
         require(!ended, "Auction has already been called");
         
         require(highestBid >= startingPrice, "No valid bid received");
-
         
         uint256 twitterFee = (highestBid * 5) / 100;
         uint256 royaltyAmount = (highestBid * royaltyPercentage) / 100;
         uint256 sellerShare = highestBid - royaltyAmount - twitterFee;
 
-        originalOwner.transfer(royaltyAmount);
-        seller.transfer(sellerShare);
-        twitterContract.receiveFunds{value: twitterFee}();
-        
+        if (originalOwner == seller) {
+            originalOwner.transfer(sellerShare + royaltyAmount);
+            twitterContract.receiveFunds{value: twitterFee}();
+        } else {
+            originalOwner.transfer(royaltyAmount);
+            seller.transfer(sellerShare);
+            twitterContract.receiveFunds{value: twitterFee}();
+        }
         // Transfer NFT ownership to highest bidder
         nftContract.safeTransferFrom(seller, highestBidder, nftId);
 
         ended = true;
-        emit AuctionEnded(highestBidder, highestBid);
+        emit AuctionEnded(highestBidder, highestBid, royaltyAmount, twitterFee, sellerShare);
     }
 }
