@@ -1,6 +1,6 @@
 const { time } = require('@openzeppelin/test-helpers');
 const { web3 } = require('@openzeppelin/test-helpers/src/setup');
-const { expect } = require('chai');
+const { expect, assert } = require('chai');
 const helpers = require('./helpers');
 require('chai').use(require('chai-as-promised')).should();
 const TweetToken = artifacts.require('./TweetToken');
@@ -136,14 +136,30 @@ contract('Auction', ([owner, user1, user2]) => {
 				highestBidder.should.equal(newOwner);
 			});
 
-			it.only('declares auction as ended', async () => {
+			it('declares auction as ended', async () => {
 				await auction.bid({ from: user1, value: web3.utils.toWei('2', 'ether') });
 				await time.increase(time.duration.hours(1));
 				await auction.endAuction({ from: owner });
-				await auction.getEnded().should.equal(true);
+				const ended = await auction.getEnded();
+				assert.isTrue(ended);
 			});
 
-			it('emits an AuctionEnded event', async () => {});
+			it('emits an AuctionEnded event', async () => {
+				await auction.bid({ from: user1, value: web3.utils.toWei('2', 'ether') });
+				await time.increase(time.duration.hours(1));
+				const event = await auction.endAuction({ from: owner });
+				const log = event.logs[0];
+				const data = log.args;
+				const highestBid = web3.utils.toWei('2', 'ether');
+				const royaltyAmount = (web3.utils.toWei('2', 'ether') * 5) / 100;
+				const twitterFee = (web3.utils.toWei('2', 'ether') * 5) / 100;
+				log.event.should.eq('AuctionEnded');
+				data.winner.should.equal(user1);
+				data.amount.toString().should.equal(web3.utils.toWei('2', 'ether').toString());
+				data.royaltyAmount.toString().should.equal(((highestBid * 5) / 100).toString());
+				data.twitterFee.toString().should.equal(((highestBid * 5) / 100).toString());
+				data.sellerShare.toString().should.equal((highestBid - royaltyAmount - twitterFee).toString());
+			});
 		});
 
 		describe('Failure', () => {
