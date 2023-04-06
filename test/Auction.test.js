@@ -136,7 +136,12 @@ contract('Auction', ([owner, user1, user2]) => {
 				highestBidder.should.equal(newOwner);
 			});
 
-			it('declares auction as ended', async () => {});
+			it.only('declares auction as ended', async () => {
+				await auction.bid({ from: user1, value: web3.utils.toWei('2', 'ether') });
+				await time.increase(time.duration.hours(1));
+				await auction.endAuction({ from: owner });
+				await auction.getEnded().should.equal(true);
+			});
 
 			it('emits an AuctionEnded event', async () => {});
 		});
