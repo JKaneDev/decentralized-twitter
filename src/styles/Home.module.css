@@ -1,0 +1,18 @@
+.home {
+	min-height: 100vh;
+	width: 100vw;
+	display: grid;
+	grid-template-columns: auto 1fr;
+}
+
+.sidebar {
+	grid-column: 1 / 2;
+}
+
+.createTweet {
+	grid-column: 2 / -1;
+}
+
+.feed {
+	grid-column: 2 / -1;
+}

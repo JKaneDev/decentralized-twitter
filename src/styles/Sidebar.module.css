@@ -1,0 +1,15 @@
+.sidebar {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 3rem;
+	padding: 2rem 2rem 2rem 4rem;
+	border-right: 1px solid #252525;
+}
+
+.links {
+	background-color: black;
+	border: none;
+	padding: 0.25rem;
+}
