@@ -1,7 +1,6 @@
 import styles from '@components/styles/Home.module.css';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
 import { loadWeb3, loadAccount, loadTweetToken, loadTweetNFT, loadTwitter } from '../store/interactions';
 
 const Home = (props) => {
@@ -18,7 +17,25 @@ const Home = (props) => {
 		const twitter = await loadTwitter(web3, networkId, dispatch);
 	}
 
-	return <></>;
+	return (
+		<>
+			<section className='sidebar'>
+				<button className='nav-links' id='home'></button>
+				<button className='nav-links' id='search'></button>
+				<button className='nav-links' id='notifications'></button>
+				<button className='nav-links' id='messages'></button>
+				<button className='nav-links' id='bookmarks'></button>
+				<button className='nav-links' id='profile'></button>
+				<button className='nav-links' id='log-out'></button>
+			</section>
+			<main className='feed'>
+				<div className='tweet'>
+					<img src='' alt='user-profile' className='user-profile' />
+					<textarea name='tweet-content' id='tweet-content'></textarea>
+				</div>
+			</main>
+		</>
+	);
 };
 
 function mapStateToProps(state) {
