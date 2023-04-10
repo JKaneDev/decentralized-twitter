@@ -2,17 +2,13 @@
 	min-height: 100vh;
 	width: 100vw;
 	display: grid;
-	grid-template-columns: auto 1fr;
+	grid-template-columns: 150px 1fr;
 }
 
 .sidebar {
 	grid-column: 1 / 2;
 }
 
-.createTweet {
-	grid-column: 2 / -1;
-}
-
-.feed {
+.content {
 	grid-column: 2 / -1;
 }

@@ -2,8 +2,9 @@ import styles from '@components/styles/Home.module.css';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { loadWeb3, loadAccount, loadTweetToken, loadTweetNFT, loadTwitter } from '../store/interactions';
-import Sidebar from '../components/Sidebar/Sidebar';
-import CreateTweet from '@components/components/CreateTweet/CreateTweet';
+import Sidebar from '../components/Sidebar';
+import CreateTweet from '@components/components/CreateTweet';
+import Feed from '@components/components/Feed';
 
 const Home = (props) => {
 	useEffect(() => {
@@ -21,9 +22,17 @@ const Home = (props) => {
 
 	return (
 		<div className={styles.home}>
-			<Sidebar className={styles.sidebar} />
-			<CreateTweet className={styles.createTweet} />
-			<main className={styles.feed}></main>
+			<div className={styles.sidebar}>
+				<Sidebar />
+			</div>
+			<div className={styles.content}>
+				<div className={styles.createTweet}>
+					<CreateTweet />
+				</div>
+				<div className={styles.feed}>
+					<Feed />
+				</div>
+			</div>
 		</div>
 	);
 };

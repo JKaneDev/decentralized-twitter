@@ -8,8 +8,16 @@
 	border-right: 1px solid #252525;
 }
 
-.links {
-	background-color: black;
-	border: none;
-	padding: 0.25rem;
+.sidebar > * {
+	transition: 0.35s all ease;
+}
+
+.sidebar > *:hover:nth-child(1) {
+	color: #1da1f2;
+}
+
+.sidebar > *:hover {
+	cursor: pointer;
+	transform: scale(1.2);
+	color: #ca8b16;
 }
