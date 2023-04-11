@@ -38,3 +38,30 @@ export function auctionLoaded(contract) {
 		contract,
 	};
 }
+
+export function allTweetsLoaded(tweets) {
+	return {
+		type: 'TWEETS_LOADED',
+		tweets,
+	};
+}
+
+export function profilesLoaded(profiles) {
+	return {
+		type: 'PROFILES_LOADED',
+		profiles,
+	};
+}
+
+// store/actions.js
+export const accountCreated = (userAddress, name, bio, profilePictureURL) => {
+	return {
+		type: 'ACCOUNT_CREATED',
+		payload: {
+			userAddress,
+			name,
+			bio,
+			profilePictureURL,
+		},
+	};
+};

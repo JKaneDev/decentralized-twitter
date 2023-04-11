@@ -3,35 +3,32 @@ import { faComment, faRetweet, faHeart, faHandHoldingUsd } from '@fortawesome/fr
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from '@components/styles/Tweet.module.css';
 
-const Tweet = () => {
+const Tweet = ({ name, address, content, likes, retweets, tips, tipCount, profilePic, time }) => {
 	return (
 		<div className={styles.tweet}>
-			<img src='' alt='profile-pic' className='profile' />
+			<img src={profilePic} alt='profile-pic' className='profile' />
 			<span className={styles.tweetInfo}>
-				<span className={styles.name}>James Kane</span>
-				<span className={styles.username}>@jtkanedev</span>
-				<span className={styles.time}> . 5m</span>
+				<span className={styles.name}>{name}</span>
+				<span className={styles.address}>{address}</span>
+				<span className={styles.time}>{time}</span>
 			</span>
-			<p className={styles.tweetContent}>
-				Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa temporibus maxime sed consectetur omnis, fugit
-				libero error facere ullam amet.
-			</p>
+			<p className={styles.tweetContent}>{content}</p>
 			<span className={styles.actionsWrapper}>
 				<span className={styles.actions}>
 					<FontAwesomeIcon icon={faComment} size='lg' />
-					<span>10</span>
+					<span>0</span>
 				</span>
 				<span className={styles.actions}>
 					<FontAwesomeIcon icon={faRetweet} size='lg' />
-					<span>10</span>
+					<span>{retweets}</span>
 				</span>
 				<span className={styles.actions}>
 					<FontAwesomeIcon icon={faHeart} size='lg' />
-					<span>10</span>
+					<span>{likes}</span>
 				</span>
 				<span className={styles.actions}>
 					<FontAwesomeIcon icon={faHandHoldingUsd} size='lg' />
-					<span>10</span>
+					<span>{tipCount}</span>
 				</span>
 			</span>
 		</div>

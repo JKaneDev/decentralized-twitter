@@ -1,0 +1,86 @@
+.createProfile {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+.createProfile > * {
+	font-family: inherit;
+	letter-spacing: 0.05rem;
+	background-color: inherit;
+}
+
+.createProfileForm {
+	display: flex;
+	flex-direction: column;
+	padding: 0 3rem;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+.createProfileForm > * {
+	font-family: inherit;
+	letter-spacing: 0.05rem;
+	background-color: inherit;
+	width: 700px;
+}
+
+@media (max-width: 800px) {
+	.createProfileForm > * {
+		width: 500px;
+	}
+}
+
+.h1 {
+	margin-bottom: 2rem;
+}
+
+.textarea {
+	height: 70px;
+	resize: none;
+	padding: 0.75rem 1rem;
+	border: 2px solid #363636;
+	transition: all 0.35s ease-in-out;
+}
+
+.inputFields {
+	height: 40px;
+	padding: 0.75rem 1rem;
+	border: 2px solid #363636;
+	transition: all 0.35s ease-in-out;
+}
+
+.inputFields:active,
+.inputFields:focus,
+.textarea:active,
+.textarea:focus {
+	outline: none;
+	border: 2px solid #1da1f2;
+}
+
+.btn {
+	border: 1px solid #363636;
+	background-color: #464646;
+	color: black;
+	font-weight: bold;
+	font-size: 1.1rem;
+	letter-spacing: 0.1rem;
+	padding: 1rem;
+	border-radius: 32px;
+	transition: all 0.35s ease-in-out;
+	margin-top: 1rem;
+}
+
+.btn:hover {
+	cursor: pointer;
+	background-color: #666666;
+}
+
+.twitterIcon {
+	position: absolute;
+	top: 40px;
+	left: 40px;
+	color: #1da1f2;
+}

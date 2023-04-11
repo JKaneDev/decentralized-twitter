@@ -55,6 +55,7 @@ contract Twitter {
     struct Tweet {
         uint256 id;
         address creator;
+        string name;
         string content;
         uint256 likeCount;
         uint256 retweetCount;
@@ -62,6 +63,7 @@ contract Twitter {
         uint256 tipCount;
         bool exists;
         string imageUrl;
+        uint256 timestamp;
     }
 
     event AccountCreated(address userAddress, uint256 id, string name, string bio, string profilePictureURL, bool exists);
@@ -71,7 +73,7 @@ contract Twitter {
     event AccountDeleted(string name, address user);
     event FollowerAdded(address userAddress, string user, string follower, address followerAddress);
     event Unfollowed(string user, string follower);
-    event TweetCreated(uint256 id, address creator, string content, uint256 likeCount, uint256 retweetCount, uint256[] tips, uint256 tipCount, bool exists, string imageUrl);
+    event TweetCreated(uint256 id, address creator, string name, string content, uint256 likeCount, uint256 retweetCount, uint256[] tips, uint256 tipCount, bool exists, string imageUrl, uint256 timestamp);
     event TweetLiked(uint256 tweetId, uint256 likeCount);
     event ReTweeted(uint256 tweetId, uint256 retweetCount);
     event UserTipped(uint256 amount, uint256 tweetId, address creator, address tipper, string tipperName, uint256 tipCount);
@@ -189,6 +191,7 @@ contract Twitter {
 
         tweets[_tweetId] = Tweet({
             id: _tweetId,
+            name: users[msg.sender].name,
             creator: msg.sender,
             content: _content,
             likeCount: 0,
@@ -196,19 +199,22 @@ contract Twitter {
             tips: new uint256[](0),
             tipCount: 0,
             exists: true,
-            imageUrl: _imageUrl
+            imageUrl: _imageUrl,
+            timestamp: block.timestamp
         });
 
         emit TweetCreated(
             tweets[_tweetId].id, 
             tweets[_tweetId].creator, 
+            tweets[_tweetId].name,
             tweets[_tweetId].content, 
             tweets[_tweetId].likeCount, 
             tweets[_tweetId].retweetCount, 
             tweets[_tweetId].tips,
             tweets[_tweetId].tipCount, 
             tweets[_tweetId].exists,
-            tweets[_tweetId].imageUrl
+            tweets[_tweetId].imageUrl,
+            tweets[_tweetId].timestamp
         );
 
         nextTweetId++;

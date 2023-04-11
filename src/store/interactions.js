@@ -4,6 +4,7 @@ import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
+import { allTweetsLoaded } from './actions';
 
 export const loadWeb3 = async (dispatch) => {
 	if (typeof window.ethereum !== 'undefined') {
@@ -66,4 +67,38 @@ export const loadAuction = async (web3, networkId, dispatch) => {
 		console.log('Auction Contract not deployed to the current network. Please select another network with Metamask.');
 		return null;
 	}
+};
+
+export const loadAllTweets = async (twitter, dispatch) => {
+	// Fetch all tweets with the 'TweetCreated' stream
+	const tweetStream = await twitter.getPastEvents('TweetCreated', {
+		fromBlock: 0,
+		toBlock: 'latest',
+	});
+	// Format tweets
+	const tweets = tweetStream.map((e) => e.returnValues);
+	// Add tweets to redux store
+	dispatch(allTweetsLoaded(tweets));
+};
+
+export const createAccount = async (twitterContract, name, bio, profilePictureUrl, account, dispatch) => {
+	try {
+		await twitterContract.methods.createAccount(name, bio, profilePictureUrl).send({ from: account });
+		// dispatch an action to update redux store
+		dispatch(accountCreated(account, name, bio, profilePictureUrl));
+	} catch {
+		console.error('Error creating account: ', error);
+	}
+};
+
+export const loadProfiles = async (twitter, dispatch) => {
+	// Fetch all accounts from the 'AccountCreated' stream
+	const profileStream = await twitter.getPastEvents('AccountCreated', {
+		fromBlock: 0,
+		toBlock: 'latest',
+	});
+	// Format profiles
+	const profiles = profileStream.map((e) => e.returnValues);
+	// Add profiles to redux store
+	dispatch(profilesLoaded(profiles));
 };
