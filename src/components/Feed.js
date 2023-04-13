@@ -1,8 +1,11 @@
-import { allTweetsSelector, allTweetsLoadedSelector } from '@components/store/selectors';
+import { twitterSelector, allTweetsSelector, allTweetsLoadedSelector } from '@components/store/selectors';
 import { connect } from 'react-redux';
 import Tweet from './Tweet';
+import { loadAllTweets } from '@components/store/interactions';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
-const renderTweets = (tweets) => {
+const renderTweets = (allTweets) => {
 	return (
 		<div>
 			{allTweets.map((tweet) => {
@@ -25,7 +28,21 @@ const renderTweets = (tweets) => {
 	);
 };
 
-const Feed = ({ allTweets, allTweetsLoaded }) => {
+const Feed = ({ twitter, allTweets, allTweetsLoaded }) => {
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		loadBlockchainData(twitter, dispatch);
+	}, []);
+
+	// useEffect(async () => {
+	// 	await loadAllTweets(twitter, dispatch);
+	// }, [allTweets]);
+
+	const loadBlockchainData = async (twitter, dispatch) => {
+		await loadAllTweets(twitter, dispatch);
+	};
+
 	return <main>{allTweetsLoaded ? renderTweets(allTweets) : <div></div>}</main>;
 };
 
@@ -33,6 +50,7 @@ function mapStateToProps(state) {
 	return {
 		allTweets: allTweetsSelector(state),
 		allTweetsLoaded: allTweetsLoadedSelector(state),
+		twitter: twitterSelector(state),
 	};
 }
 

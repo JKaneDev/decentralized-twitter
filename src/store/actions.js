@@ -64,3 +64,10 @@ export function allTweetsLoaded(tweets) {
 		tweets,
 	};
 }
+
+export function tweetCreated(content) {
+	return {
+		type: 'TWEET_CREATED',
+		content,
+	};
+}

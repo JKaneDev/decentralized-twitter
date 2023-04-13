@@ -25,14 +25,14 @@ export const twitterSelector = createSelector(twitter, (tw) => tw);
 const twitterLoaded = (state) => get(state, 'twitter.loaded', false);
 export const twitterLoadedSelector = createSelector(twitterLoaded, (twl) => twl);
 
-const allTweets = (state) => get(state, 'twitter.allTweets.data', []);
-export const allTweetsSelector = createSelector(allTweets, (tw) => tw);
-
-const allTweetsLoaded = (state) => get(state, 'twitter.allTweets.loaded', false);
-export const allTweetsLoadedSelector = createSelector(allTweetsLoaded, (loaded) => loaded);
-
 const allProfiles = (state) => get(state, 'users.allProfiles.data', []);
 export const allProfilesSelector = createSelector(allProfiles, (pr) => pr);
 
 const allProfilesLoaded = (state) => get(state, 'users.loaded', false);
 export const allProfilesLoadedSelector = createSelector(allProfilesLoaded, (prl) => prl);
+
+const allTweets = (state) => get(state, 'tweets.allTweets.data', []);
+export const allTweetsSelector = createSelector(allTweets, (tw) => tw);
+
+const allTweetsLoaded = (state) => get(state, 'tweets.allTweets.loaded', false);
+export const allTweetsLoadedSelector = createSelector(allTweetsLoaded, (loaded) => loaded);

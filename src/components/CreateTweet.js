@@ -1,21 +1,45 @@
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import styles from '@components/styles/CreateTweet.module.css';
+import { createTweet } from '@components/store/interactions';
+import { twitterSelector, accountSelector, allTweetsSelector } from '@components/store/selectors';
+import { useState } from 'react';
 
-const CreateTweet = ({ profilePic }) => {
+const CreateTweet = ({ profilePic, twitter, account }) => {
+	const [tweetContent, setTweetContent] = useState('');
+
+	const dispatch = useDispatch();
+
+	const onSubmit = async (e) => {
+		e.preventDefault();
+		await createTweet(twitter, account, dispatch, tweetContent, profilePic);
+	};
+
 	return (
-		<div className={styles.createTweet}>
+		<form onSubmit={onSubmit} className={styles.createTweet}>
 			<img src={profilePic} alt='user-profile' className={styles.profilePic} />
 			<section className={styles.section}>
-				<textarea name='tweet-content' className={styles.tweetContent} placeholder='Write something here...'></textarea>
+				<textarea
+					name='tweet-content'
+					className={styles.tweetContent}
+					placeholder='Write something here...'
+					value={tweetContent}
+					onChange={(e) => setTweetContent(e.target.value)}
+				></textarea>
 			</section>
-			<button className={styles.tweetBtn}>Tweet</button>
-		</div>
+			<button className={styles.tweetBtn} type='submit'>
+				Tweet
+			</button>
+		</form>
 	);
 };
 
 function mapStateToProps(state) {
+	// console.log({
+	// 	tweets: state,
+	// });
 	return {
-		// TODO
+		twitter: twitterSelector(state),
+		account: accountSelector(state),
 	};
 }
 

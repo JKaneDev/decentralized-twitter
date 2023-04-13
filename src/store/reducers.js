@@ -33,11 +33,7 @@ function twitter(state = {}, action) {
 	switch (action.type) {
 		case 'TWITTER_LOADED':
 			return { ...state, loaded: true, twitterContract: action.contract };
-		case 'TWEETS_LOADED':
-			return {
-				...state,
-				allTweets: { loaded: true, data: action.allTweets },
-			};
+
 		default:
 			return state;
 	}
@@ -63,12 +59,33 @@ function users(state = { allProfiles: { loaded: false, data: [] } }, action) {
 	}
 }
 
+function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
+	switch (action.type) {
+		case 'TWEETS_LOADED':
+			return {
+				...state,
+				allTweets: { loaded: true, data: action.tweets },
+			};
+		case 'TWEET_CREATED':
+			return {
+				...state,
+				allTweets: {
+					...state.allTweets,
+					data: [...state.allTweets.data, action.content],
+				},
+			};
+		default:
+			return state;
+	}
+}
+
 const rootReducer = combineReducers({
 	web3,
 	tweetToken,
 	nft,
 	twitter,
 	users,
+	tweets,
 });
 
 export default rootReducer;

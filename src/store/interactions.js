@@ -4,7 +4,7 @@ import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
-import { allTweetsLoaded, profilesLoaded, accountCreated } from './actions';
+import { allTweetsLoaded, profilesLoaded, accountCreated, tweetCreated } from './actions';
 import { Log } from 'ethers';
 
 export const loadWeb3 = async (dispatch) => {
@@ -104,4 +104,12 @@ export const loadAllTweets = async (twitter, dispatch) => {
 	const tweets = tweetStream.map((e) => e.returnValues);
 	// Add tweets to redux store
 	dispatch(allTweetsLoaded(tweets));
+};
+export const createTweet = async (twitter, account, dispatch, content, profilePic) => {
+	try {
+		await twitter.methods.createTweet(content, profilePic).send({ from: account });
+		dispatch(tweetCreated(content));
+	} catch (error) {
+		console.error('Error creating tweet: ', error);
+	}
 };
