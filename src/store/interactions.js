@@ -103,5 +103,5 @@ export const loadProfiles = async (twitter, dispatch) => {
 	const profiles = profileStream.map((e) => e.returnValues);
 	// console.log('Events: ', profiles);
 	// Add profiles to redux store
-	dispatch(profilesLoaded({ allProfiles: profiles }));
+	dispatch(profilesLoaded(profiles));
 };

@@ -2,7 +2,7 @@ import styles from '@components/styles/Home.module.css';
 import { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { loadWeb3, loadAccount, loadTweetToken, loadTweetNFT, loadTwitter, loadProfiles } from '../store/interactions';
-import { web3Selector, accountSelector, allProfilesSelector } from '../store/selectors';
+import { accountSelector, allProfilesSelector } from '../store/selectors';
 import Sidebar from '../components/Sidebar';
 import CreateTweet from '@components/components/CreateTweet';
 import Feed from '@components/components/Feed';
@@ -17,13 +17,6 @@ const Home = ({ account, users }) => {
 		loadBlockchainData(dispatch);
 	}, []);
 
-	const hasProfile =
-		accountCreated ||
-		(Array.isArray(users.allProfiles.data) &&
-			users.allProfiles.data.some((profile) => profile.userAddress === account));
-
-	const handleAccountCreated = () => setProfileCreated(true);
-
 	async function loadBlockchainData(dispatch) {
 		const web3 = await loadWeb3(dispatch);
 		const networkId = await web3.eth.net.getId();
@@ -33,6 +26,9 @@ const Home = ({ account, users }) => {
 		const twitter = await loadTwitter(web3, networkId, dispatch);
 		await loadProfiles(twitter, dispatch);
 	}
+
+	const hasProfile = accountCreated || (users && users.some((profile) => profile.userAddress === account));
+	const profilePic = users.find((user) => user.userAddress === account).profilePictureURL;
 
 	return (
 		<>
@@ -50,7 +46,7 @@ const Home = ({ account, users }) => {
 					</div>
 					<div className={styles.content}>
 						<div className={styles.createTweet}>
-							<CreateTweet />
+							<CreateTweet profilePic={profilePic} />
 						</div>
 						<div className={styles.feed}>
 							<Feed />
@@ -64,12 +60,11 @@ const Home = ({ account, users }) => {
 
 function mapStateToProps(state) {
 	console.log({
-		account: accountSelector(state),
 		users: allProfilesSelector(state),
 	});
 	return {
 		account: accountSelector(state),
-		users: state.users,
+		users: allProfilesSelector(state),
 	};
 }
 

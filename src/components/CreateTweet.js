@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
 import styles from '@components/styles/CreateTweet.module.css';
 
-const CreateTweet = () => {
+const CreateTweet = ({ profilePic }) => {
 	return (
 		<div className={styles.createTweet}>
-			<img src='' alt='user-profile' className='user-profile' />
+			<img src={profilePic} alt='user-profile' className={styles.profilePic} />
 			<section className={styles.section}>
 				<textarea name='tweet-content' className={styles.tweetContent} placeholder='Write something here...'></textarea>
 			</section>

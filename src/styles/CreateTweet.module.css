@@ -14,8 +14,8 @@
 }
 
 .tweetContent {
-	padding: 1rem;
-	width: 100%;
+	padding: 1rem 0 2rem 0;
+	width: 95%;
 	border: none;
 	outline: none;
 	resize: none;
@@ -24,6 +24,7 @@
 	font-family: Helvetica;
 	background-color: inherit;
 	border-bottom: 1px solid #252525;
+	margin-left: 1.5rem;
 }
 
 .tweetContent::placeholder {
@@ -39,4 +40,10 @@
 	margin-left: auto;
 	border: none;
 	background-color: #1da1f2;
+}
+
+.profilePic {
+	border-radius: 36px;
+	height: 72px;
+	width: 72px;
 }

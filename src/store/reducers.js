@@ -55,7 +55,7 @@ function users(state = { allProfiles: { loaded: false, data: [] } }, action) {
 				...state,
 				allProfiles: {
 					...state.allProfiles,
-					data: Array.isArray(state.allProfiles.data) ? [...state.allProfiles.data, action.payload] : [action.payload],
+					data: [...state.allProfiles.data, action.payload],
 				},
 			};
 		default:
