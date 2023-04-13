@@ -10,12 +10,17 @@ import CreateProfile from '@components/components/CreateProfile';
 
 const Home = ({ account, users }) => {
 	const [accountCreated, setAccountCreated] = useState(false);
+	const [profilePic, setProfilePic] = useState('');
 
 	const dispatch = useDispatch();
 
 	useEffect(() => {
 		loadBlockchainData(dispatch);
 	}, []);
+
+	useEffect(() => {
+		getProfilePicture();
+	}, [users]);
 
 	async function loadBlockchainData(dispatch) {
 		const web3 = await loadWeb3(dispatch);
@@ -28,7 +33,15 @@ const Home = ({ account, users }) => {
 	}
 
 	const hasProfile = accountCreated || (users && users.some((profile) => profile.userAddress === account));
-	const profilePic = users.find((user) => user.userAddress === account).profilePictureURL;
+
+	const getProfilePicture = () => {
+		if (users && users.length > 0) {
+			const userProfile = users.find((user) => user.userAddress === account);
+			if (userProfile) {
+				setProfilePic(userProfile.profilePictureURL);
+			}
+		}
+	};
 
 	return (
 		<>
@@ -59,9 +72,6 @@ const Home = ({ account, users }) => {
 };
 
 function mapStateToProps(state) {
-	console.log({
-		users: allProfilesSelector(state),
-	});
 	return {
 		account: accountSelector(state),
 		users: allProfilesSelector(state),

@@ -39,13 +39,6 @@ export function auctionLoaded(contract) {
 	};
 }
 
-export function allTweetsLoaded(tweets) {
-	return {
-		type: 'TWEETS_LOADED',
-		tweets,
-	};
-}
-
 export function profilesLoaded(allProfiles) {
 	return {
 		type: 'PROFILES_LOADED',
@@ -53,17 +46,7 @@ export function profilesLoaded(allProfiles) {
 	};
 }
 
-// store/actions.js
 export const accountCreated = (userAddress, name, bio, profilePictureURL) => {
-	console.log('Actions: ', {
-		type: 'ACCOUNT_CREATED',
-		payload: {
-			userAddress,
-			name,
-			bio,
-			profilePictureURL,
-		},
-	});
 	return {
 		type: 'ACCOUNT_CREATED',
 		payload: {
@@ -74,3 +57,10 @@ export const accountCreated = (userAddress, name, bio, profilePictureURL) => {
 		},
 	};
 };
+
+export function allTweetsLoaded(tweets) {
+	return {
+		type: 'TWEETS_LOADED',
+		tweets,
+	};
+}

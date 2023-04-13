@@ -70,18 +70,6 @@ export const loadAuction = async (web3, networkId, dispatch) => {
 	}
 };
 
-export const loadAllTweets = async (twitter, dispatch) => {
-	// Fetch all tweets with the 'TweetCreated' stream
-	const tweetStream = await twitter.getPastEvents('TweetCreated', {
-		fromBlock: 0,
-		toBlock: 'latest',
-	});
-	// Format tweets
-	const tweets = tweetStream.map((e) => e.returnValues);
-	// Add tweets to redux store
-	dispatch(allTweetsLoaded(tweets));
-};
-
 export const createAccount = async (twitterContract, name, bio, profilePictureUrl, account, dispatch) => {
 	try {
 		await twitterContract.methods.createAccount(name, bio, profilePictureUrl).send({ from: account });
@@ -101,7 +89,19 @@ export const loadProfiles = async (twitter, dispatch) => {
 
 	// Format profiles
 	const profiles = profileStream.map((e) => e.returnValues);
-	// console.log('Events: ', profiles);
+
 	// Add profiles to redux store
 	dispatch(profilesLoaded(profiles));
+};
+
+export const loadAllTweets = async (twitter, dispatch) => {
+	// Fetch all tweets with the 'TweetCreated' stream
+	const tweetStream = await twitter.getPastEvents('TweetCreated', {
+		fromBlock: 0,
+		toBlock: 'latest',
+	});
+	// Format tweets
+	const tweets = tweetStream.map((e) => e.returnValues);
+	// Add tweets to redux store
+	dispatch(allTweetsLoaded(tweets));
 };
