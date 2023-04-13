@@ -1,17 +1,28 @@
 import styles from '@components/styles/Home.module.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { loadWeb3, loadAccount, loadTweetToken, loadTweetNFT, loadTwitter } from '../store/interactions';
+import { loadWeb3, loadAccount, loadTweetToken, loadTweetNFT, loadTwitter, loadProfiles } from '../store/interactions';
+import { web3Selector, accountSelector, allProfilesSelector } from '../store/selectors';
 import Sidebar from '../components/Sidebar';
 import CreateTweet from '@components/components/CreateTweet';
 import Feed from '@components/components/Feed';
 import CreateProfile from '@components/components/CreateProfile';
 
-const Home = ({ account, user }) => {
+const Home = ({ account, users }) => {
+	const [accountCreated, setAccountCreated] = useState(false);
+
 	const dispatch = useDispatch();
+
 	useEffect(() => {
 		loadBlockchainData(dispatch);
 	}, []);
+
+	const hasProfile =
+		accountCreated ||
+		(Array.isArray(users.allProfiles.data) &&
+			users.allProfiles.data.some((profile) => profile.userAddress === account));
+
+	const handleAccountCreated = () => setProfileCreated(true);
 
 	async function loadBlockchainData(dispatch) {
 		const web3 = await loadWeb3(dispatch);
@@ -20,6 +31,7 @@ const Home = ({ account, user }) => {
 		const tweetToken = await loadTweetToken(web3, networkId, dispatch);
 		const tweetNFT = await loadTweetNFT(web3, networkId, dispatch);
 		const twitter = await loadTwitter(web3, networkId, dispatch);
+		await loadProfiles(twitter, dispatch);
 	}
 
 	return (
@@ -27,9 +39,9 @@ const Home = ({ account, user }) => {
 			{!account ? (
 				// Show a loading indicator or message while waiting for the account to load
 				<div>Loading...</div>
-			) : !user.userAddress ? (
+			) : !hasProfile ? (
 				// Render the CreateProfile component if the account is loaded and userAddress is not in state.users
-				<CreateProfile />
+				<CreateProfile setAccountCreated={setAccountCreated} />
 			) : (
 				// Render the Home page if the account is loaded and userAddress exists in state.users
 				<div className={styles.home}>
@@ -51,9 +63,13 @@ const Home = ({ account, user }) => {
 };
 
 function mapStateToProps(state) {
+	console.log({
+		account: accountSelector(state),
+		users: allProfilesSelector(state),
+	});
 	return {
-		account: state.web3.account,
-		user: state.users,
+		account: accountSelector(state),
+		users: state.users,
 	};
 }
 

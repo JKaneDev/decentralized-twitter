@@ -46,15 +46,24 @@ export function allTweetsLoaded(tweets) {
 	};
 }
 
-export function profilesLoaded(profiles) {
+export function profilesLoaded(allProfiles) {
 	return {
 		type: 'PROFILES_LOADED',
-		profiles,
+		allProfiles,
 	};
 }
 
 // store/actions.js
 export const accountCreated = (userAddress, name, bio, profilePictureURL) => {
+	console.log('Actions: ', {
+		type: 'ACCOUNT_CREATED',
+		payload: {
+			userAddress,
+			name,
+			bio,
+			profilePictureURL,
+		},
+	});
 	return {
 		type: 'ACCOUNT_CREATED',
 		payload: {

@@ -26,7 +26,6 @@ const renderTweets = (tweets) => {
 };
 
 const Feed = ({ allTweets, allTweetsLoaded }) => {
-	console.log('Tweets: ', allTweets);
 	return <main>{allTweetsLoaded ? renderTweets(allTweets) : <div></div>}</main>;
 };
 

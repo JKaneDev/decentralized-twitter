@@ -3,9 +3,27 @@ import { combineReducers } from 'redux';
 function web3(state = {}, action) {
 	switch (action.type) {
 		case 'WEB3_LOADED':
-			return { ...state, connection: action.connection };
+			return { ...state, loaded: true, connection: action.connection };
 		case 'WEB3_ACCOUNT_LOADED':
-			return { ...state, account: action.account };
+			return { ...state, loaded: true, account: action.account };
+		default:
+			return state;
+	}
+}
+
+function tweetToken(state = {}, action) {
+	switch (action.type) {
+		case 'TWEET_TOKEN_LOADED':
+			return { ...state, loaded: true, tweetTokenContract: action.contract };
+		default:
+			return state;
+	}
+}
+
+function nft(state = {}, action) {
+	switch (action.type) {
+		case 'TWEET_NFT_LOADED':
+			return { ...state, loaded: true, nftContract: action.contract };
 		default:
 			return state;
 	}
@@ -13,12 +31,8 @@ function web3(state = {}, action) {
 
 function twitter(state = {}, action) {
 	switch (action.type) {
-		case 'TWEET_TOKEN_LOADED':
-			return { ...state, tweetTokenContract: action.contract };
-		case 'TWEET_NFT_LOADED':
-			return { ...state, nftContract: action.contract };
 		case 'TWITTER_LOADED':
-			return { ...state, twitterContract: action.contract };
+			return { ...state, loaded: true, twitterContract: action.contract };
 		case 'TWEETS_LOADED':
 			return {
 				...state,
@@ -29,7 +43,7 @@ function twitter(state = {}, action) {
 	}
 }
 
-function users(state = {}, action) {
+function users(state = { allProfiles: { loaded: false, data: [] } }, action) {
 	switch (action.type) {
 		case 'PROFILES_LOADED':
 			return {
@@ -39,10 +53,10 @@ function users(state = {}, action) {
 		case 'ACCOUNT_CREATED':
 			return {
 				...state,
-				userAddress: action.payload.userAddress,
-				name: action.payload.name,
-				bio: action.payload.bio,
-				profilePictureUrl: action.payload.profilePictureUrl,
+				allProfiles: {
+					...state.allProfiles,
+					data: Array.isArray(state.allProfiles.data) ? [...state.allProfiles.data, action.payload] : [action.payload],
+				},
 			};
 		default:
 			return state;
@@ -51,6 +65,8 @@ function users(state = {}, action) {
 
 const rootReducer = combineReducers({
 	web3,
+	tweetToken,
+	nft,
 	twitter,
 	users,
 });

@@ -58,6 +58,7 @@
 .textarea:focus {
 	outline: none;
 	border: 2px solid #1da1f2;
+	z-index: 1;
 }
 
 .btn {
@@ -70,7 +71,6 @@
 	padding: 1rem;
 	border-radius: 32px;
 	transition: all 0.35s ease-in-out;
-	margin-top: 1rem;
 }
 
 .btn:hover {
@@ -83,4 +83,29 @@
 	top: 40px;
 	left: 40px;
 	color: #1da1f2;
+}
+
+.getRandomProfilePicture {
+	border: 1px solid #363636;
+	background-color: #464646;
+	color: black;
+	font-weight: bolder;
+	letter-spacing: 0.1rem;
+	padding: 0.6rem;
+	transition: all 0.35s ease-in-out;
+	width: 100px;
+	position: relative;
+	left: 400px;
+	bottom: 38px;
+}
+
+.getRandomProfilePicture:hover {
+	cursor: pointer;
+	background-color: #666666;
+}
+
+@media (min-width: 800px) {
+	.getRandomProfilePicture {
+		left: 600px;
+	}
 }

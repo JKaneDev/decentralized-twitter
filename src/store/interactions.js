@@ -4,7 +4,8 @@ import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
-import { allTweetsLoaded } from './actions';
+import { allTweetsLoaded, profilesLoaded, accountCreated } from './actions';
+import { Log } from 'ethers';
 
 export const loadWeb3 = async (dispatch) => {
 	if (typeof window.ethereum !== 'undefined') {
@@ -86,7 +87,7 @@ export const createAccount = async (twitterContract, name, bio, profilePictureUr
 		await twitterContract.methods.createAccount(name, bio, profilePictureUrl).send({ from: account });
 		// dispatch an action to update redux store
 		dispatch(accountCreated(account, name, bio, profilePictureUrl));
-	} catch {
+	} catch (error) {
 		console.error('Error creating account: ', error);
 	}
 };
@@ -97,8 +98,10 @@ export const loadProfiles = async (twitter, dispatch) => {
 		fromBlock: 0,
 		toBlock: 'latest',
 	});
+
 	// Format profiles
 	const profiles = profileStream.map((e) => e.returnValues);
+	// console.log('Events: ', profiles);
 	// Add profiles to redux store
-	dispatch(profilesLoaded(profiles));
+	dispatch(profilesLoaded({ allProfiles: profiles }));
 };
