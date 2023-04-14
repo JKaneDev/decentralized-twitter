@@ -65,9 +65,16 @@ export function allTweetsLoaded(tweets) {
 	};
 }
 
-export function tweetCreated(content) {
+export function tweetCreated(tweet) {
 	return {
 		type: 'TWEET_CREATED',
-		content,
+		tweet,
+	};
+}
+
+export function tweetLiked(newLikeCount) {
+	return {
+		type: 'TWEET_LIKED',
+		newLikeCount,
 	};
 }

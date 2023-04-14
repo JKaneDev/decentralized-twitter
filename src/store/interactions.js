@@ -4,7 +4,7 @@ import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
-import { allTweetsLoaded, profilesLoaded, accountCreated, tweetCreated } from './actions';
+import { allTweetsLoaded, profilesLoaded, accountCreated, tweetCreated, tweetLiked } from './actions';
 import { Log } from 'ethers';
 
 export const loadWeb3 = async (dispatch) => {
@@ -18,6 +18,7 @@ export const loadWeb3 = async (dispatch) => {
 		window.location.assign('https://metamask.io/');
 	}
 };
+
 export const loadAccount = async (web3, dispatch) => {
 	await window.ethereum.request({ method: 'eth_requestAccounts' });
 	const accounts = await web3.eth.getAccounts();
@@ -105,11 +106,44 @@ export const loadAllTweets = async (twitter, dispatch) => {
 	// Add tweets to redux store
 	dispatch(allTweetsLoaded(tweets));
 };
+
 export const createTweet = async (twitter, account, dispatch, content, profilePic) => {
 	try {
-		await twitter.methods.createTweet(content, profilePic).send({ from: account });
-		dispatch(tweetCreated(content));
+		const receipt = await twitter.methods.createTweet(content, profilePic).send({ from: account });
+		const event = receipt.events.TweetCreated;
+		if (event) {
+			const newTweet = {
+				id: event.returnValues.id,
+				name: event.returnValues.name,
+				creator: event.returnValues.creator,
+				content: event.returnValues.content,
+				likeCount: event.returnValues.likeCount,
+				retweetCount: event.returnValues.retweetCount,
+				tips: event.returnValues.tips,
+				tipCount: event.returnValues.tipCount,
+				imageUrl: event.returnValues.imageUrl,
+				timestamp: event.returnValues.timestamp,
+			};
+			dispatch(tweetCreated(newTweet));
+		}
 	} catch (error) {
 		console.error('Error creating tweet: ', error);
+	}
+};
+
+export const likeTweet = async (twitter, account, dispatch, tweetId) => {
+	try {
+		const receipt = await twitter.methods.likeTweet(tweetId).send({ from: account });
+		console.log('Receipt: ', receipt);
+		const event = receipt.events.TweetLiked;
+		if (event) {
+			const newLikeCount = {
+				tweetId: event.returnValues.tweetId,
+				updatedLikeCount: event.returnValues.likeCount,
+			};
+			dispatch(tweetLiked(newLikeCount));
+		}
+	} catch (error) {
+		console.error('Error liking tweet: ', error);
 	}
 };

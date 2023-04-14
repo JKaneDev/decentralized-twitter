@@ -71,7 +71,25 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 				...state,
 				allTweets: {
 					...state.allTweets,
-					data: [...state.allTweets.data, action.content],
+					data: [...state.allTweets.data, action.tweet],
+				},
+			};
+		case 'TWEET_LIKED':
+			const updatedLikeCount = state.allTweets.data.map((tweet) => {
+				if (tweet.id === action.newLikeCount.tweetId) {
+					return {
+						...tweet,
+						likeCount: action.newLikeCount.updatedLikeCount,
+					};
+				} else {
+					return tweet;
+				}
+			});
+			return {
+				...state,
+				allTweets: {
+					...state.allTweets,
+					data: updatedLikeCount,
 				},
 			};
 		default:

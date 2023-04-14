@@ -1,43 +1,57 @@
 .tweet {
 	display: grid;
 	grid-template-columns: 50px 1fr;
-	grid-template-rows: 30px auto 40px;
+	grid-auto-flow: row;
+	grid-auto-rows: min-content;
 	gap: 0.5rem;
-	padding: 2rem 2rem 1rem 1rem;
+	padding: 2rem 2rem 1.25rem 1rem;
 	margin-right: 5rem;
 	border: 1px solid #252525;
 	font-family: Helvetica;
 	line-height: 1.25rem;
 	letter-spacing: 0.02rem;
+	max-width: 710px;
 }
 
 .tweetInfo {
 	display: flex;
-	align-items: center;
 	gap: 0.5rem;
 	grid-row: 1 / 2;
 	grid-column: 2 / -1;
 	letter-spacing: 0.05rem;
-	padding: 0rem 0.75rem;
+	font-size: 1.5ch;
+}
+
+.mainWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding-left: 2rem;
 }
 
 .name {
 	font-weight: bold;
+	font-size: 1.6ch;
 }
 
 .address {
 	color: grey;
+	font-size: 1.75ch;
 }
 
 .time {
 	color: grey;
+	font-size: 1.75ch;
 }
 
 .tweetContent {
 	grid-row: 2 / 3;
 	grid-column: 2 / -1;
-	padding: 0.25rem 0.75rem;
-	width: 100%;
+	width: 95%;
+	border-radius: 4px;
+	line-height: 1.2rem;
+	font-family: Helvetica;
+	background-color: inherit;
 }
 
 .actionsWrapper {
@@ -45,13 +59,37 @@
 	align-items: center;
 	grid-row: 3 / 4;
 	grid-column: 2 / -1;
-	padding: 0rem 0.75rem;
 	justify-content: space-between;
+	padding: 0 1rem;
 }
 
 .actions {
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
-	color: grey;
+	color: #757575;
+	transition: all 0.35s ease-in-out;
+}
+
+.actions:hover {
+	cursor: pointer;
+	color: #999999;
+}
+
+#like:hover {
+	color: red;
+}
+
+#retweet:hover {
+	color: #1da1f2;
+}
+
+#tip:hover {
+	color: rgb(0, 148, 0);
+}
+
+.profilePic {
+	border-radius: 36px;
+	height: 72px;
+	width: 72px;
 }

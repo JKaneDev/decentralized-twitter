@@ -1,5 +1,6 @@
 import { create, get } from 'lodash';
 import { createSelector } from 'reselect';
+import moment from 'moment';
 
 const account = (state) => get(state, 'web3.account');
 export const accountSelector = createSelector(account, (a) => a);
@@ -32,7 +33,16 @@ const allProfilesLoaded = (state) => get(state, 'users.loaded', false);
 export const allProfilesLoadedSelector = createSelector(allProfilesLoaded, (prl) => prl);
 
 const allTweets = (state) => get(state, 'tweets.allTweets.data', []);
-export const allTweetsSelector = createSelector(allTweets, (tw) => tw);
+export const allTweetsSelector = createSelector(allTweets, (tweets) => {
+	return tweets.map((tweet) => {
+		const formattedTimestamp = moment.unix(tweet.timestamp).format('HH:mm');
+		return {
+			...tweet,
+			timestamp: formattedTimestamp,
+		};
+	});
+});
+export const tweetSelector = createSelector(allTweets, (tweets) => {});
 
 const allTweetsLoaded = (state) => get(state, 'tweets.allTweets.loaded', false);
 export const allTweetsLoadedSelector = createSelector(allTweetsLoaded, (loaded) => loaded);

@@ -12,6 +12,7 @@ const CreateTweet = ({ profilePic, twitter, account }) => {
 	const onSubmit = async (e) => {
 		e.preventDefault();
 		await createTweet(twitter, account, dispatch, tweetContent, profilePic);
+		setTweetContent('');
 	};
 
 	return (
