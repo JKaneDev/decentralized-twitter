@@ -14,6 +14,9 @@ export const tweetTokenSelector = createSelector(tweetToken, (t) => t);
 const tweetTokenLoaded = (state) => get(state, 'tweetToken.loaded', false);
 export const tweetTokenLoadedSelector = createSelector(tweetTokenLoaded, (tl) => tl);
 
+const tweetTokenBalance = (state) => get(state, 'tweetToken.balance', 0);
+export const tweetTokenBalanceSelector = createSelector(tweetTokenBalance, (balance) => balance);
+
 const nft = (state) => get(state, 'nft.nftContract');
 export const nftSelector = createSelector(nft, (nft) => nft);
 
@@ -42,7 +45,6 @@ export const allTweetsSelector = createSelector(allTweets, (tweets) => {
 		};
 	});
 });
-export const tweetSelector = createSelector(allTweets, (tweets) => {});
 
 const allTweetsLoaded = (state) => get(state, 'tweets.allTweets.loaded', false);
 export const allTweetsLoadedSelector = createSelector(allTweetsLoaded, (loaded) => loaded);

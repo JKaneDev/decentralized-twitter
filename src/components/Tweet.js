@@ -1,16 +1,28 @@
 import { connect, useDispatch } from 'react-redux';
 import { useState } from 'react';
+import Tipper from './Tipper';
 import { faComment, faRetweet, faHeart, faHandHoldingUsd } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from '@components/styles/Tweet.module.css';
 import { likeTweet } from '@components/store/interactions';
-import { allTweetsSelector, twitterSelector, accountSelector } from '@components/store/selectors';
+import { allTweetsSelector, twitterSelector, accountSelector, allProfilesSelector } from '@components/store/selectors';
+import { useEffect } from 'react';
 
 const Tweet = ({ id, name, address, content, likes, retweets, tips, tipCount, profilePic, time, twitter, account }) => {
 	const dispatch = useDispatch();
 
 	const [liked, setLiked] = useState(false);
+	const [showTipper, setShowTipper] = useState(false);
 	const [tipped, setTipped] = useState(false);
+	const [tipAmount, setTipAmount] = useState('');
+
+	const handleShowTipper = () => {
+		setShowTipper(true);
+	};
+
+	const handleCloseTipper = () => {
+		setShowTipper(false);
+	};
 
 	return (
 		<div className={styles.tweet}>
@@ -44,8 +56,28 @@ const Tweet = ({ id, name, address, content, likes, retweets, tips, tipCount, pr
 						<span style={{ color: liked ? 'red' : '#757575' }}>{likes}</span>
 					</span>
 					<span className={styles.actions} id={styles.tip}>
-						<FontAwesomeIcon icon={faHandHoldingUsd} size='lg' />
-						<span>{tipCount}</span>
+						{showTipper ? (
+							<Tipper
+								id={id}
+								tipped={tipped}
+								setTipped={setTipped}
+								amount={tipAmount}
+								setAmount={setTipAmount}
+								account={account}
+								twitter={twitter}
+								onClose={handleCloseTipper}
+							/>
+						) : (
+							<>
+								<FontAwesomeIcon
+									icon={faHandHoldingUsd}
+									size='lg'
+									style={{ color: tipped ? 'rgb(0, 148, 0)' : '#757575' }}
+									onClick={handleShowTipper}
+								/>
+								<span style={{ color: tipped ? 'rgb(0, 148, 0)' : '#757575' }}>{tipCount}</span>
+							</>
+						)}
 					</span>
 				</span>
 			</div>
@@ -54,9 +86,6 @@ const Tweet = ({ id, name, address, content, likes, retweets, tips, tipCount, pr
 };
 
 function mapStateToProps(state) {
-	console.log({
-		tweets: allTweetsSelector(state),
-	});
 	return {
 		twitter: twitterSelector(state),
 		account: accountSelector(state),

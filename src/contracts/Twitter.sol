@@ -238,7 +238,7 @@ contract Twitter {
 
     function tipUser(uint256 _tweetId, uint256 _amount) public {
         require(_amount > 0, "Amount should be greater than 0");
-        require(tweetToken.transferFrom(msg.sender, tweets[_tweetId].creator, _amount), "Transfer failed");
+        require(tweetToken.transferFrom(msg.sender, tweets[_tweetId].creator, _amount), "THE ISSUE IS WITH THE TRANSFER FROM FUNCTION");
         tweets[_tweetId].tips.push(_amount);
         tweets[_tweetId].tipCount++;
 

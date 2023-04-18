@@ -16,38 +16,30 @@ const Feed = ({ twitter, allTweets, allTweetsLoaded }) => {
 		await loadAllTweets(twitter, dispatch);
 	};
 
-	function formatTimestamp(timestamp) {
-		const date = moment.unix(timestamp);
-		return date.format('YY/M/D HH:mm');
-	}
-
 	return (
-		console.log(allTweets),
-		(
-			<main>
-				{allTweetsLoaded ? (
-					allTweets.map((tweet) => {
-						return (
-							<Tweet
-								key={tweet.id}
-								id={tweet.id}
-								name={tweet.name}
-								address={tweet.creator}
-								content={tweet.content}
-								likes={tweet.likeCount}
-								retweets={tweet.retweetCount}
-								tips={tweet.tips}
-								tipCount={tweet.tipCount}
-								profilePic={tweet.imageUrl}
-								time={tweet.timestamp}
-							/>
-						);
-					})
-				) : (
-					<div></div>
-				)}
-			</main>
-		)
+		<main>
+			{allTweetsLoaded ? (
+				allTweets.map((tweet) => {
+					return (
+						<Tweet
+							key={tweet.id}
+							id={tweet.id}
+							name={tweet.name}
+							address={tweet.creator}
+							content={tweet.content}
+							likes={tweet.likeCount}
+							retweets={tweet.retweetCount}
+							tips={tweet.tips}
+							tipCount={tweet.tipCount}
+							profilePic={tweet.imageUrl}
+							time={tweet.timestamp}
+						/>
+					);
+				})
+			) : (
+				<div></div>
+			)}
+		</main>
 	);
 };
 

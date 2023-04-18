@@ -15,6 +15,11 @@ function tweetToken(state = {}, action) {
 	switch (action.type) {
 		case 'TWEET_TOKEN_LOADED':
 			return { ...state, loaded: true, tweetTokenContract: action.contract };
+		case 'TWEET_BALANCE_FETCHED':
+			return {
+				...state,
+				balance: action.balance,
+			};
 		default:
 			return state;
 	}
@@ -90,6 +95,31 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 				allTweets: {
 					...state.allTweets,
 					data: updatedLikeCount,
+				},
+			};
+		case 'USER_TIPPED':
+			const { tweetId, tipCount, tipper, amount } = action.tip;
+			const updatedTips = state.allTweets.data.map((tweet) => {
+				if (tweet.id === tweetId) {
+					return {
+						...tweet,
+						tipCount: tipCount,
+						tips: [
+							...tweet.tips,
+							{
+								tipper: tipper,
+								amount: amount,
+							},
+						],
+					};
+				}
+				return tweet;
+			});
+			return {
+				...state,
+				allTweets: {
+					...state.allTweets,
+					data: updatedTips,
 				},
 			};
 		default:

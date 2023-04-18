@@ -4,8 +4,15 @@ import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
-import { allTweetsLoaded, profilesLoaded, accountCreated, tweetCreated, tweetLiked } from './actions';
-import { Log } from 'ethers';
+import {
+	allTweetsLoaded,
+	profilesLoaded,
+	accountCreated,
+	tweetCreated,
+	tweetLiked,
+	userTipped,
+	fetchedTweetTokenBalance,
+} from './actions';
 
 export const loadWeb3 = async (dispatch) => {
 	if (typeof window.ethereum !== 'undefined') {
@@ -145,5 +152,34 @@ export const likeTweet = async (twitter, account, dispatch, tweetId) => {
 		}
 	} catch (error) {
 		console.error('Error liking tweet: ', error);
+	}
+};
+
+export const tipUser = async (tweetToken, twitter, account, dispatch, tweetId, amount) => {
+	try {
+		await tweetToken.methods.approve(twitter._address, amount).send({ from: account });
+		const receipt = await twitter.methods.tipUser(tweetId, amount).send({ from: account });
+		const event = receipt.events.UserTipped;
+		if (event) {
+			const tip = {
+				tweetId: event.returnValues.tweetId,
+				amount: event.returnValues.amount,
+				tipper: event.returnValues.tipperName,
+				tipCount: event.returnValues.tipCount,
+			};
+			dispatch(userTipped(tip));
+		}
+	} catch (error) {
+		console.error('Error tipping user: ', error);
+	}
+};
+
+export const getTweetTokenBalance = async (tweetToken, account, dispatch) => {
+	try {
+		const balance = await tweetToken.methods.getBalanceOf(account).call({ from: account });
+		dispatch(fetchedTweetTokenBalance(balance));
+		window.alert(`Your balance is: ${balance}`);
+	} catch (error) {
+		console.error('Error fetching balance: ', error);
 	}
 };

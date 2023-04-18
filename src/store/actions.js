@@ -78,3 +78,17 @@ export function tweetLiked(newLikeCount) {
 		newLikeCount,
 	};
 }
+
+export function userTipped(tip) {
+	return {
+		type: 'USER_TIPPED',
+		tip,
+	};
+}
+
+export function fetchedTweetTokenBalance(balance) {
+	return {
+		type: 'TOKEN_BALANCE_FETCHED',
+		balance,
+	};
+}
