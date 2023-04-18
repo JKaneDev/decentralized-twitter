@@ -65,6 +65,13 @@ export function allTweetsLoaded(tweets) {
 	};
 }
 
+export function tipsLoaded(tipData) {
+	return {
+		type: 'TIPS_LOADED',
+		tipData,
+	};
+}
+
 export function tweetCreated(tweet) {
 	return {
 		type: 'TWEET_CREATED',

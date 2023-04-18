@@ -11,6 +11,7 @@ import {
 	tweetCreated,
 	tweetLiked,
 	userTipped,
+	tipsLoaded,
 	fetchedTweetTokenBalance,
 } from './actions';
 
@@ -112,6 +113,24 @@ export const loadAllTweets = async (twitter, dispatch) => {
 	const tweets = tweetStream.map((e) => e.returnValues);
 	// Add tweets to redux store
 	dispatch(allTweetsLoaded(tweets));
+};
+
+export const loadTipData = async (twitter, dispatch) => {
+	const tipStream = await twitter.getPastEvents('UserTipped', {
+		fromBlock: 0,
+		toBlock: 'latest',
+	});
+
+	const tweetTipData = {};
+	tipStream.forEach((tip) => {
+		const { tweetId, tipper, amount } = tip.returnValues;
+		if (!tweetTipData[tweetId]) {
+			tweetTipData[tweetId] = { tipCount: 0, tips: [] };
+		}
+		tweetTipData[tweetId].tipCount += 1;
+		tweetTipData[tweetId].tips.push({ tipper, amount });
+		dispatch(tipsLoaded(tweetTipData));
+	});
 };
 
 export const createTweet = async (twitter, account, dispatch, content, profilePic) => {

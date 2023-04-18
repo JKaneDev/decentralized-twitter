@@ -97,6 +97,25 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 					data: updatedLikeCount,
 				},
 			};
+		case 'TIPS_LOADED':
+			const { tipData } = action;
+			const updatedTipsFromEventStream = state.allTweets.data.map((tweet) => {
+				if (tipData[tweet.id]) {
+					return {
+						...tweet,
+						tipCount: tipData[tweet.id].tipCount,
+						tips: tipData[tweet.id].tips,
+					};
+				}
+				return tweet;
+			});
+			return {
+				...state,
+				allTweets: {
+					...state.allTweets,
+					data: updatedTipsFromEventStream,
+				},
+			};
 		case 'USER_TIPPED':
 			const { tweetId, tipCount, tipper, amount } = action.tip;
 			const updatedTips = state.allTweets.data.map((tweet) => {
