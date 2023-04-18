@@ -12,6 +12,7 @@ import {
 	tweetLiked,
 	userTipped,
 	tipsLoaded,
+	likesLoaded,
 	fetchedTweetTokenBalance,
 } from './actions';
 
@@ -130,6 +131,19 @@ export const loadTipData = async (twitter, dispatch) => {
 		tweetTipData[tweetId].tipCount += 1;
 		tweetTipData[tweetId].tips.push({ tipper, amount });
 		dispatch(tipsLoaded(tweetTipData));
+	});
+};
+
+export const loadLikeData = async (twitter, dispatch) => {
+	const likeStream = await twitter.getPastEvents('TweetLiked', { fromBlock: 0, toBlock: 'latest' });
+	const likeData = {};
+	likeStream.forEach((like) => {
+		const { tweetId, likeCount } = like.returnValues;
+		if (!likeData[tweetId]) {
+			likeData[tweetId] = { likeCount: 0 };
+		}
+		likeData[tweetId].likeCount += 1;
+		dispatch(likesLoaded(likeData));
 	});
 };
 

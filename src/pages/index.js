@@ -57,12 +57,14 @@ const Home = ({ account, users }) => {
 					<div className={styles.sidebar}>
 						<Sidebar />
 					</div>
-					<div className={styles.content}>
-						<div className={styles.createTweet}>
-							<CreateTweet profilePic={profilePic} />
-						</div>
-						<div className={styles.feed}>
-							<Feed />
+					<div className={styles.contentWrapper}>
+						<div className={styles.content}>
+							<div className={styles.createTweet}>
+								<CreateTweet profilePic={profilePic} />
+							</div>
+							<div className={styles.feed}>
+								<Feed />
+							</div>
 						</div>
 					</div>
 				</div>

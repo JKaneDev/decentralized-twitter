@@ -79,6 +79,24 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 					data: [...state.allTweets.data, action.tweet],
 				},
 			};
+		case 'LIKES_LOADED':
+			const { likeData } = action;
+			const updatedLikesFromEventStream = state.allTweets.data.map((tweet) => {
+				if (likeData[tweet.id]) {
+					return {
+						...tweet,
+						likeCount: likeData[tweet.id].likeCount,
+					};
+				}
+				return tweet;
+			});
+			return {
+				...state,
+				allTweets: {
+					...state.allTweets,
+					data: updatedLikesFromEventStream,
+				},
+			};
 		case 'TWEET_LIKED':
 			const updatedLikeCount = state.allTweets.data.map((tweet) => {
 				if (tweet.id === action.newLikeCount.tweetId) {

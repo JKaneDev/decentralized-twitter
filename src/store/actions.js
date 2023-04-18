@@ -72,6 +72,13 @@ export function tipsLoaded(tipData) {
 	};
 }
 
+export function likesLoaded(likeData) {
+	return {
+		type: 'LIKES_LOADED',
+		likeData,
+	};
+}
+
 export function tweetCreated(tweet) {
 	return {
 		type: 'TWEET_CREATED',
