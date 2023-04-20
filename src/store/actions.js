@@ -65,10 +65,10 @@ export function allTweetsLoaded(tweets) {
 	};
 }
 
-export function tipsLoaded(tipData) {
+export function tipsLoaded(allTipData) {
 	return {
 		type: 'TIPS_LOADED',
-		tipData,
+		allTipData,
 	};
 }
 

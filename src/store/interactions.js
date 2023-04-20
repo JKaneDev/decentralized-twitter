@@ -22,6 +22,7 @@ import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
+import { isTypedArray } from 'lodash';
 
 export const loadWeb3 = async (dispatch) => {
 	if (typeof window.ethereum !== 'undefined') {
@@ -121,26 +122,26 @@ export const loadAllTweets = async (twitter, dispatch) => {
 };
 
 export const loadTipData = async (twitter, dispatch) => {
-	const tipStream = await twitter.getPastEvents('UserTipped', {
-		fromBlock: 0,
-		toBlock: 'latest',
-	});
+	const tipStream = await twitter.getPastEvents('UserTipped', { fromBlock: 0, toBlock: 'latest' });
+	const allTipData = [];
 
-	const tweetTipData = {};
 	tipStream.forEach((tip) => {
-		const { tweetId, tipper, amount } = tip.returnValues;
-		if (!tweetTipData[tweetId]) {
-			tweetTipData[tweetId] = { tipCount: 0, tips: [] };
-		}
-		tweetTipData[tweetId].tipCount += 1;
-		tweetTipData[tweetId].tips.push({ tipper, amount });
-		dispatch(tipsLoaded(tweetTipData));
+		const tipData = {
+			tipper: tip.returnValues.tipper,
+			tipperName: tip.returnValues.tipperName,
+			tweetId: tip.returnValues.tweetId,
+			creator: tip.returnValues.creator,
+			amount: tip.returnValues.amount,
+		};
+		allTipData.push(tipData);
 	});
+	dispatch(tipsLoaded(allTipData));
 };
 
 export const loadLikeData = async (twitter, dispatch) => {
 	const likeStream = await twitter.getPastEvents('TweetLiked', { fromBlock: 0, toBlock: 'latest' });
 	const allLikesData = [];
+
 	likeStream.forEach((like) => {
 		const likeData = {
 			tweetId: like.returnValues.tweetId,
@@ -178,13 +179,11 @@ export const likeTweet = async (twitter, account, dispatch, tweetId) => {
 	try {
 		const receipt = await twitter.methods.likeTweet(tweetId).send({ from: account });
 		const event = receipt.events.TweetLiked.returnValues;
-		if (event) {
-			const likeData = {
-				tweetId: event.tweetId,
-				liker: event.liker,
-			};
-			dispatch(tweetLiked(likeData));
-		}
+		const likeData = {
+			tweetId: event.tweetId,
+			liker: event.liker,
+		};
+		dispatch(tweetLiked(likeData));
 	} catch (error) {
 		console.error('Error liking tweet: ', error);
 	}

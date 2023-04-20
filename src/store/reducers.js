@@ -165,22 +165,27 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 				},
 			};
 		case 'TIPS_LOADED':
-			const { tipData } = action;
-			const updatedTipsFromEventStream = state.allTweets.data.map((tweet) => {
-				if (tipData[tweet.id]) {
+			const { allTipData } = action;
+			const updatedTweetsWithTips = state.allTweets.data.map((tweet) => {
+				// Filter the comments that belong to the current tweet
+				const tipsForTweet = allTipData.filter((tip) => tip.tweetId === tweet.id);
+
+				// If there are comments for the current tweet, add them to the tweet object
+				if (tipsForTweet.length > 0) {
 					return {
 						...tweet,
-						tipCount: tipData[tweet.id].tipCount,
-						tips: tipData[tweet.id].tips,
+						tips: [...tipsForTweet],
 					};
 				}
+
+				// If there are no comments for the current tweet, return the original tweet object
 				return tweet;
 			});
 			return {
 				...state,
 				allTweets: {
 					...state.allTweets,
-					data: updatedTipsFromEventStream,
+					data: updatedTweetsWithTips,
 				},
 			};
 		case 'USER_TIPPED':
