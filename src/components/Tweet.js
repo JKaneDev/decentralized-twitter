@@ -75,8 +75,11 @@ const Tweet = ({
 
 	useEffect(() => {
 		loadBlockchainData(twitter, dispatch);
+	}, []);
+
+	useEffect(() => {
 		checkUserInteractions(tweets);
-	}, [account, id, twitter, tweets]);
+	}, [account, twitter, id, tweets]);
 
 	return (
 		<div className={styles.tweet}>

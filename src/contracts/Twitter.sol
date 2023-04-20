@@ -58,11 +58,8 @@ contract Twitter {
         string name;
         string content;
         string[] comments;
-        uint256 commentCount;
-        uint256 likeCount;
-        uint256 retweetCount;
+        address[] likes;
         uint256[] tips;
-        uint256 tipCount;
         bool exists;
         string imageUrl;
         uint256 timestamp;
@@ -75,11 +72,10 @@ contract Twitter {
     event AccountDeleted(string name, address user);
     event FollowerAdded(address userAddress, string user, string follower, address followerAddress);
     event Unfollowed(string user, string follower);
-    event TweetCreated(uint256 id, address creator, string name, string content, string[] comments, uint256 commentCount, uint256 likeCount, uint256 retweetCount, uint256[] tips, uint256 tipCount, bool exists, string imageUrl, uint256 timestamp);
-    event CommentAdded(uint256 tweetId, string comment, address commenter, uint256 commentCount, string commenterName, string profilePic);
-    event TweetLiked(uint256 tweetId, uint256 likeCount);
-    event ReTweeted(uint256 tweetId, uint256 retweetCount);
-    event UserTipped(uint256 amount, uint256 tweetId, address creator, address tipper, string tipperName, uint256 tipCount);
+    event TweetCreated(uint256 id, address creator, string name, string content, string[] comments, address[] likes, uint256[] tips, bool exists, string imageUrl, uint256 timestamp);
+    event CommentAdded(uint256 tweetId, string comment, address commenter, string commenterName, string profilePic);
+    event TweetLiked(uint256 tweetId, address liker);
+    event UserTipped(uint256 amount, uint256 tweetId, address creator, address tipper, string tipperName);
     event TwitterReceivedFunds(address contractFrom, uint256 contractFromAmount);
     event FundsWithdrawn(address destinationWallet, uint256 balance);
 
@@ -198,11 +194,8 @@ contract Twitter {
             creator: msg.sender,
             content: _content,
             comments: new string[](0),
-            commentCount: 0,
-            likeCount: 0,
-            retweetCount: 0,
-            tips: new uint256[](0),
-            tipCount: 0,
+            likes: new address[](0),                                    
+            tips: new uint256[](0),            
             exists: true,
             imageUrl: _imageUrl,
             timestamp: block.timestamp
@@ -214,11 +207,8 @@ contract Twitter {
             tweets[_tweetId].name,
             tweets[_tweetId].content, 
             tweets[_tweetId].comments,
-            tweets[_tweetId].commentCount,
-            tweets[_tweetId].likeCount, 
-            tweets[_tweetId].retweetCount, 
-            tweets[_tweetId].tips,
-            tweets[_tweetId].tipCount, 
+            tweets[_tweetId].likes,                               
+            tweets[_tweetId].tips,            
             tweets[_tweetId].exists,
             tweets[_tweetId].imageUrl,
             tweets[_tweetId].timestamp
@@ -232,34 +222,24 @@ contract Twitter {
         require(tweets[_tweetId].exists, "Tweet does not exist");
 
         tweets[_tweetId].comments.push(_comment);
-        tweets[_tweetId].commentCount++;
 
-        emit CommentAdded(_tweetId, _comment, msg.sender, tweets[_tweetId].commentCount, users[msg.sender].name, users[msg.sender].profilePictureURL);
+        emit CommentAdded(_tweetId, _comment, msg.sender, users[msg.sender].name, users[msg.sender].profilePictureURL);
     }
 
     function likeTweet(uint256 _tweetId) public {
         require(!likedTweets[msg.sender][_tweetId], "You have already liked this tweet");
-        
-        tweets[_tweetId].likeCount++;
+                
         likedTweets[msg.sender][_tweetId] = true;
 
-        emit TweetLiked(_tweetId, tweets[_tweetId].likeCount);
-    }
-
-    function retweet(uint256 _tweetId) public {
-        require(users[msg.sender].exists, "User does not exist");
-        tweets[_tweetId].retweetCount++;
-
-        emit ReTweeted(_tweetId, tweets[_tweetId].retweetCount);
+        emit TweetLiked(_tweetId, msg.sender);
     }
 
     function tipUser(uint256 _tweetId, uint256 _amount) public {
         require(_amount > 0, "Amount should be greater than 0");
         require(tweetToken.transferFrom(msg.sender, tweets[_tweetId].creator, _amount));
         tweets[_tweetId].tips.push(_amount);
-        tweets[_tweetId].tipCount++;
 
-        emit UserTipped(_amount, _tweetId, tweets[_tweetId].creator, msg.sender, users[msg.sender].name, tweets[_tweetId].tipCount);
+        emit UserTipped(_amount, _tweetId, tweets[_tweetId].creator, msg.sender, users[msg.sender].name);
     }
 
     function receiveFunds() external payable {
