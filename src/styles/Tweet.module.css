@@ -20,6 +20,7 @@
 	letter-spacing: 0.05rem;
 	font-size: 1.5ch;
 	padding-left: 1rem;
+	justify-content: space-between;
 }
 
 .mainWrapper {
@@ -31,7 +32,8 @@
 
 .name {
 	font-weight: bold;
-	font-size: 1.6ch;
+	font-size: 2ch;
+	color: white;
 }
 
 .address {
@@ -53,6 +55,7 @@
 	font-family: Helvetica;
 	background-color: inherit;
 	padding: 0.5rem 0 1rem 1rem;
+	color: white;
 }
 
 .actionsWrapper {
@@ -78,12 +81,15 @@
 	color: #999999;
 }
 
+#comment:hover {
+	color: #1da1f2;
+}
+
 #like:hover {
 	color: red;
 }
 
 #retweet:hover {
-	color: #1da1f2;
 }
 
 #tip:hover {

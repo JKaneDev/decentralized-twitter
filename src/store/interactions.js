@@ -1,10 +1,11 @@
 import Web3 from 'web3';
-import { web3Loaded, web3AccountLoaded, tweetTokenLoaded, NFTLoaded, twitterLoaded, auctionLoaded } from './actions';
-import TweetToken from '../abis/TweetToken.json';
-import TweetNFT from '../abis/TweetNFT.json';
-import Twitter from '../abis/Twitter.json';
-import Auction from '../abis/Auction.json';
 import {
+	web3Loaded,
+	web3AccountLoaded,
+	tweetTokenLoaded,
+	NFTLoaded,
+	twitterLoaded,
+	auctionLoaded,
 	allTweetsLoaded,
 	profilesLoaded,
 	accountCreated,
@@ -14,7 +15,13 @@ import {
 	tipsLoaded,
 	likesLoaded,
 	fetchedTweetTokenBalance,
+	commentCreated,
+	commentsLoaded,
 } from './actions';
+import TweetToken from '../abis/TweetToken.json';
+import TweetNFT from '../abis/TweetNFT.json';
+import Twitter from '../abis/Twitter.json';
+import Auction from '../abis/Auction.json';
 
 export const loadWeb3 = async (dispatch) => {
 	if (typeof window.ethereum !== 'undefined') {
@@ -106,10 +113,7 @@ export const loadProfiles = async (twitter, dispatch) => {
 
 export const loadAllTweets = async (twitter, dispatch) => {
 	// Fetch all tweets with the 'TweetCreated' stream
-	const tweetStream = await twitter.getPastEvents('TweetCreated', {
-		fromBlock: 0,
-		toBlock: 'latest',
-	});
+	const tweetStream = await twitter.getPastEvents('TweetCreated', { fromBlock: 0, toBlock: 'latest' });
 	// Format tweets
 	const tweets = tweetStream.map((e) => e.returnValues);
 	// Add tweets to redux store
@@ -198,6 +202,7 @@ export const tipUser = async (tweetToken, twitter, account, dispatch, tweetId, a
 				tweetId: event.returnValues.tweetId,
 				amount: event.returnValues.amount,
 				tipper: event.returnValues.tipperName,
+				tipperAddress: event.returnValues.tipper,
 				tipCount: event.returnValues.tipCount,
 			};
 			dispatch(userTipped(tip));
@@ -214,5 +219,41 @@ export const getTweetTokenBalance = async (tweetToken, account, dispatch) => {
 		window.alert(`Your balance is: ${balance}`);
 	} catch (error) {
 		console.error('Error fetching balance: ', error);
+	}
+};
+
+export const loadCommentData = async (twitter, dispatch) => {
+	const commentStream = await twitter.getPastEvents('CommentAdded', { fromBlock: 0, toBlock: 'latest' });
+	const allCommentsData = [];
+	commentStream.forEach((com) => {
+		const commentData = {
+			tweetId: com.returnValues.tweetId,
+			commenter: com.returnValues.commenter,
+			commenterName: com.returnValues.commenterName,
+			comment: com.returnValues.comment,
+			profilePic: com.returnValues.profilePic,
+		};
+		allCommentsData.push(commentData);
+	});
+	dispatch(commentsLoaded(allCommentsData));
+};
+
+export const createComment = async (twitter, account, dispatch, tweetId, content) => {
+	try {
+		const comment = await twitter.methods.createComment(tweetId, content).send({ from: account });
+		const event = comment.events.CommentAdded.returnValues;
+
+		if (event) {
+			const commentData = {
+				tweetId: event.tweetId,
+				commenter: event.commenter,
+				commenterName: event.commenterName,
+				comment: event.comment,
+				profilePic: event.profilePic,
+			};
+			dispatch(commentCreated(commentData));
+		}
+	} catch (error) {
+		console.error('Error creating comment: ', error);
 	}
 };

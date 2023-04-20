@@ -79,6 +79,52 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 					data: [...state.allTweets.data, action.tweet],
 				},
 			};
+		case 'COMMENTS_LOADED':
+			const { allCommentsData } = action;
+			const updatedTweetsWithComments = state.allTweets.data.map((tweet) => {
+				// Filter the comments that belong to the current tweet
+				const commentsForTweet = allCommentsData.filter((comment) => comment.tweetId === tweet.id);
+
+				// If there are comments for the current tweet, add them to the tweet object
+				if (commentsForTweet.length > 0) {
+					return {
+						...tweet,
+						comments: [...commentsForTweet],
+					};
+				}
+
+				// If there are no comments for the current tweet, return the original tweet object
+				return tweet;
+			});
+
+			return {
+				...state,
+				allTweets: {
+					...state.allTweets,
+					data: updatedTweetsWithComments,
+				},
+			};
+		case 'COMMENT_ADDED':
+			const { commentData } = action;
+			// update redux store with new comment
+			const updatedComments = state.allTweets.data.map((tweet) => {
+				if (tweet.id === commentData.tweetId) {
+					return {
+						...tweet,
+						comments: [...tweet.comments, commentData],
+					};
+				}
+				return tweet;
+			});
+
+			return {
+				...state,
+				allTweets: {
+					...state.allTweets,
+					data: updatedComments,
+				},
+			};
+
 		case 'LIKES_LOADED':
 			const { likeData } = action;
 			const updatedLikesFromEventStream = state.allTweets.data.map((tweet) => {
@@ -135,7 +181,7 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 				},
 			};
 		case 'USER_TIPPED':
-			const { tweetId, tipCount, tipper, amount } = action.tip;
+			const { tweetId, tipCount, tipper, tipperAddress, amount } = action.tip;
 			const updatedTips = state.allTweets.data.map((tweet) => {
 				if (tweet.id === tweetId) {
 					return {
@@ -144,6 +190,7 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 						tips: [
 							...tweet.tips,
 							{
+								tipperAddress: tipperAddress,
 								tipper: tipper,
 								amount: amount,
 							},

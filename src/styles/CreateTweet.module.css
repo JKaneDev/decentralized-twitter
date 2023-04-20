@@ -36,8 +36,8 @@
 .tweetBtn {
 	grid-column: 2 / -1;
 	width: 70px;
-	padding: 0.25rem 0.25rem;
-	border-radius: 4px;
+	padding: 0.35rem 0.5rem;
+	border-radius: 22px;
 	margin-left: auto;
 	border: none;
 	background-color: #1da1f2;

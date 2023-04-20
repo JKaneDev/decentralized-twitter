@@ -6,8 +6,10 @@ import styles from '@components/styles/Comment.module.css';
 import { useEffect } from 'react';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { createComment } from '@components/store/interactions';
 
 const Comment = ({
+	id,
 	users,
 	account,
 	name,
@@ -16,8 +18,7 @@ const Comment = ({
 	time,
 	profilePic,
 	showCommentDialog,
-	commentCount,
-	setCommentCount,
+	twitter,
 	onClose,
 }) => {
 	const [commentContent, setCommentContent] = useState('');
@@ -31,10 +32,11 @@ const Comment = ({
 		setCurrentUserProfilePic(profilePic);
 	}, []);
 
-	const comment = async (e) => {
+	const confirmComment = async (e) => {
 		e.preventDefault();
-		await createComment(twitter, account, dispatch, commentContent, profilePic);
+		await createComment(twitter, account, dispatch, id, commentContent);
 		setCommentContent('');
+		onClose();
 	};
 
 	return (
@@ -50,7 +52,7 @@ const Comment = ({
 					time={time}
 					commentDialogOpen={showCommentDialog}
 				/>
-				<form onSubmit={comment} className={styles.comment}>
+				<form onSubmit={confirmComment} className={styles.comment}>
 					<img src={currentUserProfilePic} alt='user-profile' className={styles.profilePic} />
 					<section className={styles.section}>
 						<textarea
@@ -71,9 +73,6 @@ const Comment = ({
 };
 
 function mapStateToProps(state) {
-	console.log({
-		state: state,
-	});
 	return {
 		twitter: twitterSelector(state),
 		account: accountSelector(state),

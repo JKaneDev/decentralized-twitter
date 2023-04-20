@@ -42,8 +42,8 @@ function mapStateToProps(state) {
 
 const StyledTipper = styled.form`
 	position: absolute;
-	right: 18px;
-	bottom: 8px;
+	right: -15px;
+	bottom: -5px;
 	background-color: black;
 	border: 1px solid #363636;
 	width: 120px;

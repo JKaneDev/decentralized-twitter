@@ -106,3 +106,17 @@ export function fetchedTweetTokenBalance(balance) {
 		balance,
 	};
 }
+
+export function commentsLoaded(allCommentsData) {
+	return {
+		type: 'COMMENTS_LOADED',
+		allCommentsData,
+	};
+}
+
+export function commentCreated(commentData) {
+	return {
+		type: 'COMMENT_ADDED',
+		commentData,
+	};
+}

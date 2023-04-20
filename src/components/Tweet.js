@@ -4,32 +4,35 @@ import Tipper from './Tipper';
 import { faComment, faRetweet, faHeart, faHandHoldingUsd } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from '@components/styles/Tweet.module.css';
-import { likeTweet } from '@components/store/interactions';
+import { likeTweet, loadLikeData, loadCommentData, loadTipData } from '@components/store/interactions';
 import { allTweetsSelector, twitterSelector, accountSelector, allProfilesSelector } from '@components/store/selectors';
 import Comment from './Comment';
+import { useEffect } from 'react';
 
 const Tweet = ({
 	id,
 	name,
 	address,
 	content,
+	comCount,
 	likes,
 	retweets,
-	tips,
 	tipCount,
 	profilePic,
 	time,
 	twitter,
+	tweets,
 	account,
 	commentDialogOpen,
 }) => {
 	const dispatch = useDispatch();
 
-	const [commentCount, setCommentCount] = useState(0);
-	const [showCommentDialog, setShowCommentDialog] = useState(false);
+	const [commented, setCommented] = useState(false);
+	const [retweeted, setRetweeted] = useState(false);
 	const [liked, setLiked] = useState(false);
-	const [showTipper, setShowTipper] = useState(false);
 	const [tipped, setTipped] = useState(false);
+	const [showCommentDialog, setShowCommentDialog] = useState(false);
+	const [showTipper, setShowTipper] = useState(false);
 	const [tipAmount, setTipAmount] = useState('');
 
 	const handleShowCommentDialog = () => {
@@ -48,6 +51,29 @@ const Tweet = ({
 		setShowTipper(false);
 	};
 
+	const hasUserCommented = (userAddress, tweet) => {
+		return tweet.comments.some((comment) => comment.commenter.toLowerCase() === userAddress.toLowerCase());
+	};
+
+	const loadBlockchainData = async (twitter, dispatch) => {
+		await loadTipData(twitter, dispatch);
+		await loadLikeData(twitter, dispatch);
+		await loadCommentData(twitter, dispatch);
+	};
+
+	const checkUserInteractions = (tweets) => {
+		const currentTweet = tweets.find((tweet) => tweet.id === id);
+		if (currentTweet) {
+			setCommented(hasUserCommented(account, currentTweet));
+		}
+	};
+
+	useEffect(() => {
+		loadBlockchainData(twitter, dispatch);
+		checkUserInteractions(tweets);
+		// console.log(commented);
+	}, [account, id, twitter, tweets]);
+
 	return (
 		<div className={styles.tweet}>
 			<img src={profilePic} alt='profile-pic' className={styles.profilePic} />
@@ -62,23 +88,22 @@ const Tweet = ({
 					<></>
 				) : (
 					<span className={styles.actionsWrapper}>
-						<span className={styles.actions}>
+						<span className={styles.actions} id={styles.comment} style={{ color: commented ? '#1da1f2' : '#757575' }}>
 							{showCommentDialog ? (
 								<Comment
+									id={id}
 									name={name}
 									address={address}
 									content={content}
 									time={time}
 									profilePic={profilePic}
 									showCommentDialog={showCommentDialog}
-									commentCount={commentCount}
-									setCommentCount={setCommentCount}
 									onClose={handleCloseCommentDialog}
 								/>
 							) : (
 								<>
 									<FontAwesomeIcon icon={faComment} size='lg' onClick={handleShowCommentDialog} />
-									<span>{commentCount}</span>
+									<span>{comCount}</span>
 								</>
 							)}
 						</span>
@@ -130,6 +155,9 @@ const Tweet = ({
 };
 
 function mapStateToProps(state) {
+	// console.log({
+	// 	tweets: allTweetsSelector(state),
+	// });
 	return {
 		twitter: twitterSelector(state),
 		account: accountSelector(state),
