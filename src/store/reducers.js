@@ -126,9 +126,10 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 			};
 		case 'LIKES_LOADED':
 			const { allLikesData } = action;
+
 			const updatedTweetsWithLikes = state.allTweets.data.map((tweet) => {
 				// Filter the likes for the current tweet, add them to the tweet object
-				const likesForTweet = allLikesData.filter((like) => like.id === tweet.id);
+				const likesForTweet = allLikesData.filter((like) => like.tweetId === tweet.id);
 				// If there are likes for the tweet, add them to the tweet object
 				if (likesForTweet.length > 0) {
 					return {
@@ -138,6 +139,7 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 				}
 				return tweet;
 			});
+
 			return {
 				...state,
 				allTweets: {
@@ -189,21 +191,10 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 				},
 			};
 		case 'USER_TIPPED':
-			const { tweetId, tipCount, tipper, tipperAddress, amount } = action.tip;
+			const { tip } = action;
 			const updatedTips = state.allTweets.data.map((tweet) => {
-				if (tweet.id === tweetId) {
-					return {
-						...tweet,
-						tipCount: tipCount,
-						tips: [
-							...tweet.tips,
-							{
-								tipperAddress: tipperAddress,
-								tipper: tipper,
-								amount: amount,
-							},
-						],
-					};
+				if (tweet.id === tip.tweetId) {
+					return { ...tweet, tips: [...tweet.tips, tip] };
 				}
 				return tweet;
 			});

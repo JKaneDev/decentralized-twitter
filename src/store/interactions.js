@@ -121,37 +121,6 @@ export const loadAllTweets = async (twitter, dispatch) => {
 	dispatch(allTweetsLoaded(tweets));
 };
 
-export const loadTipData = async (twitter, dispatch) => {
-	const tipStream = await twitter.getPastEvents('UserTipped', { fromBlock: 0, toBlock: 'latest' });
-	const allTipData = [];
-
-	tipStream.forEach((tip) => {
-		const tipData = {
-			tipper: tip.returnValues.tipper,
-			tipperName: tip.returnValues.tipperName,
-			tweetId: tip.returnValues.tweetId,
-			creator: tip.returnValues.creator,
-			amount: tip.returnValues.amount,
-		};
-		allTipData.push(tipData);
-	});
-	dispatch(tipsLoaded(allTipData));
-};
-
-export const loadLikeData = async (twitter, dispatch) => {
-	const likeStream = await twitter.getPastEvents('TweetLiked', { fromBlock: 0, toBlock: 'latest' });
-	const allLikesData = [];
-
-	likeStream.forEach((like) => {
-		const likeData = {
-			tweetId: like.returnValues.tweetId,
-			liker: like.returnValues.liker,
-		};
-		allLikesData.push(likeData);
-	});
-	dispatch(likesLoaded(allLikesData));
-};
-
 export const createTweet = async (twitter, account, dispatch, content, profilePic) => {
 	try {
 		const receipt = await twitter.methods.createTweet(content, profilePic).send({ from: account });
@@ -175,6 +144,20 @@ export const createTweet = async (twitter, account, dispatch, content, profilePi
 	}
 };
 
+export const loadLikeData = async (twitter, dispatch) => {
+	const likeStream = await twitter.getPastEvents('TweetLiked', { fromBlock: 0, toBlock: 'latest' });
+	const allLikesData = [];
+
+	likeStream.forEach((like) => {
+		const likeData = {
+			tweetId: like.returnValues.tweetId,
+			liker: like.returnValues.liker,
+		};
+		allLikesData.push(likeData);
+	});
+	dispatch(likesLoaded(allLikesData));
+};
+
 export const likeTweet = async (twitter, account, dispatch, tweetId) => {
 	try {
 		const receipt = await twitter.methods.likeTweet(tweetId).send({ from: account });
@@ -189,33 +172,38 @@ export const likeTweet = async (twitter, account, dispatch, tweetId) => {
 	}
 };
 
+export const loadTipData = async (twitter, dispatch) => {
+	const tipStream = await twitter.getPastEvents('UserTipped', { fromBlock: 0, toBlock: 'latest' });
+	const allTipData = [];
+
+	tipStream.forEach((tip) => {
+		const tipData = {
+			tipper: tip.returnValues.tipper,
+			tipperName: tip.returnValues.tipperName,
+			tweetId: tip.returnValues.tweetId,
+			creator: tip.returnValues.creator,
+			amount: tip.returnValues.amount,
+		};
+		allTipData.push(tipData);
+	});
+	dispatch(tipsLoaded(allTipData));
+};
+
 export const tipUser = async (tweetToken, twitter, account, dispatch, tweetId, amount) => {
 	try {
 		await tweetToken.methods.approve(twitter._address, amount).send({ from: account });
 		const receipt = await twitter.methods.tipUser(tweetId, amount).send({ from: account });
-		const event = receipt.events.UserTipped;
-		if (event) {
-			const tip = {
-				tweetId: event.returnValues.tweetId,
-				amount: event.returnValues.amount,
-				tipper: event.returnValues.tipperName,
-				tipperAddress: event.returnValues.tipper,
-				tipCount: event.returnValues.tipCount,
-			};
-			dispatch(userTipped(tip));
-		}
+		const event = receipt.events.UserTipped.returnValues;
+		const tip = {
+			tipper: event.tipper,
+			tipperName: event.tipperName,
+			tweetId: event.tweetId,
+			creator: event.creator,
+			amount: event.amount,
+		};
+		dispatch(userTipped(tip));
 	} catch (error) {
 		console.error('Error tipping user: ', error);
-	}
-};
-
-export const getTweetTokenBalance = async (tweetToken, account, dispatch) => {
-	try {
-		const balance = await tweetToken.methods.getBalanceOf(account).call({ from: account });
-		dispatch(fetchedTweetTokenBalance(balance));
-		window.alert(`Your balance is: ${balance}`);
-	} catch (error) {
-		console.error('Error fetching balance: ', error);
 	}
 };
 
@@ -252,5 +240,15 @@ export const createComment = async (twitter, account, dispatch, tweetId, content
 		}
 	} catch (error) {
 		console.error('Error creating comment: ', error);
+	}
+};
+
+export const getTweetTokenBalance = async (tweetToken, account, dispatch) => {
+	try {
+		const balance = await tweetToken.methods.getBalanceOf(account).call({ from: account });
+		dispatch(fetchedTweetTokenBalance(balance));
+		window.alert(`Your balance is: ${balance}`);
+	} catch (error) {
+		console.error('Error fetching balance: ', error);
 	}
 };

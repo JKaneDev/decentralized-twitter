@@ -32,6 +32,7 @@ export function twitterLoaded(contract) {
 		contract,
 	};
 }
+
 export function auctionLoaded(contract) {
 	return {
 		type: 'AUCTION_LOADED',
@@ -65,10 +66,10 @@ export function allTweetsLoaded(tweets) {
 	};
 }
 
-export function tipsLoaded(allTipData) {
+export function tweetCreated(tweet) {
 	return {
-		type: 'TIPS_LOADED',
-		allTipData,
+		type: 'TWEET_CREATED',
+		tweet,
 	};
 }
 
@@ -79,17 +80,17 @@ export function likesLoaded(allLikesData) {
 	};
 }
 
-export function tweetCreated(tweet) {
-	return {
-		type: 'TWEET_CREATED',
-		tweet,
-	};
-}
-
 export function tweetLiked(likeData) {
 	return {
 		type: 'TWEET_LIKED',
 		likeData,
+	};
+}
+
+export function tipsLoaded(allTipData) {
+	return {
+		type: 'TIPS_LOADED',
+		allTipData,
 	};
 }
 

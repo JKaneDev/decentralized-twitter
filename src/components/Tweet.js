@@ -58,6 +58,10 @@ const Tweet = ({
 		return tweet.tips.some((tip) => tip.tipper === userAddress);
 	};
 
+	const hasUserLiked = (userAddress, tweet) => {
+		return tweet.likes.some((like) => like.liker === userAddress);
+	};
+
 	const loadBlockchainData = async (twitter, dispatch) => {
 		await loadTipData(twitter, dispatch);
 		await loadLikeData(twitter, dispatch);
@@ -69,6 +73,7 @@ const Tweet = ({
 		if (currentTweet) {
 			setCommented(hasUserCommented(account, currentTweet));
 			setTipped(hasUserTipped(account, currentTweet));
+			setLiked(hasUserLiked(account, currentTweet));
 		}
 	};
 
