@@ -52,7 +52,11 @@ const Tweet = ({
 	};
 
 	const hasUserCommented = (userAddress, tweet) => {
-		return tweet.comments.some((comment) => comment.commenter.toLowerCase() === userAddress.toLowerCase());
+		return tweet.comments.some((comment) => comment.commenter === userAddress);
+	};
+
+	const hasUserTipped = (userAddress, tweet) => {
+		return tweet.tips.some((tip) => tip.tipper === userAddress);
 	};
 
 	const loadBlockchainData = async (twitter, dispatch) => {
@@ -65,13 +69,13 @@ const Tweet = ({
 		const currentTweet = tweets.find((tweet) => tweet.id === id);
 		if (currentTweet) {
 			setCommented(hasUserCommented(account, currentTweet));
+			setTipped(hasUserTipped(account, currentTweet));
 		}
 	};
 
 	useEffect(() => {
 		loadBlockchainData(twitter, dispatch);
 		checkUserInteractions(tweets);
-		// console.log(commented);
 	}, [account, id, twitter, tweets]);
 
 	return (
@@ -123,7 +127,7 @@ const Tweet = ({
 							/>
 							<span style={{ color: liked ? 'red' : '#757575' }}>{likes}</span>
 						</span>
-						<span className={styles.actions} id={styles.tip}>
+						<span className={styles.actions} id={styles.tip} style={{ color: tipped ? 'rgb(0, 148, 0)' : '#757575' }}>
 							{showTipper ? (
 								<Tipper
 									id={id}
@@ -137,13 +141,8 @@ const Tweet = ({
 								/>
 							) : (
 								<>
-									<FontAwesomeIcon
-										icon={faHandHoldingUsd}
-										size='lg'
-										style={{ color: tipped ? 'rgb(0, 148, 0)' : '#757575' }}
-										onClick={handleShowTipper}
-									/>
-									<span style={{ color: tipped ? 'rgb(0, 148, 0)' : '#757575' }}>{tipCount}</span>
+									<FontAwesomeIcon icon={faHandHoldingUsd} size='lg' onClick={handleShowTipper} />
+									<span>{tipCount}</span>
 								</>
 							)}
 						</span>
