@@ -15,8 +15,7 @@ const Tweet = ({
 	address,
 	content,
 	comCount,
-	likes,
-	retweets,
+	likeCount,
 	tipCount,
 	profilePic,
 	time,
@@ -116,7 +115,7 @@ const Tweet = ({
 						</span>
 						<span className={styles.actions} id={styles.retweet}>
 							<FontAwesomeIcon icon={faRetweet} size='lg' />
-							<span>{retweets}</span>
+							<span>0</span>
 						</span>
 						<span className={styles.actions} id={styles.like}>
 							<FontAwesomeIcon
@@ -128,7 +127,7 @@ const Tweet = ({
 									setLiked(!liked);
 								}}
 							/>
-							<span style={{ color: liked ? 'red' : '#757575' }}>{likes}</span>
+							<span style={{ color: liked ? 'red' : '#757575' }}>{likeCount}</span>
 						</span>
 						<span className={styles.actions} id={styles.tip} style={{ color: tipped ? 'rgb(0, 148, 0)' : '#757575' }}>
 							{showTipper ? (

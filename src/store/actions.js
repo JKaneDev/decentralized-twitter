@@ -72,10 +72,10 @@ export function tipsLoaded(tipData) {
 	};
 }
 
-export function likesLoaded(likeData) {
+export function likesLoaded(allLikesData) {
 	return {
 		type: 'LIKES_LOADED',
-		likeData,
+		allLikesData,
 	};
 }
 
@@ -86,10 +86,10 @@ export function tweetCreated(tweet) {
 	};
 }
 
-export function tweetLiked(newLikeCount) {
+export function tweetLiked(likeData) {
 	return {
 		type: 'TWEET_LIKED',
-		newLikeCount,
+		likeData,
 	};
 }
 

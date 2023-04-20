@@ -140,15 +140,15 @@ export const loadTipData = async (twitter, dispatch) => {
 
 export const loadLikeData = async (twitter, dispatch) => {
 	const likeStream = await twitter.getPastEvents('TweetLiked', { fromBlock: 0, toBlock: 'latest' });
-	const likeData = {};
+	const allLikesData = [];
 	likeStream.forEach((like) => {
-		const { tweetId, likeCount } = like.returnValues;
-		if (!likeData[tweetId]) {
-			likeData[tweetId] = { likeCount: 0 };
-		}
-		likeData[tweetId].likeCount += 1;
-		dispatch(likesLoaded(likeData));
+		const likeData = {
+			tweetId: like.returnValues.tweetId,
+			liker: like.returnValues.liker,
+		};
+		allLikesData.push(likeData);
 	});
+	dispatch(likesLoaded(allLikesData));
 };
 
 export const createTweet = async (twitter, account, dispatch, content, profilePic) => {
@@ -161,10 +161,9 @@ export const createTweet = async (twitter, account, dispatch, content, profilePi
 				name: event.returnValues.name,
 				creator: event.returnValues.creator,
 				content: event.returnValues.content,
-				likeCount: event.returnValues.likeCount,
-				retweetCount: event.returnValues.retweetCount,
+				comments: event.returnValues.comments,
+				likes: event.returnValues.likes,
 				tips: event.returnValues.tips,
-				tipCount: event.returnValues.tipCount,
 				imageUrl: event.returnValues.imageUrl,
 				timestamp: event.returnValues.timestamp,
 			};
@@ -178,14 +177,13 @@ export const createTweet = async (twitter, account, dispatch, content, profilePi
 export const likeTweet = async (twitter, account, dispatch, tweetId) => {
 	try {
 		const receipt = await twitter.methods.likeTweet(tweetId).send({ from: account });
-		console.log('Receipt: ', receipt);
-		const event = receipt.events.TweetLiked;
+		const event = receipt.events.TweetLiked.returnValues;
 		if (event) {
-			const newLikeCount = {
-				tweetId: event.returnValues.tweetId,
-				updatedLikeCount: event.returnValues.likeCount,
+			const likeData = {
+				tweetId: event.tweetId,
+				liker: event.liker,
 			};
-			dispatch(tweetLiked(newLikeCount));
+			dispatch(tweetLiked(likeData));
 		}
 	} catch (error) {
 		console.error('Error liking tweet: ', error);

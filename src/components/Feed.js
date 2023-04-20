@@ -28,10 +28,8 @@ const Feed = ({ twitter, allTweets, allTweetsLoaded }) => {
 							address={tweet.creator}
 							content={tweet.content}
 							comCount={tweet.comments.length}
-							likes={tweet.likeCount}
-							retweets={tweet.retweetCount}
-							tips={tweet.tips}
-							tipCount={tweet.tipCount}
+							likeCount={tweet.likes.length}
+							tipCount={tweet.tips.length}
 							profilePic={tweet.imageUrl}
 							time={tweet.timestamp}
 						/>

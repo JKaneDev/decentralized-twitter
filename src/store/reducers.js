@@ -124,14 +124,16 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 					data: updatedComments,
 				},
 			};
-
 		case 'LIKES_LOADED':
-			const { likeData } = action;
-			const updatedLikesFromEventStream = state.allTweets.data.map((tweet) => {
-				if (likeData[tweet.id]) {
+			const { allLikesData } = action;
+			const updatedTweetsWithLikes = state.allTweets.data.map((tweet) => {
+				// Filter the likes for the current tweet, add them to the tweet object
+				const likesForTweet = allLikesData.filter((like) => like.id === tweet.id);
+				// If there are likes for the tweet, add them to the tweet object
+				if (likesForTweet.length > 0) {
 					return {
 						...tweet,
-						likeCount: likeData[tweet.id].likeCount,
+						likes: [...likesForTweet],
 					};
 				}
 				return tweet;
@@ -140,25 +142,26 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 				...state,
 				allTweets: {
 					...state.allTweets,
-					data: updatedLikesFromEventStream,
+					data: updatedTweetsWithLikes,
 				},
 			};
 		case 'TWEET_LIKED':
-			const updatedLikeCount = state.allTweets.data.map((tweet) => {
-				if (tweet.id === action.newLikeCount.tweetId) {
+			const { likeData } = action;
+			const updatedLikes = state.allTweets.data.map((tweet) => {
+				if (tweet.id === likeData.tweetId) {
 					return {
 						...tweet,
-						likeCount: action.newLikeCount.updatedLikeCount,
+						likes: [...tweet.likes, likeData],
 					};
-				} else {
-					return tweet;
 				}
+				return tweet;
 			});
+
 			return {
 				...state,
 				allTweets: {
 					...state.allTweets,
-					data: updatedLikeCount,
+					data: updatedLikes,
 				},
 			};
 		case 'TIPS_LOADED':
