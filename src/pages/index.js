@@ -4,14 +4,13 @@ import { connect, useDispatch } from 'react-redux';
 import { loadWeb3, loadAccount, loadTweetToken, loadTweetNFT, loadTwitter, loadProfiles } from '../store/interactions';
 import { accountSelector, allProfilesSelector, allTweetsSelector } from '../store/selectors';
 import Sidebar from '../components/Sidebar';
+import CreateProfile from '@components/components/CreateProfile';
 import CreateTweet from '@components/components/CreateTweet';
 import Feed from '@components/components/Feed';
-import CreateProfile from '@components/components/CreateProfile';
 
 const Home = ({ account, users }) => {
 	const [accountCreated, setAccountCreated] = useState(false);
 	const [profilePic, setProfilePic] = useState('');
-
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -74,6 +73,9 @@ const Home = ({ account, users }) => {
 };
 
 function mapStateToProps(state) {
+	console.log({
+		tweets: allTweetsSelector(state),
+	});
 	return {
 		account: accountSelector(state),
 		users: allProfilesSelector(state),

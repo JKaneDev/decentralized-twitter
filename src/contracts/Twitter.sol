@@ -73,7 +73,7 @@ contract Twitter {
     event FollowerAdded(address userAddress, string user, string follower, address followerAddress);
     event Unfollowed(string user, string follower);
     event TweetCreated(uint256 id, address creator, string name, string content, string[] comments, address[] likes, uint256[] tips, bool exists, string imageUrl, uint256 timestamp);
-    event CommentAdded(uint256 tweetId, string comment, address commenter, string commenterName, string profilePic);
+    event CommentAdded(uint256 tweetId, string comment, address commenter, string commenterName, string profilePic, uint256 timestamp);
     event TweetLiked(uint256 tweetId, address liker);
     event UserTipped(uint256 amount, uint256 tweetId, address creator, address tipper, string tipperName);
     event TwitterReceivedFunds(address contractFrom, uint256 contractFromAmount);
@@ -223,7 +223,7 @@ contract Twitter {
 
         tweets[_tweetId].comments.push(_comment);
 
-        emit CommentAdded(_tweetId, _comment, msg.sender, users[msg.sender].name, users[msg.sender].profilePictureURL);
+        emit CommentAdded(_tweetId, _comment, msg.sender, users[msg.sender].name, users[msg.sender].profilePictureURL, block.timestamp);
     }
 
     function likeTweet(uint256 _tweetId) public {

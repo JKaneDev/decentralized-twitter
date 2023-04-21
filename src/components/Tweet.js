@@ -1,13 +1,13 @@
+import styles from '@components/styles/Tweet.module.css';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { useState } from 'react';
-import Tipper from './Tipper';
 import { faComment, faRetweet, faHeart, faHandHoldingUsd } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styles from '@components/styles/Tweet.module.css';
 import { likeTweet, loadLikeData, loadCommentData, loadTipData } from '@components/store/interactions';
 import { allTweetsSelector, twitterSelector, accountSelector, allProfilesSelector } from '@components/store/selectors';
-import Comment from './Comment';
-import { useEffect } from 'react';
+import Tipper from './Tipper';
+import CreateComment from './CreateComment';
 
 const Tweet = ({
 	id,
@@ -27,7 +27,6 @@ const Tweet = ({
 	const dispatch = useDispatch();
 
 	const [commented, setCommented] = useState(false);
-	const [retweeted, setRetweeted] = useState(false);
 	const [liked, setLiked] = useState(false);
 	const [tipped, setTipped] = useState(false);
 	const [showCommentDialog, setShowCommentDialog] = useState(false);
@@ -86,77 +85,79 @@ const Tweet = ({
 	}, [account, twitter, id, tweets]);
 
 	return (
-		<div className={styles.tweet}>
-			<img src={profilePic} alt='profile-pic' className={styles.profilePic} />
-			<div className={styles.mainWrapper}>
-				<span className={styles.tweetInfo}>
-					<span className={styles.name}>{name}</span>
-					<span className={styles.address}>{address}</span>
-					<span className={styles.time}>{time}</span>
-				</span>
-				<p className={styles.tweetContent}>{content}</p>
-				{commentDialogOpen ? (
-					<></>
-				) : (
-					<span className={styles.actionsWrapper}>
-						<span className={styles.actions} id={styles.comment} style={{ color: commented ? '#1da1f2' : '#757575' }}>
-							{showCommentDialog ? (
-								<Comment
-									id={id}
-									name={name}
-									address={address}
-									content={content}
-									time={time}
-									profilePic={profilePic}
-									showCommentDialog={showCommentDialog}
-									onClose={handleCloseCommentDialog}
-								/>
-							) : (
-								<>
-									<FontAwesomeIcon icon={faComment} size='lg' onClick={handleShowCommentDialog} />
-									<span>{comCount}</span>
-								</>
-							)}
-						</span>
-						<span className={styles.actions} id={styles.retweet}>
-							<FontAwesomeIcon icon={faRetweet} size='lg' />
-							<span>0</span>
-						</span>
-						<span className={styles.actions} id={styles.like}>
-							<FontAwesomeIcon
-								icon={faHeart}
-								size='lg'
-								style={{ color: liked ? 'red' : '#757575' }}
-								onClick={() => {
-									likeTweet(twitter, account, dispatch, id);
-									setLiked(!liked);
-								}}
-							/>
-							<span style={{ color: liked ? 'red' : '#757575' }}>{likeCount}</span>
-						</span>
-						<span className={styles.actions} id={styles.tip} style={{ color: tipped ? 'rgb(0, 148, 0)' : '#757575' }}>
-							{showTipper ? (
-								<Tipper
-									id={id}
-									tipped={tipped}
-									setTipped={setTipped}
-									amount={tipAmount}
-									setAmount={setTipAmount}
-									account={account}
-									twitter={twitter}
-									onClose={handleCloseTipper}
-								/>
-							) : (
-								<>
-									<FontAwesomeIcon icon={faHandHoldingUsd} size='lg' onClick={handleShowTipper} />
-									<span>{tipCount}</span>
-								</>
-							)}
-						</span>
+		<Link href={`/tweet/${id}`}>
+			<div className={styles.tweet}>
+				<img src={profilePic} alt='profile-pic' className={styles.profilePic} />
+				<div className={styles.mainWrapper}>
+					<span className={styles.tweetInfo}>
+						<span className={styles.name}>{name}</span>
+						<span className={styles.address}>{address}</span>
+						<span className={styles.time}>{time}</span>
 					</span>
-				)}
+					<p className={styles.tweetContent}>{content}</p>
+					{commentDialogOpen ? (
+						<></>
+					) : (
+						<span className={styles.actionsWrapper}>
+							<span className={styles.actions} style={{ color: commented ? '#1da1f2' : '#757575' }}>
+								{showCommentDialog ? (
+									<CreateComment
+										id={id}
+										name={name}
+										address={address}
+										content={content}
+										time={time}
+										profilePic={profilePic}
+										showCommentDialog={showCommentDialog}
+										onClose={handleCloseCommentDialog}
+									/>
+								) : (
+									<>
+										<FontAwesomeIcon icon={faComment} size='lg' onClick={handleShowCommentDialog} id={styles.comment} />
+										<span>{comCount}</span>
+									</>
+								)}
+							</span>
+							<span className={styles.actions}>
+								<FontAwesomeIcon icon={faRetweet} size='lg' />
+								<span>0</span>
+							</span>
+							<span className={styles.actions}>
+								<FontAwesomeIcon
+									icon={faHeart}
+									size='lg'
+									id={styles.like}
+									style={{ color: liked ? 'red' : '#757575' }}
+									onClick={() => {
+										likeTweet(twitter, account, dispatch, id);
+									}}
+								/>
+								<span style={{ color: liked ? 'red' : '#757575' }}>{likeCount}</span>
+							</span>
+							<span className={styles.actions} style={{ color: tipped ? 'rgb(0, 148, 0)' : '#757575' }}>
+								{showTipper ? (
+									<Tipper
+										id={id}
+										tipped={tipped}
+										setTipped={setTipped}
+										amount={tipAmount}
+										setAmount={setTipAmount}
+										account={account}
+										twitter={twitter}
+										onClose={handleCloseTipper}
+									/>
+								) : (
+									<>
+										<FontAwesomeIcon icon={faHandHoldingUsd} size='lg' onClick={handleShowTipper} id={styles.tip} />
+										<span>{tipCount}</span>
+									</>
+								)}
+							</span>
+						</span>
+					)}
+				</div>
 			</div>
-		</div>
+		</Link>
 	);
 };
 

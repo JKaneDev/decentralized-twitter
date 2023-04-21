@@ -217,6 +217,7 @@ export const loadCommentData = async (twitter, dispatch) => {
 			commenterName: com.returnValues.commenterName,
 			comment: com.returnValues.comment,
 			profilePic: com.returnValues.profilePic,
+			timestamp: com.returnValues.timestamp,
 		};
 		allCommentsData.push(commentData);
 	});
@@ -235,6 +236,7 @@ export const createComment = async (twitter, account, dispatch, tweetId, content
 				commenterName: event.commenterName,
 				comment: event.comment,
 				profilePic: event.profilePic,
+				timestamp: event.timestamp,
 			};
 			dispatch(commentCreated(commentData));
 		}

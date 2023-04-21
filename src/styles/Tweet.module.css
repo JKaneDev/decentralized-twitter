@@ -4,12 +4,16 @@
 	grid-auto-flow: row;
 	grid-auto-rows: min-content;
 	gap: 0.5rem;
-	padding: 2rem 2rem 1.25rem 1rem;
+	padding: 2rem 2rem 0.75rem 1rem;
 	border: 1px solid #252525;
 	font-family: Helvetica;
 	line-height: 1.25rem;
 	letter-spacing: 0.02rem;
 	max-width: 710px;
+}
+
+.tweet:hover {
+	cursor: pointer;
 }
 
 .tweetInfo {
@@ -81,19 +85,30 @@
 	color: #999999;
 }
 
+#like,
+#comment,
+#tip {
+	transition: all 0.35s ease-in-out;
+	border-radius: 32px;
+	padding: 0.5rem;
+}
+
 #comment:hover {
 	color: #1da1f2;
+	transform: scale(1.05);
+	background-color: rgb(153, 153, 153, 0.2);
 }
 
 #like:hover {
 	color: red;
-}
-
-#retweet:hover {
+	transform: scale(1.05);
+	background-color: rgb(153, 153, 153, 0.2);
 }
 
 #tip:hover {
 	color: rgb(0, 148, 0);
+	transform: scale(1.1);
+	background-color: rgb(153, 153, 153, 0.2);
 }
 
 .profilePic {

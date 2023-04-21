@@ -1,83 +1,39 @@
-import { accountSelector, allProfilesSelector, twitterSelector } from '@components/store/selectors';
-import { useState } from 'react';
-import { connect, useDispatch } from 'react-redux';
-import Tweet from './Tweet';
 import styles from '@components/styles/Comment.module.css';
-import { useEffect } from 'react';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faComment, faRetweet, faHeart, faHandHoldingUsd } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { createComment } from '@components/store/interactions';
 
-const Comment = ({
-	id,
-	users,
-	account,
-	name,
-	address,
-	content,
-	time,
-	profilePic,
-	showCommentDialog,
-	twitter,
-	onClose,
-}) => {
-	const [commentContent, setCommentContent] = useState('');
-	const [currentUserProfilePic, setCurrentUserProfilePic] = useState('');
-
-	const dispatch = useDispatch();
-
-	useEffect(() => {
-		const currentUser = users.find((user) => user.userAddress === account);
-		const profilePic = currentUser.profilePictureURL;
-		setCurrentUserProfilePic(profilePic);
-	}, []);
-
-	const confirmComment = async (e) => {
-		e.preventDefault();
-		await createComment(twitter, account, dispatch, id, commentContent);
-		setCommentContent('');
-		onClose();
-	};
-
+const Comment = ({ comment, commenter, commenterName, profilePic, timestamp }) => {
 	return (
-		<>
-			<div className={styles.overlay}></div>
-			<div className={styles.commentDialogWrapper}>
-				<FontAwesomeIcon icon={faTimes} className={styles.exit} onClick={onClose} />
-				<Tweet
-					name={name}
-					profilePic={profilePic}
-					address={address}
-					content={content}
-					time={time}
-					commentDialogOpen={showCommentDialog}
-				/>
-				<form onSubmit={confirmComment} className={styles.comment}>
-					<img src={currentUserProfilePic} alt='user-profile' className={styles.profilePic} />
-					<section className={styles.section}>
-						<textarea
-							className={styles.tweetContent}
-							name='comment-content'
-							placeholder='Tweet your reply'
-							value={commentContent}
-							onChange={(e) => setCommentContent(e.target.value)}
-						/>
-					</section>
-					<button type='submit' className={styles.replyBtn}>
-						Reply
-					</button>
-				</form>
+		<div className={styles.comment}>
+			<img src={profilePic} alt='profile-pic' className={styles.profilePic} />
+			<div className={styles.mainWrapper}>
+				<span className={styles.commentInfo}>
+					<span className={styles.name}>{commenterName}</span>
+					<span className={styles.address}>{commenter}</span>
+					<span className={styles.time}>{timestamp}</span>
+				</span>
+				<p className={styles.commentContent}>{comment}</p>
+				<span className={styles.actionsWrapper}>
+					<span className={styles.actions} style={{ color: commented ? '#1da1f2' : '#757575' }}>
+						<FontAwesomeIcon icon={faComment} size='lg' onClick={handleShowCommentDialog} id={styles.comment} />
+						<span>0</span>
+					</span>
+					<span className={styles.actions}>
+						<FontAwesomeIcon icon={faRetweet} size='lg' />
+						<span>0</span>
+					</span>
+					<span className={styles.actions}>
+						<FontAwesomeIcon icon={faHeart} size='lg' id={styles.like} />
+						<span style={{ color: liked ? 'red' : '#757575' }}>0</span>
+					</span>
+					<span className={styles.actions} style={{ color: tipped ? 'rgb(0, 148, 0)' : '#757575' }}>
+						<FontAwesomeIcon icon={faHandHoldingUsd} size='lg' onClick={handleShowTipper} id={styles.tip} />
+						<span>0</span>
+					</span>
+				</span>
 			</div>
-		</>
+		</div>
 	);
 };
 
-function mapStateToProps(state) {
-	return {
-		twitter: twitterSelector(state),
-		account: accountSelector(state),
-		users: allProfilesSelector(state),
-	};
-}
-
-export default connect(mapStateToProps)(Comment);
+export default Comment;
