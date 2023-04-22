@@ -1,6 +1,9 @@
 import styles from '@components/styles/CommentPage.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { connect, useDispatch } from 'react-redux';
 import Tweet from '@components/components/Tweet';
 import Comment from '@components/components/Comment';
@@ -34,8 +37,18 @@ const TweetPage = ({ twitter, users, usersLoaded, account, tweets, tweetsLoaded 
 		setReply('');
 	};
 
+	const backToFeed = () => {
+		router.push(`/`);
+	};
+
 	return (
 		<div className={styles.wrapper}>
+			<div className={styles.back}>
+				<button className={styles.backBtn} onClick={backToFeed}>
+					<FontAwesomeIcon icon={faArrowLeft} size='sm' />
+					Back
+				</button>
+			</div>
 			<Tweet
 				key={tweet.id}
 				id={tweet.id}
