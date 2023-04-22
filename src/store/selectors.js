@@ -39,9 +39,17 @@ const allTweets = (state) => get(state, 'tweets.allTweets.data', []);
 export const allTweetsSelector = createSelector(allTweets, (tweets) => {
 	return tweets.map((tweet) => {
 		const formattedTimestamp = moment.unix(tweet.timestamp).format('HH:mm');
+		const formattedComments = tweet.comments.map((comment) => {
+			const formattedCommentTimestamp = moment.unix(comment.timestamp).format('HH:mm');
+			return {
+				...comment,
+				timestamp: formattedCommentTimestamp,
+			};
+		});
 		return {
 			...tweet,
 			timestamp: formattedTimestamp,
+			comments: formattedComments,
 		};
 	});
 });

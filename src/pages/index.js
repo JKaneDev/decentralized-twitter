@@ -73,9 +73,6 @@ const Home = ({ account, users }) => {
 };
 
 function mapStateToProps(state) {
-	console.log({
-		tweets: allTweetsSelector(state),
-	});
 	return {
 		account: accountSelector(state),
 		users: allProfilesSelector(state),

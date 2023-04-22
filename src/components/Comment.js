@@ -14,8 +14,8 @@ const Comment = ({ comment, commenter, commenterName, profilePic, timestamp }) =
 				</span>
 				<p className={styles.commentContent}>{comment}</p>
 				<span className={styles.actionsWrapper}>
-					<span className={styles.actions} style={{ color: commented ? '#1da1f2' : '#757575' }}>
-						<FontAwesomeIcon icon={faComment} size='lg' onClick={handleShowCommentDialog} id={styles.comment} />
+					<span className={styles.actions}>
+						<FontAwesomeIcon icon={faComment} size='lg' id={styles.comment} />
 						<span>0</span>
 					</span>
 					<span className={styles.actions}>
@@ -24,10 +24,10 @@ const Comment = ({ comment, commenter, commenterName, profilePic, timestamp }) =
 					</span>
 					<span className={styles.actions}>
 						<FontAwesomeIcon icon={faHeart} size='lg' id={styles.like} />
-						<span style={{ color: liked ? 'red' : '#757575' }}>0</span>
+						<span>0</span>
 					</span>
-					<span className={styles.actions} style={{ color: tipped ? 'rgb(0, 148, 0)' : '#757575' }}>
-						<FontAwesomeIcon icon={faHandHoldingUsd} size='lg' onClick={handleShowTipper} id={styles.tip} />
+					<span className={styles.actions}>
+						<FontAwesomeIcon icon={faHandHoldingUsd} size='lg' id={styles.tip} />
 						<span>0</span>
 					</span>
 				</span>

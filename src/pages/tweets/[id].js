@@ -1,19 +1,41 @@
 import styles from '@components/styles/CommentPage.module.css';
-import { allTweetsSelector } from '@components/store/selectors';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import Tweet from '@components/components/Tweet';
 import Comment from '@components/components/Comment';
+import { createComment, loadAllTweets, loadProfiles } from '@components/store/interactions';
+import {
+	accountSelector,
+	allProfilesLoadedSelector,
+	allProfilesSelector,
+	allTweetsLoadedSelector,
+	allTweetsSelector,
+	twitterSelector,
+} from '@components/store/selectors';
+import { useEffect } from 'react';
 
-const TweetPage = ({ tweets }) => {
+const TweetPage = ({ twitter, users, usersLoaded, account, tweets, tweetsLoaded }) => {
+	const dispatch = useDispatch();
 	const router = useRouter();
 	const { id } = router.query;
 
+	const [reply, setReply] = useState('');
+
 	// Find the tweet in the tweets array
-	const tweet = tweets.find((tweet) => tweet.id === id);
+	const tweet = tweets.find((tweet) => String(tweet.id) === id);
+
+	const user = users.find((user) => user.userAddress === account);
+	const userProfilePic = user.profilePictureURL;
+
+	const confirmReply = (e) => {
+		e.preventDefault();
+		createComment(twitter, account, dispatch, tweet.id, reply);
+		setReply('');
+	};
 
 	return (
-		<div className={stye}>
+		<div className={styles.wrapper}>
 			<Tweet
 				key={tweet.id}
 				id={tweet.id}
@@ -26,8 +48,16 @@ const TweetPage = ({ tweets }) => {
 				profilePic={tweet.imageUrl}
 				time={tweet.timestamp}
 			/>
-			{tweet.comments.map((comment) => (
+			<form onSubmit={confirmReply} className={styles.commentBox}>
+				<img src={userProfilePic} alt='user-profile-pic' className={styles.profilePic} />
+				<textarea type='text' value={reply} onChange={(e) => setReply(e.target.value)} className={styles.reply} />
+				<button type='submit' placeholder='Tweet your reply' value={reply} className={styles.replyBtn}>
+					Reply
+				</button>
+			</form>
+			{tweet.comments.map((comment, index) => (
 				<Comment
+					key={index}
 					comment={comment.comment}
 					commenter={comment.commenter}
 					commenterName={comment.commenterName}
@@ -40,11 +70,18 @@ const TweetPage = ({ tweets }) => {
 };
 
 function mapStateToProps(state) {
-	console.log({
-		tweets: allTweetsSelector(state),
-	});
+	// console.log({
+	// 	users: allProfilesSelector(state),
+	// 	account: accountSelector(state),
+	// 	tweets: allTweetsSelector(state),
+	// });
 	return {
+		twitter: twitterSelector(state),
+		users: allProfilesSelector(state),
+		usersLoaded: allProfilesLoadedSelector(state),
+		account: accountSelector(state),
 		tweets: allTweetsSelector(state),
+		tweetsLoaded: allTweetsLoadedSelector(state),
 	};
 }
 
