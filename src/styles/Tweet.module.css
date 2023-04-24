@@ -14,6 +14,14 @@
 	overflow: hidden;
 }
 
+.loading {
+	padding: 2rem 2rem 0.75rem 1rem;
+	border: 1px solid #252525;
+	max-width: 710px;
+	position: relative;
+	overflow: hidden;
+}
+
 .tweet:hover {
 	cursor: pointer;
 }

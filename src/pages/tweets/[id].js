@@ -63,8 +63,14 @@ const TweetPage = ({ twitter, users, usersLoaded, account, tweets, tweetsLoaded 
 			/>
 			<form onSubmit={confirmReply} className={styles.commentBox}>
 				<img src={userProfilePic} alt='user-profile-pic' className={styles.profilePic} />
-				<textarea type='text' value={reply} onChange={(e) => setReply(e.target.value)} className={styles.reply} />
-				<button type='submit' placeholder='Tweet your reply' value={reply} className={styles.replyBtn}>
+				<textarea
+					type='text'
+					placeholder='Tweet your reply'
+					value={reply}
+					onChange={(e) => setReply(e.target.value)}
+					className={styles.reply}
+				/>
+				<button type='submit' value={reply} className={styles.replyBtn}>
 					Reply
 				</button>
 			</form>

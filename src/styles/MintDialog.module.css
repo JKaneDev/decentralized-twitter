@@ -1,0 +1,49 @@
+.dialog {
+	position: absolute;
+	right: 0px;
+	bottom: -12px;
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	justify-content: center;
+	align-items: center;
+	padding: 2rem;
+	background-color: black;
+	border: 1px solid #252525;
+	width: 100%;
+	cursor: auto;
+}
+
+.text {
+	color: white;
+}
+
+.btn {
+	padding: 0.5rem 1rem;
+	border-radius: 32px;
+	border: none;
+	font-weight: bold;
+	background-color: #1da1f2;
+	transition: all 0.35s ease-in-out;
+}
+
+.btn:hover {
+	cursor: pointer;
+	transform: scale(1.05);
+}
+
+.exit {
+	position: relative;
+	right: 260px;
+	top: 12px;
+	transition: all 0.35s ease-in-out;
+	padding: 0.5rem 0.6rem;
+	border-radius: 24px;
+}
+
+.exit:hover {
+	cursor: pointer;
+	transform: scale(1.1);
+	background-color: #252525;
+	color: white;
+}

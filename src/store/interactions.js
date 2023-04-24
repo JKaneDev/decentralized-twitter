@@ -17,12 +17,13 @@ import {
 	fetchedTweetTokenBalance,
 	commentCreated,
 	commentsLoaded,
+	nftMinted,
 } from './actions';
+import { nftSelector } from './selectors';
 import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
-import { isTypedArray } from 'lodash';
 
 export const loadWeb3 = async (dispatch) => {
 	if (typeof window.ethereum !== 'undefined') {
@@ -252,5 +253,22 @@ export const getTweetTokenBalance = async (tweetToken, account, dispatch) => {
 		window.alert(`Your balance is: ${balance}`);
 	} catch (error) {
 		console.error('Error fetching balance: ', error);
+	}
+};
+
+export const mintNFT = async (nftContract, account, ipfsURI, dispatch) => {
+	try {
+		const mint = await nftContract.methods.mintTweetNFT(account, ipfsURI).send({ from: account });
+		const event = mint.events.NFTMinted.returnValues;
+		if (event) {
+			const mintData = {
+				id: event.nftId,
+				owner: event.owner,
+				uri: event.fullUri,
+			};
+			dispatch(nftMinted(mintData));
+		}
+	} catch (error) {
+		console.error('Error minting NFT: ', error);
 	}
 };

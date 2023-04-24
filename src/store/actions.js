@@ -121,3 +121,10 @@ export function commentCreated(commentData) {
 		commentData,
 	};
 }
+
+export function nftMinted(mintData) {
+	return {
+		type: 'NFT_MINTED',
+		mintData,
+	};
+}

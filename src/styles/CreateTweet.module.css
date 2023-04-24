@@ -43,6 +43,10 @@
 	background-color: #1da1f2;
 }
 
+.tweetBtn:hover {
+	cursor: pointer;
+}
+
 .profilePic {
 	border-radius: 36px;
 	height: 72px;

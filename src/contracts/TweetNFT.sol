@@ -23,7 +23,7 @@ contract TweetNFT is ERC721, ERC721URIStorage {
 
     constructor() ERC721("TweetNFT", "TWNFT") {}
     
-    event NFTMinted(uint256 nftId, address owner, string baseURI);
+    event NFTMinted(uint256 nftId, address owner, string fullUri);
     event AuctionCreated(address originalOwner, address seller, uint256 nftId, uint256 startingPrice, uint256 auctionDuration, address twitterContract);
 
     function isTweetMinted(uint256 nftId) public view returns (bool) {
@@ -37,7 +37,6 @@ contract TweetNFT is ERC721, ERC721URIStorage {
     function getTwitterContractAddress() public view returns (address) {
         return twitterContractAddress;
     }
-
 
     function setBaseURI(string memory _baseURI) external {
         baseURI = _baseURI;
@@ -69,7 +68,7 @@ contract TweetNFT is ERC721, ERC721URIStorage {
     }
 
 
-    function mintTweetNFT(address payable owner) public returns (uint256) {
+    function mintTweetNFT(address payable owner, string memory ipfsURI) public returns (uint256) {
         uint256 nftId = _nftIDs.current();
 
         // Only 1 mint per tweet
@@ -78,41 +77,15 @@ contract TweetNFT is ERC721, ERC721URIStorage {
         _mint(owner, nftId);
 
         // Create the full tokenURI
-        string memory fullURI = string(abi.encodePacked(baseURI, uintToString(nftId)));
-        _setTokenURI(nftId, fullURI);
+        _setTokenURI(nftId, ipfsURI);
 
         _tweetMinted[nftId] = true;
         _originalOwners[nftId] = owner;
 
         _nftIDs.increment();
 
-        emit NFTMinted(nftId, owner, fullURI);
+        emit NFTMinted(nftId, owner, ipfsURI);
 
         return nftId;
-    }
-
-    // Helper functions
-    function uintToString(uint256 value) internal pure returns (string memory) {
-        if (value == 0) {
-            return "0";
-        }
-
-        uint256 temp = value;
-        uint256 digits;
-
-        while (temp != 0) {
-            digits++;
-            temp /= 10;
-        }
-
-        bytes memory buffer = new bytes(digits);
-
-        while (value != 0) {
-            digits -= 1;
-            buffer[digits] = bytes1(uint8(48 + value % 10));
-            value /= 10;
-        }
-        
-        return string(buffer);
     }
 }
