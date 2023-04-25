@@ -5,9 +5,14 @@ import { connect, useDispatch } from 'react-redux';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toPng } from 'html-to-image';
+import { useEffect } from 'react';
 
-const MintDialog = ({ nftContract, account, closeMint, setLoading, tweetRef, name, content }) => {
+const MintDialog = ({ nftContract, account, closeMint, loading, setLoading, tweetRef, name, content }) => {
 	const dispatch = useDispatch();
+
+	useEffect(() => {
+		console.log('Loading', loading);
+	}, [loading]);
 
 	const handleMint = async (e) => {
 		e.preventDefault();
@@ -55,10 +60,11 @@ const MintDialog = ({ nftContract, account, closeMint, setLoading, tweetRef, nam
 
 			// Pass IPFS URI to mint function
 			await mintNFT(nftContract, account, metadataURI, dispatch);
+			setLoading(false);
 		} catch (error) {
 			console.error('Error in minting process: ', error);
 		} finally {
-			setLoading(false);
+			closeMint();
 		}
 	};
 

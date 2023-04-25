@@ -7,10 +7,10 @@ import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { likeTweet, loadLikeData, loadCommentData, loadTipData } from '@components/store/interactions';
 import { allTweetsSelector, twitterSelector, accountSelector, allProfilesSelector } from '@components/store/selectors';
+import { ClipLoader } from 'react-spinners';
 import Tipper from './Tipper';
 import CreateComment from './CreateComment';
 import MintDialog from './MintDialog';
-import Spinner from './Spinner';
 
 const Tweet = ({
 	id,
@@ -114,7 +114,7 @@ const Tweet = ({
 		<>
 			{loading ? (
 				<div className={styles.loading}>
-					<Spinner />
+					<ClipLoader color='#00BFFF' size={50} />
 				</div>
 			) : (
 				<div className={styles.tweet} ref={tweetRef}>
@@ -194,6 +194,7 @@ const Tweet = ({
 										<MintDialog
 											closeMint={handleCloseMint}
 											tweetRef={tweetRef}
+											loading={loading}
 											setLoading={setLoading}
 											name={name}
 											content={content}
@@ -210,7 +211,7 @@ const Tweet = ({
 					<div
 						className={styles.navigateOverlay}
 						onClick={handleNavigation}
-						style={{ backgroundColor: showMintDialog ? 'rgb(0,0,0, 0.8' : '' }}
+						style={{ backgroundColor: showMintDialog ? 'rgba(0,0,0, 0.8)' : '' }}
 					></div>
 				</div>
 			)}
