@@ -25,7 +25,7 @@ function tweetToken(state = {}, action) {
 	}
 }
 
-function nft(state = { nfts: { loaded: false, data: [] } }, action) {
+function nft(state = { nfts: { loaded: false, data: { minted: [] } } }, action) {
 	switch (action.type) {
 		case 'TWEET_NFT_LOADED':
 			return { ...state, loaded: true, nftContract: action.contract };
@@ -35,7 +35,10 @@ function nft(state = { nfts: { loaded: false, data: [] } }, action) {
 				...state,
 				nfts: {
 					...state.nfts,
-					data: [...state.nfts.data, action.mintData],
+					data: {
+						...state.nfts.data,
+						minted: [...state.nfts.data.minted, action.mintData],
+					},
 				},
 			};
 		default:

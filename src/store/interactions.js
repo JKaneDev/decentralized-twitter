@@ -265,6 +265,7 @@ export const mintNFT = async (nftContract, account, ipfsURI, dispatch) => {
 				id: event.nftId,
 				owner: event.owner,
 				uri: event.fullUri,
+				timestamp: event.timestamp,
 			};
 			dispatch(nftMinted(mintData));
 		}
