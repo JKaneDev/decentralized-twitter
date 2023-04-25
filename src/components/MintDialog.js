@@ -4,25 +4,10 @@ import styles from '@components/styles/MintDialog.module.css';
 import { connect, useDispatch } from 'react-redux';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { create } from 'ipfs-http-client';
 import { toPng } from 'html-to-image';
 
 const MintDialog = ({ nftContract, account, closeMint, setLoading, tweetRef, name, content }) => {
 	const dispatch = useDispatch();
-
-	// IPFS credentials
-	const projectId = process.env.NEXT_PUBLIC_API_KEY;
-	const projectSecret = process.env.NEXT_PUBLIC_SECRET_API_KEY;
-	const auth = 'Basic ' + Buffer.from(projectId + ':' + projectSecret).toString('base64');
-
-	// Create the IPFS instance
-	const ipfs = create({
-		url: `https://ipfs.infura.io:5001/api/v0`,
-		protocol: 'https',
-		headers: {
-			Authorization: auth,
-		},
-	});
 
 	const handleMint = async (e) => {
 		e.preventDefault();
@@ -32,34 +17,36 @@ const MintDialog = ({ nftContract, account, closeMint, setLoading, tweetRef, nam
 			// Take snapshot of tweet component
 			const dataUrl = await toPng(tweetRef.current);
 
-			// Upload snapshot image to IPFS
-			const imageResponse = await ipfs.add(dataUrl);
-
-			// Return generated IPFS URI
-			const ipfsURI = `https://ipfs.io/ipfs/${imageResponse.path}`;
-
 			// Create nft metadata
 			const metadata = {
 				creator: `${name}`,
 				content: `${content}`,
-				image: ipfsURI,
+				image: '',
 			};
 
-			// Upload the metadata JSON to IPFS:
-			const metadataBlob = new Blob([JSON.stringify(metadata)], { type: 'application/json' });
-			const metadataResponse = await ipfs.add(metadataBlob);
-			const metadataURI = `https://ipfs.io/ipfs/${metadataResponse.path}`;
+			// Call ipfs api route
+			const ipfsResponse = await fetch('/api/ipfs', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ dataUrl, metadata }),
+			});
 
-			// Pin the uploaded image using pinata
+			const { imageURI, metadataURI } = await ipfsResponse.json();
+
+			// update metadata with image
+			metadata.image = imageURI;
+
+			// Pin the uploaded image using pinata by hash
 			const pinataResponse = await fetch('/api/pinata', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ hash: metadataResponse.path }),
+				body: JSON.stringify({ hash: metadataURI.split('/').pop() }),
 			});
 
-			console.log('Response: ', pinataResponse);
 			if (pinataResponse.ok) {
 				console.log('Pinata pin response:', await pinataResponse.json());
 			} else {
@@ -67,7 +54,7 @@ const MintDialog = ({ nftContract, account, closeMint, setLoading, tweetRef, nam
 			}
 
 			// Pass IPFS URI to mint function
-			await mintNFT(nftContract, account, ipfsURI, dispatch);
+			await mintNFT(nftContract, account, metadataURI, dispatch);
 		} catch (error) {
 			console.error('Error in minting process: ', error);
 		} finally {

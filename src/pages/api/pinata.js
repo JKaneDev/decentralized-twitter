@@ -1,8 +1,8 @@
 import pinataSDK from '@pinata/sdk';
 
 // Pinata credentials
-const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY;
-const pinataApiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET;
+const pinataApiKey = process.env.PINATA_API_KEY;
+const pinataApiSecret = process.env.PINATA_API_SECRET;
 const pinata = new pinataSDK(pinataApiKey, pinataApiSecret);
 
 export default async function handler(req, res) {
