@@ -192,9 +192,9 @@ const Tweet = ({
 								<span className={styles.actions}>
 									{showMintDialog && isTweetUsers ? (
 										<MintDialog
+											tweetId={id}
 											closeMint={handleCloseMint}
 											tweetRef={tweetRef}
-											loading={loading}
 											setLoading={setLoading}
 											name={name}
 											content={content}

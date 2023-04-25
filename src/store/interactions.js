@@ -256,14 +256,15 @@ export const getTweetTokenBalance = async (tweetToken, account, dispatch) => {
 	}
 };
 
-export const mintNFT = async (nftContract, account, ipfsURI, dispatch) => {
+export const mintNFT = async (nftContract, account, tweetId, ipfsURI, dispatch) => {
 	try {
-		const mint = await nftContract.methods.mintTweetNFT(account, ipfsURI).send({ from: account });
+		const mint = await nftContract.methods.mintTweetNFT(account, tweetId, ipfsURI).send({ from: account });
 		const event = mint.events.NFTMinted.returnValues;
 		if (event) {
 			const mintData = {
 				id: event.nftId,
 				owner: event.owner,
+				tweetId: event.tweetId,
 				uri: event.fullUri,
 				timestamp: event.timestamp,
 			};

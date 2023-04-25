@@ -23,7 +23,7 @@ contract TweetNFT is ERC721, ERC721URIStorage {
 
     constructor() ERC721("TweetNFT", "TWNFT") {}
     
-    event NFTMinted(uint256 nftId, address owner, string fullUri, uint256 timestamp);
+    event NFTMinted(uint256 nftId, address owner, uint256 tweetId, string fullUri, uint256 timestamp);
     event AuctionCreated(address originalOwner, address seller, uint256 nftId, uint256 startingPrice, uint256 auctionDuration, address twitterContract);
 
     function isTweetMinted(uint256 nftId) public view returns (bool) {
@@ -68,23 +68,23 @@ contract TweetNFT is ERC721, ERC721URIStorage {
     }
 
 
-    function mintTweetNFT(address payable owner, string memory ipfsURI) public returns (uint256) {
+    function mintTweetNFT(address payable owner, uint256 tweetId, string memory ipfsURI) public returns (uint256) {
         uint256 nftId = _nftIDs.current();
 
         // Only 1 mint per tweet
-        require(!_tweetMinted[nftId], "Tweet has already been minted");
+        require(!_tweetMinted[tweetId], "Tweet has already been minted");
     
         _mint(owner, nftId);
 
         // Create the full tokenURI
         _setTokenURI(nftId, ipfsURI);
 
-        _tweetMinted[nftId] = true;
+        _tweetMinted[tweetId] = true;
         _originalOwners[nftId] = owner;
 
         _nftIDs.increment();
 
-        emit NFTMinted(nftId, owner, ipfsURI, block.timestamp);
+        emit NFTMinted(nftId, owner, tweetId, ipfsURI, block.timestamp);
 
         return nftId;
     }
