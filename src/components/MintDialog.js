@@ -1,11 +1,9 @@
-import { accountSelector, nftSelector, twitterSelector } from '@components/store/selectors';
+import { accountSelector, nftSelector } from '@components/store/selectors';
 import { mintNFT } from '@components/store/interactions';
 import styles from '@components/styles/MintDialog.module.css';
 import { connect, useDispatch } from 'react-redux';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import LZString from 'lz-string';
-import { useEffect } from 'react';
 
 const MintDialog = ({ nftContract, account, closeMint, setLoading, name, content, tweetId, tweetImage }) => {
 	const dispatch = useDispatch();

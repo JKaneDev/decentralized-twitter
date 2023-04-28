@@ -10,7 +10,6 @@ import {
 	allTweetsSelector,
 	twitterSelector,
 	accountSelector,
-	allProfilesSelector,
 	allTweetsLoadedSelector,
 } from '@components/store/selectors';
 import { ClipLoader } from 'react-spinners';
@@ -121,7 +120,6 @@ const Tweet = ({
 
 	useEffect(() => {
 		const currentTweet = tweets.find((tweet) => tweet.id === id);
-		console.log('Current Tweet: ', currentTweet);
 		if (currentTweet && currentTweet.creator === account) {
 			setIsTweetUsers(true);
 		}

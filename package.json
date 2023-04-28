@@ -36,6 +36,7 @@
 		"next": "13.2.4",
 		"react": "18.2.0",
 		"react-bootstrap": "^2.7.2",
+		"react-countdown": "^2.3.5",
 		"react-cryptocoins": "^1.0.11",
 		"react-dom": "18.2.0",
 		"react-loader-spinner": "^5.3.4",

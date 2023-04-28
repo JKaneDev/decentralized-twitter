@@ -41,7 +41,6 @@ function nft(state = { nfts: { loaded: false, data: { minted: [] } } }, action) 
 				},
 			};
 		case 'NFT_MINTED':
-			console.log('Action - Reducer Data: ', action.mintData);
 			return {
 				...state,
 				nfts: {
@@ -50,6 +49,28 @@ function nft(state = { nfts: { loaded: false, data: { minted: [] } } }, action) 
 						...state.nfts.data,
 						minted: [...state.nfts.data.minted, action.mintData],
 					},
+				},
+			};
+
+		default:
+			return state;
+	}
+}
+
+function auction(state = { allAuctions: { loaded: false, data: [] } }, action) {
+	switch (action.type) {
+		case 'AUCTIONS_LOADED':
+			return {
+				...state,
+				allAuctions: { loaded: true, data: action.allAuctionData },
+			};
+		case 'AUCTION_CREATED':
+			console.log('Auction Action - Reducer: ', action.auctionData);
+			return {
+				...state,
+				allAuctions: {
+					...state.allAuctions,
+					data: [...state.allAuctions.data, action.auctionData],
 				},
 			};
 		default:
@@ -237,6 +258,7 @@ const rootReducer = combineReducers({
 	web3,
 	tweetToken,
 	nft,
+	auction,
 	twitter,
 	users,
 	tweets,

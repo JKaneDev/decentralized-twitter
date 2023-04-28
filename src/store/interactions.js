@@ -19,13 +19,13 @@ import {
 	commentsLoaded,
 	nftMinted,
 	mintedNFTsLoaded,
+	auctionCreated,
+	auctionDataLoaded,
 } from './actions';
-import { nftSelector } from './selectors';
 import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
-import moment from 'moment';
 
 export const loadWeb3 = async (dispatch) => {
 	if (typeof window.ethereum !== 'undefined') {
@@ -297,5 +297,45 @@ export const mintNFT = async (nftContract, account, tweetId, metadataURI, imageU
 		}
 	} catch (error) {
 		console.error('Error minting NFT: ', error);
+	}
+};
+
+export const loadAllAuctions = async (nftContract, dispatch) => {
+	const auctionStream = await nftContract.getPastEvents('AuctionCreated', { fromBlock: 0, toBlock: 'latest' });
+	const allAuctionData = [];
+	auctionStream.forEach((auction) => {
+		const auctionData = {
+			originalOwner: auction.returnValues.originalOwner,
+			seller: auction.returnValues.seller,
+			nftId: auction.returnValues.nftId,
+			startingPrice: auction.returnValues.startingPrice,
+			duration: auction.returnValues.auctionDuration,
+			auctionAddress: auction.returnValues.auctionAddress,
+		};
+		allAuctionData.push(auctionData);
+	});
+	dispatch(auctionDataLoaded(allAuctionData));
+};
+
+export const startAuction = async (nftContract, account, dispatch, nftId, startingPrice, auctionDuration) => {
+	try {
+		const auction = await nftContract.methods
+			.createAuction(nftId, startingPrice, auctionDuration)
+			.send({ from: account });
+		const event = auction.events.AuctionCreated.returnValues;
+		console.log('Auction Creation Event: ', event);
+		if (event) {
+			const auctionData = {
+				originalOwner: event.originalOwner,
+				seller: event.seller,
+				nftId: event.nftId,
+				startingPrice: event.startingPrice,
+				duration: event.auctionDuration,
+				auctionAddress: event.auctionAddress,
+			};
+			dispatch(auctionCreated(auctionData));
+		}
+	} catch (error) {
+		console.error('Error starting auction: ', error);
 	}
 };

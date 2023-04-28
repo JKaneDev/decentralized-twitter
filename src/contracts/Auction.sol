@@ -66,7 +66,6 @@ contract Auction is ReentrancyGuard {
         return ended;
     }
 
-
     function bid() public payable nonReentrant {
         require(msg.sender != seller, "Tweet owner cannot bid on their own auction");
         require(msg.value >= startingPrice, "Bid should be equal or greater than starting price");

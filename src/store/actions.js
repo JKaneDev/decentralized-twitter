@@ -134,3 +134,17 @@ export function nftMinted(mintData) {
 		mintData,
 	};
 }
+
+export function auctionDataLoaded(allAuctionData) {
+	return {
+		type: 'AUCTIONS_LOADED',
+		allAuctionData,
+	};
+}
+
+export function auctionCreated(auctionData) {
+	return {
+		type: 'AUCTION_CREATED',
+		auctionData,
+	};
+}

@@ -24,7 +24,7 @@ contract TweetNFT is ERC721, ERC721URIStorage {
     constructor() ERC721("TweetNFT", "TWNFT") {}
     
     event NFTMinted(uint256 nftId, address owner, uint256 tweetId, string fullUri, string imageURI, string htmlURI, uint256 timestamp);
-    event AuctionCreated(address originalOwner, address seller, uint256 nftId, uint256 startingPrice, uint256 auctionDuration, address twitterContract);
+    event AuctionCreated(address originalOwner, address seller, uint256 nftId, uint256 startingPrice, uint256 auctionDuration, address twitterContract, address auctionAddress);
 
     function isTweetMinted(uint256 nftId) public view returns (bool) {
         return _tweetMinted[nftId];
@@ -64,7 +64,7 @@ contract TweetNFT is ERC721, ERC721URIStorage {
         Auction newAuction = new Auction(originalOwner, payable(msg.sender), _nftId, _startingPrice, _auctionDuration, address(this), twitterContractAddress);
         _approve(address(newAuction), _nftId);
 
-        emit AuctionCreated(originalOwner, msg.sender, _nftId, _startingPrice, _auctionDuration, twitterContractAddress);
+        emit AuctionCreated(originalOwner, msg.sender, _nftId, _startingPrice, _auctionDuration, twitterContractAddress, address(newAuction));
     }
 
 
