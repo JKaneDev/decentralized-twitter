@@ -4,10 +4,10 @@ import styles from '@components/styles/MintDialog.module.css';
 import { connect, useDispatch } from 'react-redux';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { toPng } from 'html-to-image';
+import LZString from 'lz-string';
 import { useEffect } from 'react';
 
-const MintDialog = ({ nftContract, account, closeMint, setLoading, tweetRef, name, content, tweetId }) => {
+const MintDialog = ({ nftContract, account, closeMint, setLoading, name, content, tweetId, tweetImage }) => {
 	const dispatch = useDispatch();
 
 	const handleMint = async (e) => {
@@ -15,15 +15,13 @@ const MintDialog = ({ nftContract, account, closeMint, setLoading, tweetRef, nam
 		setLoading(true);
 
 		try {
-			// Take snapshot of tweet component
-			const dataUrl = await toPng(tweetRef.current);
-
 			// Create nft metadata
 			const metadata = {
 				creator: `${name}`,
 				content: `${content}`,
 				tweetId: `${tweetId}`,
 				image: '',
+				imageBase64: `${tweetImage}`,
 			};
 
 			// Call ipfs api route
@@ -32,13 +30,14 @@ const MintDialog = ({ nftContract, account, closeMint, setLoading, tweetRef, nam
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ dataUrl, metadata }),
+				body: JSON.stringify({ tweetImage, metadata }),
 			});
 
-			const { imageURI, metadataURI } = await ipfsResponse.json();
+			const { imageURI, metadataURI, htmlURI } = await ipfsResponse.json();
 
 			// update metadata with image
 			metadata.image = imageURI;
+			metadata.htmlURI = htmlURI;
 
 			// Pin the uploaded image using pinata by hash
 			const pinataResponse = await fetch('/api/pinata', {
@@ -56,7 +55,7 @@ const MintDialog = ({ nftContract, account, closeMint, setLoading, tweetRef, nam
 			}
 
 			// Pass IPFS URI to mint function
-			await mintNFT(nftContract, account, tweetId, metadataURI, dispatch);
+			await mintNFT(nftContract, account, tweetId, metadataURI, imageURI, htmlURI, dispatch);
 			setLoading(false);
 		} catch (error) {
 			console.error('Error in minting process: ', error);

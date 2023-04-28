@@ -15,22 +15,65 @@ const ipfs = create({
 });
 
 export default async function handleIpfsRequest(req, res) {
-	if (req.method === 'POST') {
-		const { dataUrl, metadata } = req.body;
+	try {
+		if (req.method === 'POST') {
+			const { tweetImage, metadata } = req.body;
 
-		// Upload the snapshot to ipfs
-		const imageResponse = await ipfs.add(dataUrl);
+			const htmlContent = `
+  				<!DOCTYPE html>
+  				<html lang="en">
+  				<head>
+  				  <meta charset="UTF-8">
+  				  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  				  <style>
+  				    body, img {
+  				      margin: 0;
+  				      padding: 0;
+  				      border: none;
+  				    }
+  				    body {
+  				      display: flex;
+  				      align-items: center;
+  				      justify-content: center;
+  				      height: 100vh;
+  				      width: 100vw;
+  				      overflow: hidden;
+  				    }
+  				    img {
+  				      width: 100%;
+  				      height: 100%;
+  				    }
+  				  </style>
+  				  <title>Image</title>
+  				</head>
+  				<body>
+  				  <img src="${metadata.imageBase64}" alt="Image" />
+  				</body>
+  				</html>
+			`;
 
-		// Return generated ipfs uri
-		const ipfsURI = `https://ipfs.io/ipfs/${imageResponse.path}`;
+			// Upload the snapshot to ipfs
+			const imageResponse = await ipfs.add(tweetImage);
 
-		// Upload the metadata JSON to IPFS:
-		const metadataBuffer = Buffer.from([JSON.stringify(metadata)], 'utf-8');
-		const metadataResponse = await ipfs.add(metadataBuffer);
-		const metadataURI = `https://ipfs.io/ipfs/${metadataResponse.path}`;
+			// Return generated ipfs uri
+			const ipfsURI = `https://ipfs.io/ipfs/${imageResponse.path}`;
 
-		res.status(200).json({ imageURI: ipfsURI, metadataURI });
-	} else {
-		res.status(405).json({ success: false, message: 'Method not allowed' });
+			// Upload the HTML content to IPFS
+			const htmlBuffer = Buffer.from(htmlContent, 'utf-8');
+			const htmlResponse = await ipfs.add(htmlBuffer);
+			const htmlURI = `https://ipfs.io/ipfs/${htmlResponse.path}`;
+
+			// Upload the metadata JSON to IPFS:
+			const metadataBuffer = Buffer.from([JSON.stringify(metadata)], 'utf-8');
+			const metadataResponse = await ipfs.add(metadataBuffer);
+			const metadataURI = `https://ipfs.io/ipfs/${metadataResponse.path}`;
+
+			res.status(200).json({ imageURI: ipfsURI, metadataURI, htmlURI });
+		} else {
+			res.status(405).json({ success: false, message: 'Method not allowed' });
+		}
+	} catch (error) {
+		console.error('Error processing IPFS request:', error);
+		res.status(500).json({ success: false, message: 'Internal Server Error' });
 	}
 }

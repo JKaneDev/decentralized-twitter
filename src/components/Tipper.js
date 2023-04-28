@@ -42,8 +42,8 @@ function mapStateToProps(state) {
 
 const StyledTipper = styled.form`
 	position: absolute;
-	right: -15px;
-	bottom: -5px;
+	right: 60px;
+	bottom: 0px;
 	background-color: black;
 	border: 1px solid #363636;
 	width: 120px;
@@ -76,6 +76,7 @@ const StyledTipper = styled.form`
 		padding: 0.25rem 0.5rem;
 		width: 50px;
 		transition: 0.35s all ease-in-out;
+		z-index: 1000;
 	}
 
 	button:hover {

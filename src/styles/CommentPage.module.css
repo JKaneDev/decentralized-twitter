@@ -14,8 +14,9 @@
 .commentBox {
 	width: 75%;
 	padding: 1rem;
-	border-left: 1px solid #252525;
 	border-right: 1px solid #252525;
+	border-left: 1px solid #252525;
+	border-bottom: 1px solid #252525;
 	display: flex;
 	align-items: center;
 	gap: 2rem;

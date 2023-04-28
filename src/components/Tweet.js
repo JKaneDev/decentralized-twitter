@@ -6,8 +6,15 @@ import { faComment, faRetweet, faHeart, faHandHoldingUsd } from '@fortawesome/fr
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { likeTweet, loadLikeData, loadCommentData, loadTipData } from '@components/store/interactions';
-import { allTweetsSelector, twitterSelector, accountSelector, allProfilesSelector } from '@components/store/selectors';
+import {
+	allTweetsSelector,
+	twitterSelector,
+	accountSelector,
+	allProfilesSelector,
+	allTweetsLoadedSelector,
+} from '@components/store/selectors';
 import { ClipLoader } from 'react-spinners';
+import html2canvas from 'html2canvas';
 import Tipper from './Tipper';
 import CreateComment from './CreateComment';
 import MintDialog from './MintDialog';
@@ -24,6 +31,7 @@ const Tweet = ({
 	time,
 	twitter,
 	tweets,
+	tweetsLoaded,
 	account,
 	commentDialogOpen,
 }) => {
@@ -39,6 +47,7 @@ const Tweet = ({
 	const [showMintDialog, setShowMintDialog] = useState(false);
 	const [isTweetUsers, setIsTweetUsers] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const [tweetImage, setTweetImage] = useState('');
 
 	const loadBlockchainData = async (twitter, dispatch) => {
 		await loadTipData(twitter, dispatch);
@@ -62,7 +71,7 @@ const Tweet = ({
 		setShowTipper(false);
 	};
 
-	const handleShowMint = () => {
+	const handleShowMint = async () => {
 		setShowMintDialog(true);
 	};
 
@@ -91,6 +100,17 @@ const Tweet = ({
 		}
 	};
 
+	const setImage = async (tweet) => {
+		// Take snapshot of tweet component
+		const canvas = await html2canvas(tweet, {
+			backgroundColor: 'black',
+			scale: 1,
+			useCORS: true,
+		});
+		const imageUrl = canvas.toDataURL('image/jpeg');
+		setTweetImage(imageUrl);
+	};
+
 	const handleNavigation = () => {
 		Router.push(`/tweets/${id}`);
 	};
@@ -101,10 +121,17 @@ const Tweet = ({
 
 	useEffect(() => {
 		const currentTweet = tweets.find((tweet) => tweet.id === id);
-		if (currentTweet.creator === account) {
+		console.log('Current Tweet: ', currentTweet);
+		if (currentTweet && currentTweet.creator === account) {
 			setIsTweetUsers(true);
 		}
 	}, []);
+
+	useEffect(() => {
+		if (tweetRef.current) {
+			setImage(tweetRef.current);
+		}
+	}, [tweetRef.current]);
 
 	useEffect(() => {
 		checkUserInteractions(tweets);
@@ -129,7 +156,7 @@ const Tweet = ({
 						{commentDialogOpen ? (
 							<></>
 						) : (
-							<span className={styles.actionsWrapper}>
+							<span className={styles.actionsWrapper} style={{ zIndex: showCommentDialog ? '0' : '3' }}>
 								<span className={styles.actions} style={{ color: commented ? '#1da1f2' : '#757575' }}>
 									{showCommentDialog ? (
 										<CreateComment
@@ -193,6 +220,7 @@ const Tweet = ({
 									{showMintDialog && isTweetUsers ? (
 										<MintDialog
 											tweetId={id}
+											tweetImage={tweetImage}
 											closeMint={handleCloseMint}
 											tweetRef={tweetRef}
 											setLoading={setLoading}
@@ -223,6 +251,7 @@ function mapStateToProps(state) {
 	return {
 		twitter: twitterSelector(state),
 		account: accountSelector(state),
+		tweetsLoaded: allTweetsLoadedSelector(state),
 		tweets: allTweetsSelector(state),
 	};
 }

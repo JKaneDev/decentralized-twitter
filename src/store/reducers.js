@@ -29,6 +29,17 @@ function nft(state = { nfts: { loaded: false, data: { minted: [] } } }, action) 
 	switch (action.type) {
 		case 'TWEET_NFT_LOADED':
 			return { ...state, loaded: true, nftContract: action.contract };
+		case 'MINTED_NFTS_LOADED':
+			return {
+				...state,
+				nfts: {
+					...state.nfts,
+					data: {
+						...state.nfts.data,
+						minted: action.allMintData,
+					},
+				},
+			};
 		case 'NFT_MINTED':
 			console.log('Action - Reducer Data: ', action.mintData);
 			return {

@@ -3,11 +3,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { connect, useDispatch } from 'react-redux';
 import Tweet from '@components/components/Tweet';
 import Comment from '@components/components/Comment';
-import { createComment, loadAllTweets, loadProfiles } from '@components/store/interactions';
+import { createComment } from '@components/store/interactions';
 import {
 	accountSelector,
 	allProfilesLoadedSelector,
@@ -16,7 +15,6 @@ import {
 	allTweetsSelector,
 	twitterSelector,
 } from '@components/store/selectors';
-import { useEffect } from 'react';
 
 const TweetPage = ({ twitter, users, usersLoaded, account, tweets, tweetsLoaded }) => {
 	const dispatch = useDispatch();
@@ -89,11 +87,6 @@ const TweetPage = ({ twitter, users, usersLoaded, account, tweets, tweetsLoaded 
 };
 
 function mapStateToProps(state) {
-	// console.log({
-	// 	users: allProfilesSelector(state),
-	// 	account: accountSelector(state),
-	// 	tweets: allTweetsSelector(state),
-	// });
 	return {
 		twitter: twitterSelector(state),
 		users: allProfilesSelector(state),

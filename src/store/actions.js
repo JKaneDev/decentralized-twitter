@@ -122,6 +122,12 @@ export function commentCreated(commentData) {
 	};
 }
 
+export function mintedNFTsLoaded(allMintData) {
+	return {
+		type: 'MINTED_NFTS_LOADED',
+		allMintData,
+	};
+}
 export function nftMinted(mintData) {
 	return {
 		type: 'NFT_MINTED',

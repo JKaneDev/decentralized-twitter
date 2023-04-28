@@ -46,6 +46,7 @@ const CreateComment = ({
 				<FontAwesomeIcon icon={faTimes} className={styles.exit} onClick={onClose} />
 				<Tweet
 					name={name}
+					id={id}
 					profilePic={profilePic}
 					address={address}
 					content={content}
@@ -56,7 +57,7 @@ const CreateComment = ({
 					<img src={currentUserProfilePic} alt='user-profile' className={styles.profilePic} />
 					<section className={styles.section}>
 						<textarea
-							className={styles.tweetContent}
+							className={styles.replyContent}
 							name='comment-content'
 							placeholder='Tweet your reply'
 							value={commentContent}

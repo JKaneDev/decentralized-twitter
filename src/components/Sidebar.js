@@ -3,8 +3,13 @@ import styles from '@components/styles/Sidebar.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faSearch, faBell, faEnvelope, faHome, faBookmark, faCoins } from '@fortawesome/free-solid-svg-icons';
 import { faTwitter } from '@fortawesome/free-brands-svg-icons';
+import Router from 'next/router';
 
 const Sidebar = () => {
+	const handleNavigation = () => {
+		Router.push('/auction');
+	};
+
 	return (
 		<section className={styles.sidebar}>
 			<FontAwesomeIcon icon={faTwitter} size='2x' />
@@ -14,7 +19,7 @@ const Sidebar = () => {
 			<FontAwesomeIcon icon={faEnvelope} size='lg' />
 			<FontAwesomeIcon icon={faUser} size='lg' />
 			<FontAwesomeIcon icon={faBookmark} size='lg' />
-			<FontAwesomeIcon icon={faCoins} size='lg' />
+			<FontAwesomeIcon icon={faCoins} size='lg' onClick={handleNavigation} />
 		</section>
 	);
 };

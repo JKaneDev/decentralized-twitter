@@ -18,12 +18,14 @@ import {
 	commentCreated,
 	commentsLoaded,
 	nftMinted,
+	mintedNFTsLoaded,
 } from './actions';
 import { nftSelector } from './selectors';
 import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
+import moment from 'moment';
 
 export const loadWeb3 = async (dispatch) => {
 	if (typeof window.ethereum !== 'undefined') {
@@ -256,16 +258,39 @@ export const getTweetTokenBalance = async (tweetToken, account, dispatch) => {
 	}
 };
 
-export const mintNFT = async (nftContract, account, tweetId, ipfsURI, dispatch) => {
+export const loadMintedNFTs = async (nftContract, dispatch) => {
+	const mintStream = await nftContract.getPastEvents('NFTMinted', { fromBlock: 0, toBlock: 'latest' });
+	const allMintData = [];
+	mintStream.forEach((mint) => {
+		const mintData = {
+			id: mint.returnValues.nftId,
+			owner: mint.returnValues.owner,
+			tweetId: mint.returnValues.tweetId,
+			metadataURI: mint.returnValues.fullUri,
+			imageURI: mint.returnValues.imageURI,
+			htmlURI: mint.returnValues.htmlURI,
+			timestamp: mint.returnValues.timestamp,
+		};
+		allMintData.push(mintData);
+	});
+
+	dispatch(mintedNFTsLoaded(allMintData));
+};
+
+export const mintNFT = async (nftContract, account, tweetId, metadataURI, imageURI, htmlURI, dispatch) => {
 	try {
-		const mint = await nftContract.methods.mintTweetNFT(account, tweetId, ipfsURI).send({ from: account });
+		const mint = await nftContract.methods
+			.mintTweetNFT(account, tweetId, metadataURI, imageURI, htmlURI)
+			.send({ from: account });
 		const event = mint.events.NFTMinted.returnValues;
 		if (event) {
 			const mintData = {
 				id: event.nftId,
 				owner: event.owner,
 				tweetId: event.tweetId,
-				uri: event.fullUri,
+				metadataURI: event.fullUri,
+				imageURI: event.imageURI,
+				htmlURI: event.htmlURI,
 				timestamp: event.timestamp,
 			};
 			dispatch(nftMinted(mintData));

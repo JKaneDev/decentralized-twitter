@@ -1,4 +1,4 @@
-import { create, get } from 'lodash';
+import { get } from 'lodash';
 import { createSelector } from 'reselect';
 import moment from 'moment';
 
@@ -56,3 +56,6 @@ export const allTweetsSelector = createSelector(allTweets, (tweets) => {
 
 const allTweetsLoaded = (state) => get(state, 'tweets.allTweets.loaded', false);
 export const allTweetsLoadedSelector = createSelector(allTweetsLoaded, (loaded) => loaded);
+
+const mintedNFTs = (state) => get(state, 'nft.nfts.data.minted', []);
+export const mintedNFTsSelector = createSelector(mintedNFTs, (nfts) => nfts);
