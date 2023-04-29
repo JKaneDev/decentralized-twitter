@@ -89,19 +89,21 @@ const Auction = ({ nftContract, nfts, account, auctions, auctionsLoaded }) => {
 
 	const [cards, setCards] = useState([]);
 	const [loading, setLoading] = useState(false);
+	const [toggleAuctionActivation, setToggleAuctionActivation] = useState(false);
 
 	useEffect(() => {
 		loadBlockchainData(nftContract, dispatch);
-		if (nfts.length > 0 && auctionsLoaded) {
-			fetchAndRenderNfts();
-		}
 	}, []);
 
 	useEffect(() => {
 		if (nfts.length > 0 && auctionsLoaded) {
 			fetchAndRenderNfts();
 		}
-	}, [nfts, account, auctions]);
+	}, [nfts, account]);
+
+	useEffect(() => {
+		loadBlockchainData(nftContract, dispatch);
+	}, [toggleAuctionActivation]);
 
 	const loadBlockchainData = async (nftContract, dispatch) => {
 		await loadMintedNFTs(nftContract, dispatch);
@@ -111,6 +113,7 @@ const Auction = ({ nftContract, nfts, account, auctions, auctionsLoaded }) => {
 	const handleAuctionStart = async (nftContract, dispatch, nftId, startingPrice, auctionDuration) => {
 		setLoading(true);
 		await startAuction(nftContract, account, dispatch, nftId, startingPrice, auctionDuration);
+		setToggleAuctionActivation(!toggleAuctionActivation);
 		setLoading(false);
 	};
 
