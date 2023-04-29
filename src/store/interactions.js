@@ -310,6 +310,7 @@ export const loadAllAuctions = async (nftContract, dispatch) => {
 			nftId: auction.returnValues.nftId,
 			startingPrice: auction.returnValues.startingPrice,
 			duration: auction.returnValues.auctionDuration,
+			endTime: auction.returnValues.auctionEndTime,
 			auctionAddress: auction.returnValues.auctionAddress,
 		};
 		allAuctionData.push(auctionData);
@@ -331,6 +332,7 @@ export const startAuction = async (nftContract, account, dispatch, nftId, starti
 				nftId: event.nftId,
 				startingPrice: event.startingPrice,
 				duration: event.auctionDuration,
+				endTime: event.auctionEndTime,
 				auctionAddress: event.auctionAddress,
 			};
 			dispatch(auctionCreated(auctionData));
@@ -339,3 +341,5 @@ export const startAuction = async (nftContract, account, dispatch, nftId, starti
 		console.error('Error starting auction: ', error);
 	}
 };
+
+export const endAuction = () => {};

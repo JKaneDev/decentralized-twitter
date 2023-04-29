@@ -24,7 +24,7 @@ contract TweetNFT is ERC721, ERC721URIStorage {
     constructor() ERC721("TweetNFT", "TWNFT") {}
     
     event NFTMinted(uint256 nftId, address owner, uint256 tweetId, string fullUri, string imageURI, string htmlURI, uint256 timestamp);
-    event AuctionCreated(address originalOwner, address seller, uint256 nftId, uint256 startingPrice, uint256 auctionDuration, address twitterContract, address auctionAddress);
+    event AuctionCreated(address originalOwner, address seller, uint256 nftId, uint256 startingPrice, uint256 auctionDuration, uint256 auctionEndTime, address twitterContract, address auctionAddress);
 
     function isTweetMinted(uint256 nftId) public view returns (bool) {
         return _tweetMinted[nftId];
@@ -61,10 +61,11 @@ contract TweetNFT is ERC721, ERC721URIStorage {
         require(_exists(_nftId), "NFT does not exist");
         require(ownerOf(_nftId) == msg.sender, "Caller is not the owner of the NFT");
         address payable originalOwner = payable(_originalOwners[_nftId]);
+        uint256 auctionEndTime = block.timestamp + _auctionDuration;
         Auction newAuction = new Auction(originalOwner, payable(msg.sender), _nftId, _startingPrice, _auctionDuration, address(this), twitterContractAddress);
         _approve(address(newAuction), _nftId);
 
-        emit AuctionCreated(originalOwner, msg.sender, _nftId, _startingPrice, _auctionDuration, twitterContractAddress, address(newAuction));
+        emit AuctionCreated(originalOwner, msg.sender, _nftId, _startingPrice, _auctionDuration, auctionEndTime, twitterContractAddress, address(newAuction));
     }
 
 
