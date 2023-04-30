@@ -88,7 +88,6 @@ contract Auction is ReentrancyGuard {
 
     function endAuction() public nonReentrant {
         require(msg.sender == seller, "Only seller can end auction");
-        require(block.timestamp >= auctionEndTime, "Auction has not ended");
         require(!ended, "Auction has already been called");
         
         uint256 twitterFee = (highestBid * 5) / 100;
@@ -111,8 +110,7 @@ contract Auction is ReentrancyGuard {
             return;
         }
             
-
-        ended = true;
+        ended = true;    
         emit AuctionEnded(highestBidder, highestBid, royaltyAmount, twitterFee, sellerShare);
     }
 }

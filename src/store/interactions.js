@@ -326,7 +326,6 @@ export const startAuction = async (nftContract, account, dispatch, nftId, starti
 			.createAuction(nftId, startingPrice, auctionDuration)
 			.send({ from: account });
 		const event = auction.events.AuctionCreated.returnValues;
-		console.log('Auction Creation Event: ', event);
 		if (event) {
 			const auctionData = {
 				originalOwner: event.originalOwner,
@@ -375,9 +374,19 @@ export const subscribeToAuctionEvents = async (auction, dispatch) => {
 	});
 };
 
+export const isAuctionEnded = async (auction) => {
+	try {
+		const ended = auction.methods.getEnded().call();
+		return ended;
+	} catch (error) {
+		console.error('Error fetching auction ended state: ', error);
+	}
+};
+
 export const endAuction = async (auctionContract, account) => {
 	try {
-		await auctionContract.methods.endAuction().send({ from: account });
+		const auction = await auctionContract.methods.endAuction().send({ from: account });
+		console.log('Auction Event:', auction);
 	} catch (error) {
 		console.error('Error ending auction: ', error);
 	}

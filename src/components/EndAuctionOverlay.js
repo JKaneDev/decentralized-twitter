@@ -2,11 +2,12 @@ import styles from '@components/styles/Auction.module.css';
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import Countdown from 'react-countdown';
-import { loadHighestBid } from '@components/store/interactions';
+import { loadHighestBid, isAuctionEnded } from '@components/store/interactions';
 import { bidsSelector } from '@components/store/selectors';
 
 const EndAuctionOverlay = ({ auctionContract, account, endTime, onEndAuction, bids }) => {
 	const [highestBid, setHighestBid] = useState(null);
+	const [ended, setEnded] = useState(false);
 
 	// SET HIGHEST BID ON FIRST COMPONENT RENDER
 	useEffect(() => {
@@ -20,7 +21,9 @@ const EndAuctionOverlay = ({ auctionContract, account, endTime, onEndAuction, bi
 
 	const loadBlockchainData = async (auctionContract) => {
 		const currentHighestBid = await loadHighestBid(auctionContract);
+		const ended = await isAuctionEnded(auctionContract);
 		setHighestBid(currentHighestBid);
+		setEnded(ended);
 	};
 
 	const renderer = ({ hours, minutes, seconds }) => {
@@ -33,9 +36,15 @@ const EndAuctionOverlay = ({ auctionContract, account, endTime, onEndAuction, bi
 
 	return (
 		<div className={styles.auctionCountdownOverlay}>
-			<Countdown date={endTime} renderer={renderer} />
+			{ended ? <span>0:0:0</span> : <Countdown date={endTime} renderer={renderer} />}
+
 			<span className={styles.highestBid}>Highest Bid: {highestBid} ETH</span>
-			<button className={styles.endAuctionBtn} onClick={() => onEndAuction(auctionContract, account)}>
+			<button
+				className={styles.endAuctionBtn}
+				onClick={() => onEndAuction(auctionContract, account)}
+				disabled={ended}
+				style={{ backgroundColor: ended ? 'rgb(55, 0, 0)' : 'rgb(135, 0, 0)' }}
+			>
 				End Auction
 			</button>
 		</div>

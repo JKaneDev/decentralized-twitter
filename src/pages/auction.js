@@ -29,6 +29,11 @@ import {
 } from '@components/store/selectors';
 
 const Auction = ({ web3, nftContract, nfts, account, auctions, auctionsLoaded }) => {
+	// BRING USER BACK TO FEED
+	const backToFeed = () => {
+		router.push(`/`);
+	};
+
 	const dispatch = useDispatch();
 	const router = useRouter();
 
@@ -36,6 +41,7 @@ const Auction = ({ web3, nftContract, nfts, account, auctions, auctionsLoaded })
 	const [activeAuctionCards, setActiveAuctionCards] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [toggleAuctionActivation, setToggleAuctionActivation] = useState(false);
+	const [toggleAuctionEnded, setToggleAuctionEnded] = useState(false);
 	const [auctionInstances, setAuctionInstances] = useState([]);
 
 	// ON FIRST RENDER
@@ -61,11 +67,19 @@ const Auction = ({ web3, nftContract, nfts, account, auctions, auctionsLoaded })
 		loadBlockchainData(nftContract, dispatch);
 	}, [toggleAuctionActivation]);
 
+	// RERENDER COMPONENT WHEN AUCTION ENDS
+	useEffect(() => {
+		renderUsersActiveAuctions(nfts, auctions);
+	}, [toggleAuctionEnded]);
+
 	// LOADS MINTED NFTS AND ALL AUCTIONS
 	const loadBlockchainData = async (nftContract, dispatch) => {
 		await loadMintedNFTs(nftContract, dispatch);
 		await loadAllAuctions(nftContract, dispatch);
 	};
+
+	// CREATE NEW AUCTION INSTANCE FOR EACH AUCTION
+	const createAuctionInstance = (abi, address) => new web3.eth.Contract(abi, address);
 
 	// INITIALIZE WEB3 INSTANCES FOR ALL AUCTIONS
 	const loadAuctionInstances = async (auctions) => {
@@ -87,11 +101,6 @@ const Auction = ({ web3, nftContract, nfts, account, auctions, auctionsLoaded })
 
 	// SHOWS START AUCTION DIALOG OVERLAY IF THE NFT HAS NOT BEEN TO AUCTION OR IF THE AUCTION IS OVER
 	const shouldShowStartAuctionOverlay = (auction) => !auction || (auction && auction.endTime * 1000 < Date.now());
-
-	// BRING USER BACK TO FEED
-	const backToFeed = () => {
-		router.push(`/`);
-	};
 
 	// FETCH NFTS THAT BELONG TO USER, RENDER TO DOM
 	const renderUsersNFTs = (nfts, auctions) => {
@@ -128,7 +137,13 @@ const Auction = ({ web3, nftContract, nfts, account, auctions, auctionsLoaded })
 					auction && auction.endTime * 1000 > Date.now() ? (
 						<>
 							<iframe src={nft.htmlURI} title={`NFT ${nft.id}`} className={styles.iframe}></iframe>
-							<AuctionCountdownOverlay endTime={auction.endTime * 1000} onEndAuction={endAuction} />
+							<AuctionCountdownOverlay
+								endTime={auction.endTime * 1000}
+								onEndAuction={() => {
+									endAuction();
+									setToggleAuctionEnded(!toggleAuctionEnded);
+								}}
+							/>
 						</>
 					) : (
 						// If auction is completed or not active, render default card and hover overlay:
@@ -151,9 +166,6 @@ const Auction = ({ web3, nftContract, nfts, account, auctions, auctionsLoaded })
 		setCards(cards);
 	};
 
-	// CREATE NEW AUCTION INSTANCE FOR EACH AUCTION
-	const createAuctionInstance = (abi, address) => new web3.eth.Contract(abi, address);
-
 	const renderUsersActiveAuctions = (nfts, auctions) => {
 		const usersNfts = nfts.filter((nft) => nft.owner === account);
 		const cards = [];
@@ -166,13 +178,9 @@ const Auction = ({ web3, nftContract, nfts, account, auctions, auctionsLoaded })
 				continue;
 			}
 
-			auctionInstances.forEach((instance) => {
-				console.log('Instance Addresses:', instance._address);
-			});
-
 			// SMART CONTRACT INSTANCE
 			const auctionInstance = auctionInstances.find((instance) => instance._address === auction.auctionAddress);
-			console.log('Auction Instance:', auctionInstance);
+
 			// CURRENTLY ACTIVE CHECK
 			const currentlyActive = (auction) => auction && auction.nftId === nft.id && auction.endTime * 1000 > Date.now();
 
