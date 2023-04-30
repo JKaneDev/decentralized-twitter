@@ -232,12 +232,19 @@
 }
 
 .endAuctionBtn {
-	background-color: #1e88e5;
+	background-color: rgb(135, 0, 0);
 	color: white;
 	font-size: 18px;
-	padding: 10px 20px;
+	padding: 0.5rem 0.5rem;
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
 	margin-top: 10px;
+	width: 140px;
+}
+
+.highestBid {
+	font-size: 1.25ch;
+	font-weight: lighter;
+	padding-top: 0.25rem;
 }

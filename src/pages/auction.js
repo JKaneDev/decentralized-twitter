@@ -1,125 +1,100 @@
-import Web3 from 'web3';
-import Countdown from 'react-countdown';
+import AuctionABI from '../abis/Auction.json';
+import styles from '@components/styles/Auction.module.css';
+import OverlayContent from '@components/components/OverlayContent';
+import EndAuctionOverlay from '@components/components/EndAuctionOverlay';
+import AuctionCountdownOverlay from '@components/components/AuctionCountdownOverlay';
 import { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
-import styles from '@components/styles/Auction.module.css';
 import { ClipLoader } from 'react-spinners';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import 'react-tabs/style/react-tabs.css';
-import { startAuction, endAuction, loadMintedNFTs, loadAllAuctions } from '@components/store/interactions';
+import {
+	startAuction,
+	endAuction,
+	loadMintedNFTs,
+	loadAllAuctions,
+	subscribeToAuctionEvents,
+	getActiveAuction,
+} from '@components/store/interactions';
 import {
 	accountSelector,
 	allAuctionsSelector,
 	mintedNFTsSelector,
 	nftSelector,
 	allAuctionsLoadedSelector,
+	web3Selector,
 } from '@components/store/selectors';
 
-const OverlayContent = ({ nftId, onStartAuction }) => {
-	const [price, setPrice] = useState(0);
-	const [duration, setDuration] = useState(0);
-	const [auctionEndTime, setAuctionEndTime] = useState(null);
-	return (
-		<div className={styles.overlayContent}>
-			<div className={styles.labelWrapper}>
-				<label className={styles.label} htmlFor='nftId'>
-					NFT ID:
-				</label>
-				<span>{nftId}</span>
-			</div>
-			<div className={styles.fieldWrapper}>
-				<div className={styles.priceWrapper}>
-					<label className={styles.fieldLabels}>Starting Price:</label>
-					<input
-						className={styles.inputFields}
-						id={styles.priceField}
-						type='number'
-						placeholder='Starting Price (ETH)'
-						value={price}
-						onChange={(e) => setPrice(e.target.value)}
-					/>
-				</div>
-				<div className={styles.durationWrapper}>
-					<label className={styles.fieldLabels}>Auction Duration (Hours):</label>
-					<input
-						className={styles.inputFields}
-						type='number'
-						placeholder='Auction Duration (Hours)'
-						value={duration}
-						onChange={(e) => setDuration(e.target.value)}
-					/>
-				</div>
-				<button
-					className={styles.btn}
-					onClick={() => {
-						const startingPriceInWei = Web3.utils.toWei(price, 'ether');
-						const auctionDurationInSeconds = duration * 3600;
-						onStartAuction(nftId, startingPriceInWei, auctionDurationInSeconds);
-					}}
-				>
-					Start Auction
-				</button>
-			</div>
-		</div>
-	);
-};
-
-const AuctionCountdownOverlay = ({ endTime, onEndAuction }) => {
-	const renderer = ({ hours, minutes, seconds, completed }) => {
-		return (
-			<span>
-				{hours}:{minutes}:{seconds}
-			</span>
-		);
-	};
-
-	return (
-		<div className={styles.auctionCountdownOverlay}>
-			<Countdown date={endTime} renderer={renderer} />
-		</div>
-	);
-};
-
-const Auction = ({ nftContract, nfts, account, auctions, auctionsLoaded }) => {
+const Auction = ({ web3, nftContract, nfts, account, auctions, auctionsLoaded }) => {
 	const dispatch = useDispatch();
 	const router = useRouter();
 
 	const [cards, setCards] = useState([]);
+	const [activeAuctionCards, setActiveAuctionCards] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [toggleAuctionActivation, setToggleAuctionActivation] = useState(false);
+	const [auctionInstances, setAuctionInstances] = useState([]);
 
+	// ON FIRST RENDER
 	useEffect(() => {
 		loadBlockchainData(nftContract, dispatch);
 	}, []);
 
+	// RENDER NFTS AFTER LOADED
 	useEffect(() => {
 		if (nfts.length > 0 && auctionsLoaded) {
-			fetchAndRenderNfts();
+			renderUsersNFTs(nfts, auctions);
+			renderUsersActiveAuctions(nfts, auctions);
 		}
-	}, [nfts, account]);
+	}, [nfts, account, auctionsLoaded]);
 
+	// INITIALIZE AUCTION INSTANCES
+	useEffect(() => {
+		loadAuctionInstances(auctions);
+	}, [auctions]);
+
+	// ENSURES TIMER RENDERS IMMEDIATELY AFTER AUCTION START
 	useEffect(() => {
 		loadBlockchainData(nftContract, dispatch);
 	}, [toggleAuctionActivation]);
 
+	// LOADS MINTED NFTS AND ALL AUCTIONS
 	const loadBlockchainData = async (nftContract, dispatch) => {
 		await loadMintedNFTs(nftContract, dispatch);
 		await loadAllAuctions(nftContract, dispatch);
 	};
 
+	// INITIALIZE WEB3 INSTANCES FOR ALL AUCTIONS
+	const loadAuctionInstances = async (auctions) => {
+		const instances = await Promise.all(
+			auctions.map((auction) => createAuctionInstance(AuctionABI.abi, auction.auctionAddress)),
+		);
+		setAuctionInstances(instances);
+	};
+
+	// STARTS THE AUCTION, TRIGGERS TIMER RE-RENDERING WITH TOGGLE
 	const handleAuctionStart = async (nftContract, dispatch, nftId, startingPrice, auctionDuration) => {
 		setLoading(true);
-		await startAuction(nftContract, account, dispatch, nftId, startingPrice, auctionDuration);
+		const auctionAddress = await startAuction(nftContract, account, dispatch, nftId, startingPrice, auctionDuration);
+		const auction = createAuctionInstance(AuctionABI.abi, auctionAddress);
+		subscribeToAuctionEvents(auction, dispatch);
 		setToggleAuctionActivation(!toggleAuctionActivation);
 		setLoading(false);
 	};
 
-	const shouldShowOverlay = (auction) => !auction || (auction && auction.endTime * 1000 < Date.now());
+	// SHOWS START AUCTION DIALOG OVERLAY IF THE NFT HAS NOT BEEN TO AUCTION OR IF THE AUCTION IS OVER
+	const shouldShowStartAuctionOverlay = (auction) => !auction || (auction && auction.endTime * 1000 < Date.now());
 
-	const fetchAndRenderNfts = async () => {
+	// BRING USER BACK TO FEED
+	const backToFeed = () => {
+		router.push(`/`);
+	};
+
+	// FETCH NFTS THAT BELONG TO USER, RENDER TO DOM
+	const renderUsersNFTs = (nfts, auctions) => {
 		const usersNfts = nfts.filter((nft) => nft.owner == account);
 		const cards = [];
 
@@ -132,7 +107,7 @@ const Auction = ({ nftContract, nfts, account, auctions, auctionsLoaded }) => {
 					key={nft.id}
 					className={styles.nftCard}
 					onMouseEnter={(e) => {
-						if (shouldShowOverlay(auction)) {
+						if (shouldShowStartAuctionOverlay(auction)) {
 							const overlay = e.currentTarget.querySelector(`.${styles.overlay}`);
 							const iframe = e.currentTarget.querySelector(`.${styles.iframe}`);
 							overlay.style.height = `${iframe.offsetHeight}px`;
@@ -140,7 +115,7 @@ const Auction = ({ nftContract, nfts, account, auctions, auctionsLoaded }) => {
 						}
 					}}
 					onMouseLeave={(e) => {
-						if (shouldShowOverlay(auction)) {
+						if (shouldShowStartAuctionOverlay(auction)) {
 							e.currentTarget.querySelector(`.${styles.overlay}`).classList.remove(styles.visible);
 						}
 					}}
@@ -176,8 +151,50 @@ const Auction = ({ nftContract, nfts, account, auctions, auctionsLoaded }) => {
 		setCards(cards);
 	};
 
-	const backToFeed = () => {
-		router.push(`/`);
+	// CREATE NEW AUCTION INSTANCE FOR EACH AUCTION
+	const createAuctionInstance = (abi, address) => new web3.eth.Contract(abi, address);
+
+	const renderUsersActiveAuctions = (nfts, auctions) => {
+		const usersNfts = nfts.filter((nft) => nft.owner === account);
+		const cards = [];
+
+		for (const nft of usersNfts) {
+			// AUCTIONS THAT BELONG TO THE USER
+			const auction = auctions.find((auction) => auction.nftId === nft.id);
+
+			if (!auction) {
+				continue;
+			}
+
+			auctionInstances.forEach((instance) => {
+				console.log('Instance Addresses:', instance._address);
+			});
+
+			// SMART CONTRACT INSTANCE
+			const auctionInstance = auctionInstances.find((instance) => instance._address === auction.auctionAddress);
+			console.log('Auction Instance:', auctionInstance);
+			// CURRENTLY ACTIVE CHECK
+			const currentlyActive = (auction) => auction && auction.nftId === nft.id && auction.endTime * 1000 > Date.now();
+
+			cards.push(
+				<div key={nft.id} className={styles.nftCard}>
+					{currentlyActive(auction) ? (
+						<>
+							<iframe src={nft.htmlURI} title={`NFT ${nft.id}`} className={styles.iframe}></iframe>
+							<EndAuctionOverlay
+								auctionContract={auctionInstance}
+								account={account}
+								endTime={auction.endTime * 1000}
+								onEndAuction={endAuction}
+							/>
+						</>
+					) : (
+						<div></div>
+					)}
+				</div>,
+			);
+		}
+		setActiveAuctionCards(cards);
 	};
 
 	return (
@@ -196,7 +213,7 @@ const Auction = ({ nftContract, nfts, account, auctions, auctionsLoaded }) => {
 					<Tab className={styles.reactTabsTab}>Marketplace</Tab>
 				</TabList>
 				<TabPanel className={styles.tabContent}>{cards}</TabPanel>
-				<TabPanel className={styles.tabContent}></TabPanel>
+				<TabPanel className={styles.tabContent}>{activeAuctionCards}</TabPanel>
 				<TabPanel className={styles.tabContent}></TabPanel>
 				<TabPanel className={styles.tabContent}></TabPanel>
 			</Tabs>
@@ -206,6 +223,7 @@ const Auction = ({ nftContract, nfts, account, auctions, auctionsLoaded }) => {
 
 function mapStateToProps(state) {
 	return {
+		web3: web3Selector(state),
 		nftContract: nftSelector(state),
 		account: accountSelector(state),
 		nfts: mintedNFTsSelector(state),
@@ -213,4 +231,5 @@ function mapStateToProps(state) {
 		auctionsLoaded: allAuctionsLoadedSelector(state),
 	};
 }
+
 export default connect(mapStateToProps)(Auction);

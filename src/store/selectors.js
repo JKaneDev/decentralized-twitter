@@ -1,7 +1,6 @@
 import { get } from 'lodash';
 import { createSelector } from 'reselect';
 import moment from 'moment';
-import { createStyleRegistry } from 'styled-jsx';
 
 const account = (state) => get(state, 'web3.account');
 export const accountSelector = createSelector(account, (a) => a);
@@ -66,3 +65,6 @@ export const allAuctionsLoadedSelector = createSelector(allAuctionsLoaded, (l) =
 
 const allAuctions = (state) => get(state, 'auction.allAuctions.data', []);
 export const allAuctionsSelector = createSelector(allAuctions, (auctions) => auctions);
+
+const bids = (state) => get(state, 'auction.allAuctions.bids', {});
+export const bidsSelector = createSelector(bids, (bids) => bids);

@@ -57,7 +57,7 @@ function nft(state = { nfts: { loaded: false, data: { minted: [] } } }, action) 
 	}
 }
 
-function auction(state = { allAuctions: { loaded: false, data: [] } }, action) {
+function auction(state = { allAuctions: { loaded: false, data: [], bids: {} } }, action) {
 	switch (action.type) {
 		case 'AUCTIONS_LOADED':
 			return {
@@ -65,7 +65,6 @@ function auction(state = { allAuctions: { loaded: false, data: [] } }, action) {
 				allAuctions: { loaded: true, data: action.allAuctionData },
 			};
 		case 'AUCTION_CREATED':
-			console.log('Auction Action - Reducer: ', action.auctionData);
 			return {
 				...state,
 				allAuctions: {
@@ -73,6 +72,18 @@ function auction(state = { allAuctions: { loaded: false, data: [] } }, action) {
 					data: [...state.allAuctions.data, action.auctionData],
 				},
 			};
+		case 'BID_INCREASED':
+			return {
+				...state,
+				allAuctions: {
+					...state.allAuctions,
+					bids: {
+						...state.bids,
+						[action.auctionAddress]: action.highestBid,
+					},
+				},
+			};
+
 		default:
 			return state;
 	}

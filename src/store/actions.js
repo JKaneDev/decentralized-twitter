@@ -148,3 +148,11 @@ export function auctionCreated(auctionData) {
 		auctionData,
 	};
 }
+
+export function highestBidIncreased(auctionAddress, highestBid) {
+	return {
+		type: 'BID_INCREASED',
+		auctionAddress,
+		highestBid,
+	};
+}

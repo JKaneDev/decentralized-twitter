@@ -20,6 +20,8 @@ contract TweetNFT is ERC721, ERC721URIStorage {
     bool private twitterContractSet;
     // Base URI for nft
     string public baseURI;
+    // NFT auction address storage
+    mapping(uint256 => address[]) public nftAuctions;
 
     constructor() ERC721("TweetNFT", "TWNFT") {}
     
@@ -36,6 +38,10 @@ contract TweetNFT is ERC721, ERC721URIStorage {
 
     function getTwitterContractAddress() public view returns (address) {
         return twitterContractAddress;
+    }
+
+    function getAuctionAddresses(uint256 _nftId) external view returns (address[] memory) {
+        return nftAuctions[_nftId];
     }
 
     function setBaseURI(string memory _baseURI) external {
@@ -63,6 +69,7 @@ contract TweetNFT is ERC721, ERC721URIStorage {
         address payable originalOwner = payable(_originalOwners[_nftId]);
         uint256 auctionEndTime = block.timestamp + _auctionDuration;
         Auction newAuction = new Auction(originalOwner, payable(msg.sender), _nftId, _startingPrice, _auctionDuration, address(this), twitterContractAddress);
+        nftAuctions[_nftId].push(address(newAuction));
         _approve(address(newAuction), _nftId);
 
         emit AuctionCreated(originalOwner, msg.sender, _nftId, _startingPrice, _auctionDuration, auctionEndTime, twitterContractAddress, address(newAuction));

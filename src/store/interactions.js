@@ -21,6 +21,8 @@ import {
 	mintedNFTsLoaded,
 	auctionCreated,
 	auctionDataLoaded,
+	highestBidIncreased,
+	highestBidLoaded,
 } from './actions';
 import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
@@ -336,10 +338,47 @@ export const startAuction = async (nftContract, account, dispatch, nftId, starti
 				auctionAddress: event.auctionAddress,
 			};
 			dispatch(auctionCreated(auctionData));
+			return event.auctionAddress;
 		}
 	} catch (error) {
 		console.error('Error starting auction: ', error);
 	}
 };
 
-export const endAuction = () => {};
+export const loadHighestBid = async (auction) => {
+	try {
+		const highestBid = await auction.methods.getHighestBid().call();
+		return highestBid;
+	} catch (error) {
+		console.error('Error fetching highest bid:', error);
+		return null;
+	}
+};
+
+export const getActiveAuction = async (nftContract, nftId) => {
+	const auctionAddresses = await nftContract.methods.getAuctionAddresses(nftId).call();
+	for (const auctionAddress of auctionAddresses) {
+		const auctionInstance = new Web3.eth.Contract(AuctionABI, auctionAddress);
+		const active = await auctionInstance.methods.isActive().call();
+		if (active) {
+			return auctionInstance;
+		}
+	}
+	return null;
+};
+
+export const subscribeToAuctionEvents = async (auction, dispatch) => {
+	auction.events.HighestBidIncreased({}, async (error, event) => {
+		const highestBid = await auction.methods.getHighestBid().call();
+		dispatch(highestBidIncreased(auction, highestBid));
+		console.log('New Highest Bid:', highestBid);
+	});
+};
+
+export const endAuction = async (auctionContract, account) => {
+	try {
+		await auctionContract.methods.endAuction().send({ from: account });
+	} catch (error) {
+		console.error('Error ending auction: ', error);
+	}
+};
