@@ -60,6 +60,7 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 	// INITIALIZE AUCTION INSTANCES
 	useEffect(() => {
 		loadAuctionInstances(auctions, web3, nftContract);
+		console.log('AUCTION STARTED', auctions);
 	}, [auctions, auctionsLoaded]);
 
 	// ENSURES TIMER RENDERS IMMEDIATELY AFTER AUCTION START
@@ -102,7 +103,6 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 		setToggleAuctionActivation(!toggleAuctionActivation);
 		setLoading(false);
 		console.log('AUCTION INSTANCE', auction);
-		console.log('AUCTION STARTED', auctions);
 	};
 
 	// FETCH NFTS THAT BELONG TO USER, RENDER TO DOM
@@ -136,18 +136,22 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 		for (const nft of usersNfts) {
 			// AUCTIONS THAT BELONG TO THE USER
 			const auction = auctions.find((auction) => auction.nftId === nft.id);
+			console.log('Found match:', auction);
 
 			// SMART CONTRACT INSTANCE
-			const auctionInstance = auctionInstances.find((instance) => instance._address === auction.auctionAddress);
+			if (auction) {
+				const auctionInstance = auctionInstances.find(
+					(instance) => instance.options.address === auction.auctionAddress,
+				);
 
-			{
-				auctionInstance
-					? cards.push(
-							<UsersActiveAuctionsCard key={nft.id} ntf={nft} auction={auction} auctionInstance={auctionInstance} />,
-					  )
-					: null;
+				if (auctionInstance) {
+					cards.push(
+						<UsersActiveAuctionsCard key={nft.id} ntf={nft} auction={auction} auctionInstance={auctionInstance} />,
+					);
+				}
 			}
 		}
+
 		return cards;
 	};
 
