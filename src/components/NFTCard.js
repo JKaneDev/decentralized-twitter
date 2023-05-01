@@ -2,9 +2,23 @@ import styles from '@components/styles/Auction.module.css';
 import OverlayContent from '@components/components/OverlayContent';
 import AuctionCountdownOverlay from '@components/components/AuctionCountdownOverlay';
 import { ClipLoader } from 'react-spinners';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { isAuctionEnded } from '@components/store/interactions';
 
-const NFTCard = ({ contract, dispatch, nfts, nft, auction, loading, handleAuctionStart }) => {
+const NFTCard = ({
+	web3,
+	contract,
+	dispatch,
+	nfts,
+	nft,
+	auction,
+	loading,
+	handleAuctionStart,
+	auctionInstances,
+	auctions,
+}) => {
+	const [auctionEnded, setAuctionEnded] = useState(false);
+
 	const overlayRef = useRef(null);
 	const iframeRef = useRef(null);
 
@@ -18,6 +32,17 @@ const NFTCard = ({ contract, dispatch, nfts, nft, auction, loading, handleAuctio
 		}
 	}, [auction]);
 
+	useEffect(() => {
+		const checkAuctionEnded = async () => {
+			const ended = await isAuctionEnded(web3, auction);
+			setAuctionEnded(ended);
+		};
+
+		if (auction) {
+			checkAuctionEnded();
+		}
+	});
+
 	const toggleOverlay = (visible, iframeRef, overlayRef) => {
 		if (shouldShowStartAuctionOverlay(auction)) {
 			const overlay = overlayRef.current;
@@ -28,7 +53,14 @@ const NFTCard = ({ contract, dispatch, nfts, nft, auction, loading, handleAuctio
 	};
 
 	// SHOWS START AUCTION DIALOG OVERLAY IF THE NFT HAS NOT BEEN TO AUCTION OR IF THE AUCTION IS OVER
-	const shouldShowStartAuctionOverlay = (auction) => !auction || (auction && auction.endTime * 1000 < Date.now());
+	const shouldShowStartAuctionOverlay = (auction) =>
+		!auction || (auction && auction.endTime * 1000 < Date.now() && auctionEnded);
+
+	const isAuctionActive = (auction) => {
+		console.log('Auctions:', auctions);
+		console.log('Auction Instances:', auctionInstances);
+		return auctionInstances.find((instance) => instance.options.address === auction.auctionAddress);
+	};
 
 	return (
 		<div
@@ -42,7 +74,7 @@ const NFTCard = ({ contract, dispatch, nfts, nft, auction, loading, handleAuctio
 				<ClipLoader color='#00BFFF' size={50} />
 			) : // Only render countdown if auction is still in progress:
 
-			auction && auction.endTime * 1000 > Date.now() ? (
+			isAuctionActive(auction) ? (
 				<>
 					<iframe ref={iframeRef} src={nft.htmlURI} title={`NFT ${nft.id}`} className={styles.iframe}></iframe>
 					<AuctionCountdownOverlay endTime={auction.endTime * 1000} />

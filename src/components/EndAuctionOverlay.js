@@ -5,7 +5,7 @@ import Countdown from 'react-countdown';
 import { loadHighestBid, isAuctionEnded } from '@components/store/interactions';
 import { bidsSelector } from '@components/store/selectors';
 
-const EndAuctionOverlay = ({ id, auctionContract, account, endTime, endAuction, bids }) => {
+const EndAuctionOverlay = ({ web3, id, auction, auctionContract, account, endTime, endAuction, bids }) => {
 	const [highestBid, setHighestBid] = useState(null);
 	const [ended, setEnded] = useState(false);
 
@@ -25,7 +25,7 @@ const EndAuctionOverlay = ({ id, auctionContract, account, endTime, endAuction, 
 	}, [ended]);
 
 	const checkAuctionStatus = async () => {
-		const ended = await isAuctionEnded(auctionContract);
+		const ended = await isAuctionEnded(web3, auction);
 		setEnded(ended);
 	};
 

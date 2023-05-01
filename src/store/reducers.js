@@ -65,13 +65,32 @@ function auction(state = { allAuctions: { loaded: false, data: [], bids: {} } },
 				allAuctions: { loaded: true, data: action.allAuctionData },
 			};
 		case 'AUCTION_CREATED':
+			const existingIndex = state.allAuctions.data.findIndex(
+				(auction) => auction.seller === action.auctionData.seller && auction.nftId === action.auctionData.nftId,
+			);
+
+			let updatedAuctionsData;
+
+			if (existingIndex !== -1) {
+				// If a match is found, remove the existing object and insert the new one at the same index
+				updatedAuctionsData = [
+					...state.allAuctions.data.slice(0, existingIndex),
+					action.auctionData,
+					...state.allAuctions.data.slice(existingIndex + 1),
+				];
+			} else {
+				// If no match is found, add the new object to the array
+				updatedAuctionsData = [...state.allAuctions.data, action.auctionData];
+			}
+
 			return {
 				...state,
 				allAuctions: {
 					...state.allAuctions,
-					data: [...state.allAuctions.data, action.auctionData],
+					data: updatedAuctionsData,
 				},
 			};
+
 		case 'BID_INCREASED':
 			return {
 				...state,

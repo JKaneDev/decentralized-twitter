@@ -374,13 +374,10 @@ export const subscribeToAuctionEvents = async (auction, dispatch) => {
 	});
 };
 
-export const isAuctionEnded = async (auction) => {
-	try {
-		const ended = auction.methods.getEnded().call();
-		return ended;
-	} catch (error) {
-		console.error('Error fetching auction ended state: ', error);
-	}
+export const isAuctionEnded = async (web3, auction) => {
+	const auctionInstance = new web3.eth.Contract(Auction.abi, auction.auctionAddress);
+	const ended = await auctionInstance.methods.getEnded().call();
+	return ended;
 };
 
 export const endAuction = async (auctionContract, account) => {

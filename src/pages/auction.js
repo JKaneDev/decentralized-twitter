@@ -84,6 +84,7 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 
 	// INITIALIZE WEB3 INSTANCES FOR ALL AUCTIONS
 	const loadAuctionInstances = async (auctions, web3, nftContract) => {
+		console.log('auction instances loaded');
 		const activeAuctions = await Promise.all(
 			auctions.map(async (auction) => {
 				const activeAuction = await getActiveAuction(web3, nftContract, auction.nftId);
@@ -102,7 +103,6 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 		subscribeToAuctionEvents(auction, dispatch);
 		setToggleAuctionActivation(!toggleAuctionActivation);
 		setLoading(false);
-		console.log('AUCTION INSTANCE', auction);
 	};
 
 	// FETCH NFTS THAT BELONG TO USER, RENDER TO DOM
@@ -116,6 +116,7 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 			cards.push(
 				<NFTCard
 					key={nft.id}
+					web3={web3}
 					contract={nftContract}
 					dispatch={dispatch}
 					nfts={nfts}
@@ -123,6 +124,8 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 					auction={auction}
 					loading={loading}
 					handleAuctionStart={handleAuctionStart}
+					auctionInstances={auctionInstances}
+					auctions={auctions}
 				/>,
 			);
 		}
@@ -147,6 +150,7 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 					cards.push(
 						<UsersActiveAuctionsCard
 							key={nft.id}
+							web3={web3}
 							account={account}
 							nft={nft}
 							auction={auction}
