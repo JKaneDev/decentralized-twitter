@@ -31,7 +31,6 @@ const EndAuctionOverlay = ({ web3, id, auction, auctionContract, account, endTim
 
 	const loadBlockchainData = async (auctionContract) => {
 		const currentHighestBid = await loadHighestBid(auctionContract);
-		console.log('Is Auction Ended?', ended, id);
 		setHighestBid(currentHighestBid);
 	};
 

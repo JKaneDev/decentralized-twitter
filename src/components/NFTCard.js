@@ -9,16 +9,16 @@ const NFTCard = ({
 	web3,
 	contract,
 	dispatch,
-	nfts,
 	nft,
 	auction,
 	loading,
 	handleAuctionStart,
+	auctionEnded,
+	setAuctionEnded,
+	removeAuctionInstance,
 	auctionInstances,
 	auctions,
 }) => {
-	const [auctionEnded, setAuctionEnded] = useState(false);
-
 	const overlayRef = useRef(null);
 	const iframeRef = useRef(null);
 
@@ -35,13 +35,19 @@ const NFTCard = ({
 	useEffect(() => {
 		const checkAuctionEnded = async () => {
 			const ended = await isAuctionEnded(web3, auction);
-			setAuctionEnded(ended);
+			if (ended) {
+				removeAuctionInstance(auction.auctionAddress);
+			}
 		};
 
 		if (auction) {
 			checkAuctionEnded();
 		}
-	});
+	}, [web3, auction, auctionEnded]);
+
+	useEffect(() => {
+		console.log('Ended (useEffect):', auctionEnded);
+	}, [auctionEnded]);
 
 	const toggleOverlay = (visible, iframeRef, overlayRef) => {
 		if (shouldShowStartAuctionOverlay(auction)) {

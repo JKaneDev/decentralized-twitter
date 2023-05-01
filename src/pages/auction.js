@@ -41,6 +41,7 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 	const [toggleAuctionActivation, setToggleAuctionActivation] = useState(false);
 	const [toggleAuctionEnded, setToggleAuctionEnded] = useState(false);
 	const [auctionInstances, setAuctionInstances] = useState([]);
+	const [auctionEnded, setAuctionEnded] = useState(false);
 
 	// ON FIRST RENDER
 	useEffect(() => {
@@ -60,18 +61,12 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 	// INITIALIZE AUCTION INSTANCES
 	useEffect(() => {
 		loadAuctionInstances(auctions, web3, nftContract);
-		console.log('AUCTION STARTED', auctions);
-	}, [auctions, auctionsLoaded]);
+	}, [auctions, auctionsLoaded, auctionEnded]);
 
 	// ENSURES TIMER RENDERS IMMEDIATELY AFTER AUCTION START
 	useEffect(() => {
 		loadBlockchainData(nftContract, dispatch);
 	}, [toggleAuctionActivation]);
-
-	// RERENDER COMPONENT WHEN AUCTION ENDS
-	useEffect(() => {
-		renderUsersActiveAuctions(nfts, auctions);
-	}, [toggleAuctionEnded]);
 
 	// LOADS MINTED NFTS AND ALL AUCTIONS
 	const loadBlockchainData = async (nftContract, dispatch) => {
@@ -82,9 +77,15 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 	// CREATE NEW AUCTION INSTANCE FOR EACH AUCTION
 	const createAuctionInstance = (abi, address) => new web3.eth.Contract(abi, address);
 
+	// REMOVES AUCTION INSTANCE WHEN AUCTION ENDS
+	const removeAuctionInstance = (endedAuctionAddress) => {
+		setAuctionInstances((prevAuctionInstances) =>
+			prevAuctionInstances.filter((instance) => instance.options.address !== endedAuctionAddress),
+		);
+	};
+
 	// INITIALIZE WEB3 INSTANCES FOR ALL AUCTIONS
 	const loadAuctionInstances = async (auctions, web3, nftContract) => {
-		console.log('auction instances loaded');
 		const activeAuctions = await Promise.all(
 			auctions.map(async (auction) => {
 				const activeAuction = await getActiveAuction(web3, nftContract, auction.nftId);
@@ -119,11 +120,13 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 					web3={web3}
 					contract={nftContract}
 					dispatch={dispatch}
-					nfts={nfts}
 					nft={nft}
 					auction={auction}
 					loading={loading}
 					handleAuctionStart={handleAuctionStart}
+					auctionEnded={auctionEnded}
+					setAuctionEnded={setAuctionEnded}
+					removeAuctionInstance={removeAuctionInstance}
 					auctionInstances={auctionInstances}
 					auctions={auctions}
 				/>,
