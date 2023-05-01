@@ -354,10 +354,10 @@ export const loadHighestBid = async (auction) => {
 	}
 };
 
-export const getActiveAuction = async (nftContract, nftId) => {
+export const getActiveAuction = async (web3, nftContract, nftId) => {
 	const auctionAddresses = await nftContract.methods.getAuctionAddresses(nftId).call();
 	for (const auctionAddress of auctionAddresses) {
-		const auctionInstance = new Web3.eth.Contract(AuctionABI, auctionAddress);
+		const auctionInstance = new web3.eth.Contract(Auction.abi, auctionAddress);
 		const active = await auctionInstance.methods.isActive().call();
 		if (active) {
 			return auctionInstance;

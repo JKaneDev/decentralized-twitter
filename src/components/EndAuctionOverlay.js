@@ -5,7 +5,7 @@ import Countdown from 'react-countdown';
 import { loadHighestBid, isAuctionEnded } from '@components/store/interactions';
 import { bidsSelector } from '@components/store/selectors';
 
-const EndAuctionOverlay = ({ auctionContract, account, endTime, onEndAuction, bids }) => {
+const EndAuctionOverlay = ({ auctionContract, account, endTime, endAuction, bids }) => {
 	const [highestBid, setHighestBid] = useState(null);
 	const [ended, setEnded] = useState(false);
 
@@ -41,7 +41,7 @@ const EndAuctionOverlay = ({ auctionContract, account, endTime, onEndAuction, bi
 			<span className={styles.highestBid}>Highest Bid: {highestBid} ETH</span>
 			<button
 				className={styles.endAuctionBtn}
-				onClick={() => onEndAuction(auctionContract, account)}
+				onClick={() => endAuction(auctionContract, account)}
 				disabled={ended}
 				style={{ backgroundColor: ended ? 'rgb(55, 0, 0)' : 'rgb(135, 0, 0)' }}
 			>

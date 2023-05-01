@@ -2,7 +2,7 @@ import styles from '@components/styles/Auction.module.css';
 import Web3 from 'web3';
 import { useState } from 'react';
 
-const OverlayContent = ({ nftId, onStartAuction }) => {
+const OverlayContent = ({ nftId, handleAuctionStart }) => {
 	const [price, setPrice] = useState(0);
 	const [duration, setDuration] = useState(0);
 
@@ -41,7 +41,7 @@ const OverlayContent = ({ nftId, onStartAuction }) => {
 					onClick={() => {
 						const startingPriceInWei = Web3.utils.toWei(price, 'ether');
 						const auctionDurationInSeconds = duration * 3600;
-						onStartAuction(nftId, startingPriceInWei, auctionDurationInSeconds);
+						handleAuctionStart(nftId, startingPriceInWei, auctionDurationInSeconds);
 					}}
 				>
 					Start Auction

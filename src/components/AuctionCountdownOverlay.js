@@ -1,8 +1,8 @@
 import styles from '@components/styles/Auction.module.css';
 import Countdown from 'react-countdown';
 
-const AuctionCountdownOverlay = ({ endTime, onEndAuction }) => {
-	const renderer = ({ hours, minutes, seconds, completed }) => {
+const AuctionCountdownOverlay = ({ endTime }) => {
+	const renderer = ({ hours, minutes, seconds }) => {
 		return (
 			<span>
 				{hours}:{minutes}:{seconds}
