@@ -2,7 +2,7 @@ import AuctionABI from '../abis/Auction.json';
 import styles from '@components/styles/Auction.module.css';
 import NFTCard from '@components/components/NFTCard';
 import UsersActiveAuctionsCard from '@components/components/UsersActiveAuctionCard.';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
@@ -46,14 +46,12 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 	useEffect(() => {
 		if (nftContractLoaded) {
 			loadBlockchainData(nftContract, dispatch);
-			console.log('1. BLOCKCHAIN DATA LOADED');
 		}
 	}, []);
 
 	// RENDER NFTS AFTER LOADED
 	useEffect(() => {
 		if (nfts.length > 0 && auctionsLoaded) {
-			console.log('RENDER USERS ACTIVE AUCTIONS');
 			renderUsersNFTs(nfts, auctions);
 			renderUsersActiveAuctions(nfts, auctions);
 		}
@@ -62,7 +60,6 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 	// INITIALIZE AUCTION INSTANCES
 	useEffect(() => {
 		loadAuctionInstances(auctions, web3, nftContract);
-		console.log('AUCTION INSTANCES LOADED');
 	}, [auctions, auctionsLoaded]);
 
 	// ENSURES TIMER RENDERS IMMEDIATELY AFTER AUCTION START
@@ -73,7 +70,6 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 	// RERENDER COMPONENT WHEN AUCTION ENDS
 	useEffect(() => {
 		renderUsersActiveAuctions(nfts, auctions);
-		console.log('AUCTION ENDED TOGGLED');
 	}, [toggleAuctionEnded]);
 
 	// LOADS MINTED NFTS AND ALL AUCTIONS
@@ -105,7 +101,8 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 		subscribeToAuctionEvents(auction, dispatch);
 		setToggleAuctionActivation(!toggleAuctionActivation);
 		setLoading(false);
-		console.log('AUCTION STARTED');
+		console.log('AUCTION INSTANCE', auction);
+		console.log('AUCTION STARTED', auctions);
 	};
 
 	// FETCH NFTS THAT BELONG TO USER, RENDER TO DOM
