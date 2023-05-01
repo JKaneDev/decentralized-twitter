@@ -1,10 +1,8 @@
 import styles from '@components/styles/Auction.module.css';
 import EndAuctionOverlay from '@components/components/EndAuctionOverlay';
+import { endAuction } from '@components/store/interactions';
 
-const UsersActiveAuctionsCard = ({ nft, auction, auctionInstance }) => {
-	// // CURRENTLY ACTIVE CHECK
-	// const currentlyActive = (auction) => auction && auction.nftId === nft.id && auction.endTime * 1000 > Date.now();
-
+const UsersActiveAuctionsCard = ({ account, nft, auction, auctionInstance }) => {
 	return (
 		<div key={nft.id} className={styles.nftCard}>
 			<>

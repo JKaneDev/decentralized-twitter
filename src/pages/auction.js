@@ -1,7 +1,7 @@
 import AuctionABI from '../abis/Auction.json';
 import styles from '@components/styles/Auction.module.css';
 import NFTCard from '@components/components/NFTCard';
-import UsersActiveAuctionsCard from '@components/components/UsersActiveAuctionCard.';
+import UsersActiveAuctionsCard from '@components/components/UsersActiveAuctionCard';
 import { useEffect, useState, useRef } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -136,7 +136,6 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 		for (const nft of usersNfts) {
 			// AUCTIONS THAT BELONG TO THE USER
 			const auction = auctions.find((auction) => auction.nftId === nft.id);
-			console.log('Found match:', auction);
 
 			// SMART CONTRACT INSTANCE
 			if (auction) {
@@ -146,7 +145,13 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 
 				if (auctionInstance) {
 					cards.push(
-						<UsersActiveAuctionsCard key={nft.id} ntf={nft} auction={auction} auctionInstance={auctionInstance} />,
+						<UsersActiveAuctionsCard
+							key={nft.id}
+							account={account}
+							nft={nft}
+							auction={auction}
+							auctionInstance={auctionInstance}
+						/>,
 					);
 				}
 			}
