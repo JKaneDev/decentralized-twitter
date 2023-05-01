@@ -8,6 +8,7 @@ const UsersActiveAuctionsCard = ({ account, nft, auction, auctionInstance }) => 
 			<>
 				<iframe src={nft.htmlURI} title={`NFT ${nft.id}`} className={styles.iframe}></iframe>
 				<EndAuctionOverlay
+					id={nft.id}
 					auctionContract={auctionInstance}
 					account={account}
 					endTime={auction.endTime * 1000}
