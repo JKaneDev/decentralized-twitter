@@ -8,12 +8,14 @@ import { isAuctionEnded } from '@components/store/interactions';
 const NFTCard = ({
 	web3,
 	contract,
+	account,
 	dispatch,
 	nft,
 	auction,
 	loading,
 	handleAuctionStart,
 	auctionEnded,
+	setAuctionEnded,
 	removeAuctionInstance,
 	auctionInstances,
 }) => {
@@ -81,7 +83,15 @@ const NFTCard = ({
 			isAuctionActive(auction) ? (
 				<>
 					<iframe ref={iframeRef} src={nft.htmlURI} title={`NFT ${nft.id}`} className={styles.iframe}></iframe>
-					<AuctionCountdownOverlay endTime={auction.endTime * 1000} />
+					<AuctionCountdownOverlay
+						web3={web3}
+						id={nft.id}
+						account={account}
+						endTime={auction.endTime * 1000}
+						auction={auction}
+						auctionEnded={auctionEnded}
+						setAuctionEnded={setAuctionEnded}
+					/>
 				</>
 			) : (
 				// If auction is completed or not active, render default card and hover overlay:

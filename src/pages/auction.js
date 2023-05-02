@@ -117,6 +117,7 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 				<NFTCard
 					key={nft.id}
 					web3={web3}
+					account={account}
 					contract={nftContract}
 					dispatch={dispatch}
 					nft={nft}
@@ -124,6 +125,7 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 					loading={loading}
 					handleAuctionStart={handleAuctionStart}
 					auctionEnded={auctionEnded}
+					setAuctionEnded={setAuctionEnded}
 					removeAuctionInstance={removeAuctionInstance}
 					auctionInstances={auctionInstances}
 				/>,
