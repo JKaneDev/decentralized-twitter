@@ -22,7 +22,7 @@ import {
 	auctionCreated,
 	auctionDataLoaded,
 	highestBidIncreased,
-	highestBidLoaded,
+	auctionEnded,
 } from './actions';
 import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
@@ -302,22 +302,36 @@ export const mintNFT = async (nftContract, account, tweetId, metadataURI, imageU
 	}
 };
 
-export const loadAllAuctions = async (nftContract, dispatch) => {
+export const loadAllAuctions = async (nftContract, dispatch, web3) => {
 	const auctionStream = await nftContract.getPastEvents('AuctionCreated', { fromBlock: 0, toBlock: 'latest' });
 	const allAuctionData = [];
-	auctionStream.forEach((auction) => {
-		const auctionData = {
-			originalOwner: auction.returnValues.originalOwner,
-			seller: auction.returnValues.seller,
-			nftId: auction.returnValues.nftId,
-			startingPrice: auction.returnValues.startingPrice,
-			duration: auction.returnValues.auctionDuration,
-			endTime: auction.returnValues.auctionEndTime,
-			auctionAddress: auction.returnValues.auctionAddress,
-		};
-		allAuctionData.push(auctionData);
-	});
-	dispatch(auctionDataLoaded(allAuctionData));
+
+	(async () => {
+		const endedPromises = auctionStream.map(async (auction) => {
+			const auctionData = {
+				originalOwner: auction.returnValues.originalOwner,
+				seller: auction.returnValues.seller,
+				nftId: auction.returnValues.nftId,
+				startingPrice: auction.returnValues.startingPrice,
+				duration: auction.returnValues.auctionDuration,
+				endTime: auction.returnValues.auctionEndTime,
+				auctionAddress: auction.returnValues.auctionAddress,
+			};
+
+			// Check if ended
+			const isEnded = await isAuctionEnded(web3, auctionData);
+
+			// Only add to redux if not ended
+			if (!isEnded) {
+				allAuctionData.push(auctionData);
+			}
+		});
+
+		// Wait for all ended checks to complete
+		await Promise.all(endedPromises);
+
+		dispatch(auctionDataLoaded(allAuctionData));
+	})();
 };
 
 export const startAuction = async (nftContract, account, dispatch, nftId, startingPrice, auctionDuration) => {
@@ -326,6 +340,7 @@ export const startAuction = async (nftContract, account, dispatch, nftId, starti
 			.createAuction(nftId, startingPrice, auctionDuration)
 			.send({ from: account });
 		const event = auction.events.AuctionCreated.returnValues;
+		console.log('Start Auction Event:', event);
 		if (event) {
 			const auctionData = {
 				originalOwner: event.originalOwner,
@@ -380,9 +395,10 @@ export const isAuctionEnded = async (web3, auction) => {
 	return ended;
 };
 
-export const endAuction = async (auctionContract, account) => {
+export const endAuction = async (auctionContract, account, nftId, dispatch) => {
 	try {
 		const auction = await auctionContract.methods.endAuction().send({ from: account });
+		dispatch(auctionEnded(nftId));
 		console.log('Auction Event:', auction);
 	} catch (error) {
 		console.error('Error ending auction: ', error);

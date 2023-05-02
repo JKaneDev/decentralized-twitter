@@ -1,11 +1,24 @@
 import styles from '@components/styles/Auction.module.css';
 import { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import Countdown from 'react-countdown';
 import { loadHighestBid, isAuctionEnded } from '@components/store/interactions';
 import { bidsSelector } from '@components/store/selectors';
 
-const EndAuctionOverlay = ({ web3, id, auction, auctionContract, account, endTime, endAuction, bids }) => {
+const EndAuctionOverlay = ({
+	web3,
+	id,
+	auction,
+	auctionContract,
+	account,
+	endTime,
+	endAuction,
+	auctionEnded,
+	setAuctionEnded,
+	bids,
+}) => {
+	const dispatch = useDispatch();
+
 	const [highestBid, setHighestBid] = useState(null);
 	const [ended, setEnded] = useState(false);
 
@@ -50,8 +63,8 @@ const EndAuctionOverlay = ({ web3, id, auction, auctionContract, account, endTim
 			<button
 				className={styles.endAuctionBtn}
 				onClick={async () => {
-					await endAuction(auctionContract, account);
-					setEnded(true);
+					await endAuction(auctionContract, account, id, dispatch);
+					setAuctionEnded(!auctionEnded);
 				}}
 				disabled={ended}
 				style={{ backgroundColor: ended ? 'rgb(55, 0, 0)' : 'rgb(135, 0, 0)' }}

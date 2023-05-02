@@ -14,10 +14,8 @@ const NFTCard = ({
 	loading,
 	handleAuctionStart,
 	auctionEnded,
-	setAuctionEnded,
 	removeAuctionInstance,
 	auctionInstances,
-	auctions,
 }) => {
 	const overlayRef = useRef(null);
 	const iframeRef = useRef(null);
@@ -30,7 +28,7 @@ const NFTCard = ({
 				overlay.style.height = `${iframe.offsetHeight}px`;
 			}
 		}
-	}, [auction]);
+	}, [auction, auctionEnded]);
 
 	useEffect(() => {
 		const checkAuctionEnded = async () => {
@@ -43,10 +41,6 @@ const NFTCard = ({
 		if (auction) {
 			checkAuctionEnded();
 		}
-	}, [web3, auction, auctionEnded]);
-
-	useEffect(() => {
-		console.log('Ended (useEffect):', auctionEnded);
 	}, [auctionEnded]);
 
 	const toggleOverlay = (visible, iframeRef, overlayRef) => {
@@ -59,12 +53,16 @@ const NFTCard = ({
 	};
 
 	// SHOWS START AUCTION DIALOG OVERLAY IF THE NFT HAS NOT BEEN TO AUCTION OR IF THE AUCTION IS OVER
-	const shouldShowStartAuctionOverlay = (auction) =>
-		!auction || (auction && auction.endTime * 1000 < Date.now() && auctionEnded);
+	const shouldShowStartAuctionOverlay = (auction) => {
+		if (!auction) return true;
+
+		const hasInstance = auctionInstances.some((instance) => instance.options.address === auction.auctionAddress);
+
+		return !hasInstance || (auction.endTime * 1000 < Date.now() && auctionEnded);
+	};
 
 	const isAuctionActive = (auction) => {
-		console.log('Auctions:', auctions);
-		console.log('Auction Instances:', auctionInstances);
+		if (!auction) return false;
 		return auctionInstances.find((instance) => instance.options.address === auction.auctionAddress);
 	};
 

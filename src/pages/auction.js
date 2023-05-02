@@ -11,12 +11,10 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import 'react-tabs/style/react-tabs.css';
 import {
 	startAuction,
-	endAuction,
 	loadMintedNFTs,
 	loadAllAuctions,
 	subscribeToAuctionEvents,
 	getActiveAuction,
-	loadTweetNFT,
 } from '@components/store/interactions';
 import {
 	accountSelector,
@@ -39,9 +37,14 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 
 	const [loading, setLoading] = useState(false);
 	const [toggleAuctionActivation, setToggleAuctionActivation] = useState(false);
-	const [toggleAuctionEnded, setToggleAuctionEnded] = useState(false);
 	const [auctionInstances, setAuctionInstances] = useState([]);
 	const [auctionEnded, setAuctionEnded] = useState(false);
+
+	// LOADS MINTED NFTS AND ALL AUCTIONS
+	const loadBlockchainData = async (nftContract, dispatch) => {
+		await loadMintedNFTs(nftContract, dispatch);
+		await loadAllAuctions(nftContract, dispatch, web3);
+	};
 
 	// ON FIRST RENDER
 	useEffect(() => {
@@ -61,18 +64,14 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 	// INITIALIZE AUCTION INSTANCES
 	useEffect(() => {
 		loadAuctionInstances(auctions, web3, nftContract);
+		console.log('Auctions Array: (AFTER END AUCTION CALL):', auctions);
+		console.log('Auction Instances: (AFTER END AUCTION CALL):', auctionInstances);
 	}, [auctions, auctionsLoaded, auctionEnded]);
 
 	// ENSURES TIMER RENDERS IMMEDIATELY AFTER AUCTION START
 	useEffect(() => {
 		loadBlockchainData(nftContract, dispatch);
 	}, [toggleAuctionActivation]);
-
-	// LOADS MINTED NFTS AND ALL AUCTIONS
-	const loadBlockchainData = async (nftContract, dispatch) => {
-		await loadMintedNFTs(nftContract, dispatch);
-		await loadAllAuctions(nftContract, dispatch);
-	};
 
 	// CREATE NEW AUCTION INSTANCE FOR EACH AUCTION
 	const createAuctionInstance = (abi, address) => new web3.eth.Contract(abi, address);
@@ -125,10 +124,8 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 					loading={loading}
 					handleAuctionStart={handleAuctionStart}
 					auctionEnded={auctionEnded}
-					setAuctionEnded={setAuctionEnded}
 					removeAuctionInstance={removeAuctionInstance}
 					auctionInstances={auctionInstances}
-					auctions={auctions}
 				/>,
 			);
 		}
@@ -158,6 +155,8 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 							nft={nft}
 							auction={auction}
 							auctionInstance={auctionInstance}
+							auctionEnded={auctionEnded}
+							setAuctionEnded={setAuctionEnded}
 						/>,
 					);
 				}

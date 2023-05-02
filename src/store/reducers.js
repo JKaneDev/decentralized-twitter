@@ -90,7 +90,14 @@ function auction(state = { allAuctions: { loaded: false, data: [], bids: {} } },
 					data: updatedAuctionsData,
 				},
 			};
-
+		case 'AUCTION_ENDED':
+			return {
+				...state,
+				allAuctions: {
+					...state.allAuctions,
+					data: state.allAuctions.data.filter((auction) => auction.nftId !== action.nftId),
+				},
+			};
 		case 'BID_INCREASED':
 			return {
 				...state,

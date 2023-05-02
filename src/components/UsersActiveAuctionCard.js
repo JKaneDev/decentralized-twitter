@@ -2,7 +2,7 @@ import styles from '@components/styles/Auction.module.css';
 import EndAuctionOverlay from '@components/components/EndAuctionOverlay';
 import { endAuction } from '@components/store/interactions';
 
-const UsersActiveAuctionsCard = ({ web3, account, nft, auction, auctionInstance }) => {
+const UsersActiveAuctionsCard = ({ web3, account, nft, auction, auctionInstance, auctionEnded, setAuctionEnded }) => {
 	return (
 		<div key={nft.id} className={styles.nftCard}>
 			<>
@@ -13,6 +13,8 @@ const UsersActiveAuctionsCard = ({ web3, account, nft, auction, auctionInstance 
 					auction={auction}
 					auctionContract={auctionInstance}
 					account={account}
+					auctionEnded={auctionEnded}
+					setAuctionEnded={setAuctionEnded}
 					endTime={auction.endTime * 1000}
 					endAuction={endAuction}
 				/>

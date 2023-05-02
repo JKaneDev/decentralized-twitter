@@ -156,3 +156,10 @@ export function highestBidIncreased(auctionAddress, highestBid) {
 		highestBid,
 	};
 }
+
+export function auctionEnded(nftId) {
+	return {
+		type: 'AUCTION_ENDED',
+		nftId,
+	};
+}
