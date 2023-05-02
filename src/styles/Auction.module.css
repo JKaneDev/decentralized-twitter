@@ -166,6 +166,7 @@
 	padding: 0.75rem 1rem;
 	border: 2px solid #363636;
 	transition: all 0.35s ease-in-out;
+	margin-top: auto;
 }
 
 #priceField::-webkit-inner-spin-button,
@@ -247,8 +248,49 @@
 	background-color: rgb(105, 0, 0);
 }
 
+.bidBtn {
+	color: white;
+	background-color: #1da1f2;
+	padding: 0.25rem 0.35rem;
+	font-weight: bold;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	margin-top: 10px;
+	width: 50px;
+	transition: all 0.3s ease-in-out;
+	height: 30px;
+}
+
+.bidBtn:hover {
+	background-color: #0f81c7;
+}
+
 .highestBid {
 	font-size: 1.25ch;
 	font-weight: lighter;
 	padding-top: 0.25rem;
+}
+
+.bidWrapper {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.priceInput {
+	height: 30px;
+	width: 110px;
+	margin-top: auto;
+	padding: 0.25rem 0.35rem;
+	border: 2px solid #363636;
+	transition: all 0.35s ease-in-out;
+	border-radius: 5px;
+}
+
+.priceInput:active,
+.priceInput:focus {
+	outline: none;
+	border: 2px solid #1da1f2;
 }

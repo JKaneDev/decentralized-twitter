@@ -99,6 +99,7 @@ function auction(state = { allAuctions: { loaded: false, data: [], bids: {} } },
 				},
 			};
 		case 'BID_INCREASED':
+			console.log('Reducer - Bid Increased: ', action);
 			return {
 				...state,
 				allAuctions: {

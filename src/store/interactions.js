@@ -340,7 +340,6 @@ export const startAuction = async (nftContract, account, dispatch, nftId, starti
 			.createAuction(nftId, startingPrice, auctionDuration)
 			.send({ from: account });
 		const event = auction.events.AuctionCreated.returnValues;
-		console.log('Start Auction Event:', event);
 		if (event) {
 			const auctionData = {
 				originalOwner: event.originalOwner,
@@ -385,8 +384,19 @@ export const subscribeToAuctionEvents = async (auction, dispatch) => {
 	auction.events.HighestBidIncreased({}, async (error, event) => {
 		const highestBid = await auction.methods.getHighestBid().call();
 		dispatch(highestBidIncreased(auction, highestBid));
-		console.log('New Highest Bid:', highestBid);
 	});
+
+	auction.events.AuctionEnded({}, async (error, event) => {
+		console.log('Auction Ended Event: ', event);
+	});
+};
+
+export const placeBid = async (auction, account, amount) => {
+	try {
+		await auction.methods.bid().send({ from: account, value: amount });
+	} catch (error) {
+		console.error('Error placing bid: ', error);
+	}
 };
 
 export const isAuctionEnded = async (web3, auction) => {
@@ -398,8 +408,8 @@ export const isAuctionEnded = async (web3, auction) => {
 export const endAuction = async (auctionContract, account, nftId, dispatch) => {
 	try {
 		const auction = await auctionContract.methods.endAuction().send({ from: account });
-		dispatch(auctionEnded(nftId));
 		console.log('Auction Event:', auction);
+		dispatch(auctionEnded(nftId));
 	} catch (error) {
 		console.error('Error ending auction: ', error);
 	}

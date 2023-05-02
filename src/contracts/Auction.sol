@@ -102,6 +102,7 @@ contract Auction is ReentrancyGuard {
             seller.transfer(sellerShare);
             twitterContract.receiveFunds{value: twitterFee}();
         }
+
         // Transfer NFT ownership to highest bidder
         if (highestBid >= startingPrice) {
             nftContract.safeTransferFrom(seller, highestBidder, nftId);
@@ -109,6 +110,7 @@ contract Auction is ReentrancyGuard {
             ended = true;
             return;
         }
+
             
         ended = true;    
         emit AuctionEnded(highestBidder, highestBid, royaltyAmount, twitterFee, sellerShare);

@@ -2,6 +2,7 @@ import AuctionABI from '../abis/Auction.json';
 import styles from '@components/styles/Auction.module.css';
 import NFTCard from '@components/components/NFTCard';
 import UsersActiveAuctionsCard from '@components/components/UsersActiveAuctionCard';
+import MarketplaceCard from '@components/components/MarketplaceCard';
 import { useEffect, useState, useRef } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -64,8 +65,6 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 	// INITIALIZE AUCTION INSTANCES
 	useEffect(() => {
 		loadAuctionInstances(auctions, web3, nftContract);
-		console.log('Auctions Array: (AFTER END AUCTION CALL):', auctions);
-		console.log('Auction Instances: (AFTER END AUCTION CALL):', auctionInstances);
 	}, [auctions, auctionsLoaded, auctionEnded]);
 
 	// ENSURES TIMER RENDERS IMMEDIATELY AFTER AUCTION START
@@ -168,6 +167,37 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 		return cards;
 	};
 
+	const renderMarketplace = (nfts, auctions) => {
+		const activeAuctions = auctions.filter((auction) => auction.seller !== account);
+		const cards = [];
+
+		for (const auction of activeAuctions) {
+			const matchingNFT = nfts.find((nft) => nft.id === auction.nftId);
+
+			if (auction) {
+				const auctionInstance = auctionInstances.find(
+					(instance) => instance.options.address === auction.auctionAddress,
+				);
+
+				if (auctionInstance) {
+					cards.push(
+						<MarketplaceCard
+							key={auction.nftId}
+							web3={web3}
+							account={account}
+							id={auction.nftId}
+							nft={matchingNFT}
+							auction={auction}
+							contract={auctionInstance}
+							endTime={auction.endTime * 1000}
+						/>,
+					);
+				}
+			}
+		}
+		return cards;
+	};
+
 	return (
 		<div className={styles.container}>
 			<div className={styles.back}>
@@ -186,7 +216,7 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 				<TabPanel className={styles.tabContent}>{renderUsersNFTs(nfts, auctions)}</TabPanel>
 				<TabPanel className={styles.tabContent}>{renderUsersActiveAuctions(nfts, auctions)}</TabPanel>
 				<TabPanel className={styles.tabContent}></TabPanel>
-				<TabPanel className={styles.tabContent}></TabPanel>
+				<TabPanel className={styles.tabContent}>{renderMarketplace(nfts, auctions)}</TabPanel>
 			</Tabs>
 		</div>
 	);
