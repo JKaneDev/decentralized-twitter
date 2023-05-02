@@ -263,10 +263,13 @@ export const getTweetTokenBalance = async (tweetToken, account, dispatch) => {
 export const loadMintedNFTs = async (nftContract, dispatch) => {
 	const mintStream = await nftContract.getPastEvents('NFTMinted', { fromBlock: 0, toBlock: 'latest' });
 	const allMintData = [];
-	mintStream.forEach((mint) => {
+	mintStream.forEach(async (mint) => {
+		const nftId = mint.returnValues.nftId;
+		const currentOwner = await nftContract.methods.ownerOf(nftId).call();
+
 		const mintData = {
-			id: mint.returnValues.nftId,
-			owner: mint.returnValues.owner,
+			id: nftId,
+			owner: currentOwner,
 			tweetId: mint.returnValues.tweetId,
 			metadataURI: mint.returnValues.fullUri,
 			imageURI: mint.returnValues.imageURI,

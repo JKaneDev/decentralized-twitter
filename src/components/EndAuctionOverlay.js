@@ -44,7 +44,8 @@ const EndAuctionOverlay = ({
 
 	const loadBlockchainData = async (auctionContract) => {
 		const currentHighestBid = await loadHighestBid(auctionContract);
-		setHighestBid(currentHighestBid);
+		const formatted = web3.utils.fromWei(currentHighestBid, 'ether');
+		setHighestBid(formatted);
 	};
 
 	const renderer = ({ hours, minutes, seconds }) => {
