@@ -169,30 +169,36 @@ const Tweet = ({
 										/>
 									) : (
 										<>
-											<FontAwesomeIcon
-												icon={faComment}
-												size='lg'
-												onClick={handleShowCommentDialog}
-												id={styles.comment}
-											/>
+											<div className={styles.iconWrapper}>
+												<FontAwesomeIcon
+													icon={faComment}
+													size='lg'
+													onClick={handleShowCommentDialog}
+													id={styles.comment}
+												/>
+											</div>
 											<span>{comCount}</span>
 										</>
 									)}
 								</span>
 								<span className={styles.actions}>
-									<FontAwesomeIcon icon={faRetweet} size='lg' />
+									<div className={styles.iconWrapper}>
+										<FontAwesomeIcon icon={faRetweet} size='lg' />
+									</div>
 									<span>0</span>
 								</span>
 								<span className={styles.actions}>
-									<FontAwesomeIcon
-										icon={faHeart}
-										size='lg'
-										id={styles.like}
-										style={{ color: liked ? 'red' : '#757575' }}
-										onClick={() => {
-											likeTweet(twitter, account, dispatch, id);
-										}}
-									/>
+									<div className={styles.iconWrapper}>
+										<FontAwesomeIcon
+											icon={faHeart}
+											size='lg'
+											id={styles.like}
+											style={{ color: liked ? 'red' : '#757575' }}
+											onClick={() => {
+												likeTweet(twitter, account, dispatch, id);
+											}}
+										/>
+									</div>
 									<span style={{ color: liked ? 'red' : '#757575' }}>{likeCount}</span>
 								</span>
 								<span className={styles.actions} style={{ color: tipped ? 'rgb(0, 148, 0)' : '#757575' }}>
@@ -209,7 +215,9 @@ const Tweet = ({
 										/>
 									) : (
 										<>
-											<FontAwesomeIcon icon={faHandHoldingUsd} size='lg' onClick={handleShowTipper} id={styles.tip} />
+											<div className={styles.iconWrapper}>
+												<FontAwesomeIcon icon={faHandHoldingUsd} size='lg' onClick={handleShowTipper} id={styles.tip} />
+											</div>
 											<span>{tipCount}</span>
 										</>
 									)}
@@ -226,7 +234,9 @@ const Tweet = ({
 											content={content}
 										/>
 									) : isTweetUsers ? (
-										<FontAwesomeIcon icon={faEthereum} size='lg' onClick={handleShowMint} />
+										<div className={styles.iconWrapper}>
+											<FontAwesomeIcon icon={faEthereum} size='lg' onClick={handleShowMint} />
+										</div>
 									) : (
 										<></>
 									)}

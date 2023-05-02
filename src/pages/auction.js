@@ -223,7 +223,6 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 };
 
 function mapStateToProps(state) {
-	console.log({ nfts: mintedNFTsSelector(state) });
 	return {
 		web3: web3Selector(state),
 		account: accountSelector(state),
