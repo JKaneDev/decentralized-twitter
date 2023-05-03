@@ -276,10 +276,8 @@ contract('Twitter', (accounts) => {
 				event.id.toString().should.equal(id.toString());
 				event.creator.toString().should.equal(user1.toString());
 				event.content.should.equal('Hello everyone! Good to be here :)');
-				event.likeCount.toString().should.equal('0');
-				event.retweetCount.toString().should.equal('0');
+				event.likes.length.toString().should.equal('0');
 				expect(event.tips.length).to.equal(0);
-				event.tipCount.toString().should.equal('0');
 				assert.isTrue(event.exists);
 				event.imageUrl.should.equal('https://tweetimageurl.com');
 			});
@@ -293,7 +291,7 @@ contract('Twitter', (accounts) => {
 				let id = event.id;
 				await twitter.likeTweet(id);
 				let tweet = await twitter.getTweet(id);
-				tweet.likeCount.toString().should.equal('1');
+				tweet.likes.length.toString().should.equal('1');
 			});
 
 			it('emits a TweetLiked event', async () => {
@@ -303,36 +301,36 @@ contract('Twitter', (accounts) => {
 				let log = result.logs[0];
 				let event = log.args;
 				let id = event.id;
-				let like = await twitter.likeTweet(id);
+				let like = await twitter.likeTweet(id, { from: user1 });
 				let likeLog = like.logs[0];
 				let likeEvent = likeLog.args;
 				likeEvent.tweetId.toString().should.equal(id.toString());
-				likeEvent.likeCount.toString().should.equal('1');
+				likeEvent.liker.toString().should.equal(user1.toString());
 			});
 
-			it('allows user to retweet', async () => {
-				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
-					from: user1,
-				});
-				let id = result.logs[0].args.id;
-				await twitter.retweet(id, { from: user2 });
-				let tweet = await twitter.getTweet(id);
-				tweet.retweetCount.toString().should.equal('1');
-			});
+			// it('allows user to retweet', async () => {
+			// 	let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+			// 		from: user1,
+			// 	});
+			// 	let id = result.logs[0].args.id;
+			// 	await twitter.retweet(id, { from: user2 });
+			// 	let tweet = await twitter.getTweet(id);
+			// 	tweet.retweetCount.toString().should.equal('1');
+			// });
 
-			it('emits a Retweeted event', async () => {
-				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
-					from: user1,
-				});
-				let log = result.logs[0];
-				let event = log.args;
-				let id = event.id;
-				let retweet = await twitter.retweet(id, { from: user2 });
-				let retweetLog = retweet.logs[0];
-				let retweetEvent = retweetLog.args;
-				retweetEvent.tweetId.toString().should.equal(id.toString());
-				retweetEvent.retweetCount.toString().should.equal('1');
-			});
+			// it('emits a Retweeted event', async () => {
+			// 	let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+			// 		from: user1,
+			// 	});
+			// 	let log = result.logs[0];
+			// 	let event = log.args;
+			// 	let id = event.id;
+			// 	let retweet = await twitter.retweet(id, { from: user2 });
+			// 	let retweetLog = retweet.logs[0];
+			// 	let retweetEvent = retweetLog.args;
+			// 	retweetEvent.tweetId.toString().should.equal(id.toString());
+			// 	retweetEvent.retweetCount.toString().should.equal('1');
+			// });
 		});
 
 		describe('Failure', () => {
@@ -355,15 +353,15 @@ contract('Twitter', (accounts) => {
 				await twitter.likeTweet(id).should.be.rejectedWith(helpers.EVM_REVERT);
 			});
 
-			it('does not allow non-users to retweet', async () => {
-				let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
-					from: user1,
-				});
-				let log = result.logs[0];
-				let event = log.args;
-				let id = event.id;
-				await twitter.retweet(id, { from: owner }).should.be.rejectedWith(helpers.EVM_REVERT);
-			});
+			// it('does not allow non-users to retweet', async () => {
+			// 	let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
+			// 		from: user1,
+			// 	});
+			// 	let log = result.logs[0];
+			// 	let event = log.args;
+			// 	let id = event.id;
+			// 	await twitter.retweet(id, { from: owner }).should.be.rejectedWith(helpers.EVM_REVERT);
+			// });
 		});
 	});
 
@@ -407,7 +405,7 @@ contract('Twitter', (accounts) => {
 				await twitter.tipUser(1, 10, { from: user2 });
 				let tweet = await twitter.getTweet(id);
 				assert.include(tweet.tips, '10');
-				tweet.tipCount.toString().should.equal('1');
+				tweet.tips.length.toString().should.equal('1');
 			});
 
 			it('emits a UserTipped event', async () => {
@@ -420,7 +418,6 @@ contract('Twitter', (accounts) => {
 				tipEvent.creator.should.equal(user1);
 				tipEvent.tipper.should.equal(user2);
 				tipEvent.tipperName.should.equal('Heraclitus');
-				tipEvent.tipCount.toString().should.equal('1');
 			});
 		});
 

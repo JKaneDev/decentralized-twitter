@@ -230,6 +230,7 @@ contract Twitter {
         require(!likedTweets[msg.sender][_tweetId], "You have already liked this tweet");
                 
         likedTweets[msg.sender][_tweetId] = true;
+        tweets[_tweetId].likes.push(msg.sender);
 
         emit TweetLiked(_tweetId, msg.sender);
     }
