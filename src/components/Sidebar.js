@@ -34,7 +34,7 @@ const Sidebar = () => {
 	return (
 		<section className={styles.sidebar}>
 			<div className={styles.iconWrapper} id={styles.twitterIcon}>
-				<FontAwesomeIcon icon={faTwitter} size='3x' />
+				<FontAwesomeIcon icon={faTwitter} size='2x' />
 			</div>
 			<div className={styles.iconWrapper}>
 				<FontAwesomeIcon icon={faHome} size='lg' />

@@ -17,10 +17,10 @@
 	margin-right: calc(20vw - 10rem);
 	border-left: 1px solid #252525;
 	border-right: 1px solid #252525;
+	height: 100vh;
 }
 
 .content {
-	height: 100vh;
 	width: 800px;
 	display: flex;
 	flex-direction: column;
