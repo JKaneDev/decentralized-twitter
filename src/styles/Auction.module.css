@@ -59,7 +59,7 @@
 }
 
 .iframe {
-	width: clamp(500px, 620px, 670px);
+	width: clamp(550px, 660px, 750px);
 	height: auto;
 	border: none;
 }
@@ -97,8 +97,7 @@
 
 .overlay {
 	position: absolute;
-	width: 73%;
-	min-width: 500px;
+	width: clamp(550px, 660px, 750px);
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.5);
 	display: flex;

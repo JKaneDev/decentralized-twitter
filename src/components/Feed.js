@@ -24,6 +24,7 @@ const Feed = ({ twitter, allTweets, allTweetsLoaded }) => {
 						<Tweet
 							key={tweet.id}
 							id={tweet.id}
+							tweet={tweet}
 							name={tweet.name}
 							address={tweet.creator}
 							content={tweet.content}

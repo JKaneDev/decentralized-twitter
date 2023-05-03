@@ -16,7 +16,7 @@ import {
 	twitterSelector,
 } from '@components/store/selectors';
 
-const TweetPage = ({ twitter, users, usersLoaded, account, tweets, tweetsLoaded }) => {
+const TweetPage = ({ twitter, users, account, tweets }) => {
 	const dispatch = useDispatch();
 	const router = useRouter();
 	const { id } = router.query;

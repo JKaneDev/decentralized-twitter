@@ -3,7 +3,7 @@ import { tweetTokenSelector } from '@components/store/selectors';
 import { connect, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
-const Tipper = ({ id, tipped, setTipped, amount, setAmount, account, twitter, tweetToken, onClose }) => {
+const Tipper = ({ id, setShowTipper, setTipped, amount, setAmount, account, twitter, tweetToken, onClose }) => {
 	const dispatch = useDispatch();
 
 	const closeTipper = () => {
@@ -17,6 +17,7 @@ const Tipper = ({ id, tipped, setTipped, amount, setAmount, account, twitter, tw
 		const amountToInt = parseInt(amount);
 		tipUser(tweetToken, twitter, account, dispatch, id, amountToInt);
 		setTipped(true);
+		setShowTipper(false);
 	};
 
 	return (

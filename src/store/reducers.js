@@ -250,6 +250,7 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 			};
 		case 'TIPS_LOADED':
 			const { allTipData } = action;
+
 			const updatedTweetsWithTips = state.allTweets.data.map((tweet) => {
 				// Filter the comments that belong to the current tweet
 				const tipsForTweet = allTipData.filter((tip) => tip.tweetId === tweet.id);

@@ -3,7 +3,7 @@ import styles from '@components/styles/Auction.module.css';
 import NFTCard from '@components/components/NFTCard';
 import UsersActiveAuctionsCard from '@components/components/UsersActiveAuctionCard';
 import MarketplaceCard from '@components/components/MarketplaceCard';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';

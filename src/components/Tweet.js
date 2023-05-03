@@ -5,7 +5,7 @@ import { connect, useDispatch } from 'react-redux';
 import { faComment, faRetweet, faHeart, faHandHoldingUsd } from '@fortawesome/free-solid-svg-icons';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { likeTweet, loadLikeData, loadCommentData, loadTipData } from '@components/store/interactions';
+import { likeTweet, loadLikeData, loadCommentData, loadTipData, loadAllTweets } from '@components/store/interactions';
 import {
 	allTweetsSelector,
 	twitterSelector,
@@ -25,12 +25,10 @@ const Tweet = ({
 	content,
 	comCount,
 	likeCount,
-	tipCount,
 	profilePic,
 	time,
 	twitter,
 	tweets,
-	tweetsLoaded,
 	account,
 	commentDialogOpen,
 }) => {
@@ -47,6 +45,7 @@ const Tweet = ({
 	const [isTweetUsers, setIsTweetUsers] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [tweetImage, setTweetImage] = useState('');
+	const [tipCount, setTipCount] = useState(0);
 
 	const loadBlockchainData = async (twitter, dispatch) => {
 		await loadTipData(twitter, dispatch);
@@ -116,9 +115,6 @@ const Tweet = ({
 
 	useEffect(() => {
 		loadBlockchainData(twitter, dispatch);
-	}, []);
-
-	useEffect(() => {
 		const currentTweet = tweets.find((tweet) => tweet.id === id);
 		if (currentTweet && currentTweet.creator === account) {
 			setIsTweetUsers(true);
@@ -134,6 +130,18 @@ const Tweet = ({
 	useEffect(() => {
 		checkUserInteractions(tweets);
 	}, [account, twitter, id, tweets]);
+
+	useEffect(() => {
+		loadBlockchainData(twitter, dispatch);
+		const getCurrentTipCount = () => {
+			const currentTweet = tweets.find((tweet) => tweet.id === id);
+			if (currentTweet) {
+				const tipCount = currentTweet.tips.length;
+				setTipCount(tipCount);
+			}
+		};
+		getCurrentTipCount();
+	}, [tipped]);
 
 	return (
 		<>
@@ -212,6 +220,7 @@ const Tweet = ({
 											account={account}
 											twitter={twitter}
 											onClose={handleCloseTipper}
+											setShowTipper={setShowTipper}
 										/>
 									) : (
 										<>
