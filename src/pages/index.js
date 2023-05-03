@@ -2,7 +2,7 @@ import styles from '@components/styles/Home.module.css';
 import { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { loadWeb3, loadAccount, loadTweetToken, loadTweetNFT, loadTwitter, loadProfiles } from '../store/interactions';
-import { accountSelector, allProfilesSelector, allTweetsSelector } from '../store/selectors';
+import { accountSelector, allProfilesSelector } from '../store/selectors';
 import Sidebar from '../components/Sidebar';
 import CreateProfile from '@components/components/CreateProfile';
 import CreateTweet from '@components/components/CreateTweet';

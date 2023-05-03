@@ -1,8 +1,0 @@
-.feed {
-	min-height: 100vh;
-	border-right: 1px solid #252525;
-	margin-right: 4rem;
-	display: flex;
-	flex-direction: column;
-	background-color: white;
-}

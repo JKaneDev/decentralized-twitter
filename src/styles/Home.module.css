@@ -2,7 +2,7 @@
 	min-height: 100vh;
 	width: 100vw;
 	display: grid;
-	grid-template-columns: minmax(100px, 225px) 1fr;
+	grid-template-columns: minmax(140px, 300px) 1fr;
 }
 
 .sidebar {
@@ -12,11 +12,26 @@
 .contentWrapper {
 	grid-column: 2 / -1;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
+	margin-right: calc(20vw - 10rem);
+	border-left: 1px solid #252525;
+	border-right: 1px solid #252525;
 }
 
 .content {
 	height: 100vh;
 	width: 800px;
-	margin: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.feed {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background-color: black;
+	width: clamp(680px, 770px, 900px);
 }

@@ -59,7 +59,7 @@
 }
 
 .iframe {
-	width: 75%;
+	width: clamp(500px, 620px, 670px);
 	height: auto;
 	border: none;
 }
