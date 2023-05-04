@@ -1,6 +1,7 @@
 import { get } from 'lodash';
 import { createSelector } from 'reselect';
 import moment from 'moment';
+import { formatBalance } from './helpers';
 
 const account = (state) => get(state, 'web3.account');
 export const accountSelector = createSelector(account, (a) => a);
@@ -13,9 +14,6 @@ export const tweetTokenSelector = createSelector(tweetToken, (t) => t);
 
 const tweetTokenLoaded = (state) => get(state, 'tweetToken.loaded', false);
 export const tweetTokenLoadedSelector = createSelector(tweetTokenLoaded, (tl) => tl);
-
-const tweetTokenBalance = (state) => get(state, 'tweetToken.balance', 0);
-export const tweetTokenBalanceSelector = createSelector(tweetTokenBalance, (balance) => balance);
 
 const nft = (state) => get(state, 'nft.nftContract');
 export const nftSelector = createSelector(nft, (nft) => nft);
@@ -68,3 +66,27 @@ export const allAuctionsSelector = createSelector(allAuctions, (auctions) => auc
 
 const bids = (state) => get(state, 'auction.allAuctions.bids', {});
 export const bidsSelector = createSelector(bids, (bids) => bids);
+
+const maticBalance = (state) => get(state, 'web3.balance', 0);
+export const maticBalanceSelector = createSelector(maticBalance, (balance) => balance);
+
+const tweetTokenBalance = (state) => get(state, 'tweetToken.balance', 0);
+export const tweetTokenBalanceSelector = createSelector(tweetTokenBalance, (balance) => formatBalance(balance));
+
+const twitterMaticBalance = (state) => get(state, 'twitter.maticBalance', 0);
+export const twitterMaticBalanceSelector = createSelector(twitterMaticBalance, (balance) => formatBalance(balance));
+
+const twitterTokenBalance = (state) => get(state, 'twitter.tweetTokenBalance', 0);
+export const twitterTokenBalanceSelector = createSelector(twitterTokenBalance, (balance) => formatBalance(balance));
+
+const maticDepositAmount = (state) => get(state, 'twitter.maticDepositAmount', 0);
+export const maticDepositAmountSelector = createSelector(maticDepositAmount, (amount) => amount);
+
+const tokenDepositAmount = (state) => get(state, 'twitter.tokenDepositAmount', 0);
+export const tokenDepositAmountSelector = createSelector(tokenDepositAmount, (amount) => amount);
+
+const maticWithdrawAmount = (state) => get(state, 'twitter.maticWithdrawAmount', 0);
+export const maticWithdrawAmountSelector = createSelector(maticWithdrawAmount, (amount) => amount);
+
+const tokenWithdrawAmount = (state) => get(state, 'twitter.tokenWithdrawAmount', 0);
+export const tokenWithdrawAmountSelector = createSelector(tokenWithdrawAmount, (amount) => amount);

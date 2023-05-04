@@ -12,6 +12,7 @@ const Sidebar = () => {
 	};
 
 	const [showText, setShowText] = useState(false);
+	const [showTokenHub, setShowTokenHub] = useState(false);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -32,39 +33,45 @@ const Sidebar = () => {
 	}, []);
 
 	return (
-		<section className={styles.sidebar}>
-			<div className={styles.iconWrapper} id={styles.twitterIcon}>
-				<FontAwesomeIcon icon={faTwitter} size='2x' />
-			</div>
-			<div className={styles.iconWrapper}>
-				<FontAwesomeIcon icon={faHome} size='lg' />
-				{showText && <span className={styles.linkText}>Home</span>}
-			</div>
-			<div className={styles.iconWrapper}>
-				<FontAwesomeIcon icon={faSearch} size='lg' />
-				{showText && <span className={styles.linkText}>Search</span>}
-			</div>
-			<div className={styles.iconWrapper}>
-				<FontAwesomeIcon icon={faBell} size='lg' />
-				{showText && <span className={styles.linkText}>Notifications</span>}
-			</div>
-			<div className={styles.iconWrapper}>
-				<FontAwesomeIcon icon={faEnvelope} size='lg' />
-				{showText && <span className={styles.linkText}>Messages</span>}
-			</div>
-			<div className={styles.iconWrapper}>
-				<FontAwesomeIcon icon={faUser} size='lg' />
-				{showText && <span className={styles.linkText}>Profile</span>}
-			</div>
-			<div className={styles.iconWrapper}>
-				<FontAwesomeIcon icon={faBookmark} size='lg' />
-				{showText && <span className={styles.linkText}>Bookmarks</span>}
-			</div>
-			<div className={styles.iconWrapper} onClick={handleNavigation}>
-				<FontAwesomeIcon icon={faCoins} size='lg' />
-				{showText && <span className={styles.linkText}>Auction</span>}
-			</div>
-		</section>
+		<>
+			{!showTokenHub ? (
+				<section className={styles.sidebar}>
+					<div className={styles.iconWrapper} id={styles.twitterIcon}>
+						<FontAwesomeIcon icon={faTwitter} size='2x' />
+					</div>
+					<div className={styles.iconWrapper}>
+						<FontAwesomeIcon icon={faHome} size='lg' />
+						{showText && <span className={styles.linkText}>Home</span>}
+					</div>
+					<div className={styles.iconWrapper}>
+						<FontAwesomeIcon icon={faSearch} size='lg' />
+						{showText && <span className={styles.linkText}>Search</span>}
+					</div>
+					<div className={styles.iconWrapper}>
+						<FontAwesomeIcon icon={faBell} size='lg' />
+						{showText && <span className={styles.linkText}>Notifications</span>}
+					</div>
+					<div className={styles.iconWrapper}>
+						<FontAwesomeIcon icon={faEnvelope} size='lg' />
+						{showText && <span className={styles.linkText}>Messages</span>}
+					</div>
+					<div className={styles.iconWrapper}>
+						<FontAwesomeIcon icon={faUser} size='lg' />
+						{showText && <span className={styles.linkText}>Profile</span>}
+					</div>
+					<div className={styles.iconWrapper}>
+						<FontAwesomeIcon icon={faBookmark} size='lg' />
+						{showText && <span className={styles.linkText}>Bookmarks</span>}
+					</div>
+					<div className={styles.iconWrapper} onClick={handleNavigation}>
+						<FontAwesomeIcon icon={faCoins} size='lg' />
+						{showText && <span className={styles.linkText}>Auction</span>}
+					</div>
+				</section>
+			) : (
+				<></>
+			)}
+		</>
 	);
 };
 

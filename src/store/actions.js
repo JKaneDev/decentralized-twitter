@@ -210,3 +210,31 @@ export function tweetTokenBought(purchaseData) {
 		purchaseData,
 	};
 }
+
+export function maticDepositAmountChanged(amount) {
+	return {
+		type: 'MATIC_DEPOSIT_AMOUNT_CHANGED',
+		amount,
+	};
+}
+
+export function tokenDepositAmountChanged(amount) {
+	return {
+		type: 'TOKEN_DEPOSIT_AMOUNT_CHANGED',
+		amount,
+	};
+}
+
+export function maticWithdrawAmountChanged(amount) {
+	return {
+		type: 'MATIC_WITHDRAW_AMOUNT_CHANGED',
+		amount,
+	};
+}
+
+export function tokenWithdrawAmountChanged(amount) {
+	return {
+		type: 'TOKEN_WITHDRAW_AMOUNT_CHANGED',
+		amount,
+	};
+}
