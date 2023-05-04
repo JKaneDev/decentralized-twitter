@@ -8,31 +8,22 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Twitter {
 
-    // Contract owner address
-    address payable public owner;
-    // Tweet Token contract
-    TweetToken public tweetToken;
-    // Tweet NFT contract
-    TweetNFT public tweetNFT;
-    // Store baseURI for NFT (IPFS);
-    string public baseURI;
-    // Store users
-    mapping(address => User) public users; 
-    // Store followers for each user
-    mapping(address => address[]) public followers; 
-    // Store user's following relationships 
-    mapping(address => mapping(address => bool)) public following; 
-    // Store the index of the follower in the _followers array (user => (follower => index))
-    mapping(address => mapping(address => uint256)) private followerIndices; 
-    // Tweet ID index counter
-    uint256 private nextTweetId = 1;
-    // Store tweets
-    mapping(uint256 => Tweet) public tweets;
-    // Store liked tweets
-    mapping(address => mapping(uint256 => bool)) private likedTweets;
-    // Store auction addresses
-    mapping(uint256 => address) public tweetAuctions;
-    // Store account IDs
+    address constant MATIC = address(0);    
+    address payable public owner;    
+    TweetToken public tweetToken;    
+    uint256 private constant conversionRate = 1000; // 1 MATIC = 1000 TWEET
+    TweetNFT public tweetNFT;    
+    string public baseURI;    
+    mapping(address => User) public users;    
+    mapping(address => mapping(address => uint256)) public balances; 
+    mapping(address => address[]) public followers;     
+    mapping(address => mapping(address => bool)) public following;     
+    mapping(address => mapping(address => uint256)) private followerIndices;     
+    uint256 private nextTweetId = 1;    
+    mapping(uint256 => Tweet) public tweets;    
+    mapping(address => mapping(uint256 => bool)) private likedTweets;    
+    mapping(uint256 => address) public tweetAuctions;    
+
     using Counters for Counters.Counter;
     Counters.Counter private accountIds;
 
@@ -41,6 +32,15 @@ contract Twitter {
         tweetToken = TweetToken(_tweetTokenAddress);
         tweetNFT = TweetNFT(_nftAddress);
         baseURI = "https://ipfs.io/ipfs/";
+    }
+    
+    modifier onlyOwner {
+        require(msg.sender == owner, "Caller is not the owner");
+        _;
+    }
+
+    fallback() external {
+        revert();
     }
 
     struct User {
@@ -65,6 +65,8 @@ contract Twitter {
         uint256 timestamp;
     }
 
+    event Deposit(address token, address user, uint256 amount, uint256 balance);
+    event Withdraw(address token, address user, uint256 amount, uint256 balance);
     event AccountCreated(address userAddress, uint256 id, string name, string bio, string profilePictureURL, bool exists);
     event NameUpdated(address indexed user, string newName);
     event BioUpdated(address indexed user, string newBio);
@@ -78,6 +80,39 @@ contract Twitter {
     event UserTipped(uint256 amount, uint256 tweetId, address creator, address tipper, string tipperName);
     event TwitterReceivedFunds(address contractFrom, uint256 contractFromAmount);
     event FundsWithdrawn(address destinationWallet, uint256 balance);
+    event TweetTokenBought(uint256 maticSent, uint256 tokensGiven, address buyersAddress, uint256 buyersNewBalance);
+
+    function depositMatic() payable public {
+        balances[MATIC][msg.sender] += msg.value;
+        emit Deposit(MATIC, msg.sender, msg.value, balances[MATIC][msg.sender]);
+    }
+
+    function withdrawMatic(uint _amount) public {
+        require(balances[MATIC][msg.sender] >= _amount);
+        balances[MATIC][msg.sender] -= _amount;
+        (bool success, ) = msg.sender.call{value: _amount}("");
+        require(success, "Transfer failed.");
+        emit Withdraw(MATIC, msg.sender, _amount, balances[MATIC][msg.sender]);
+    }
+
+    function depositTweetToken(address _token, uint256 _amount) public {
+        require(_token != MATIC);
+        require(TweetToken(_token).transferFrom(msg.sender, address(this), _amount));
+        balances[_token][msg.sender] += _amount; 
+        emit Deposit(_token, msg.sender, _amount, balances[_token][msg.sender]);
+    }
+
+    function withdrawTweetToken(address _token, uint256 _amount) public {
+        require(_token != address(0));
+        require(balances[_token][msg.sender] >= _amount);
+        balances[_token][msg.sender] -= _amount;
+        require(TweetToken(_token).transfer(msg.sender, _amount));
+        emit Withdraw(_token, msg.sender, _amount, balances[_token][msg.sender]);
+    }
+
+    function balanceOf(address _token, address _user) public view returns (uint256) {
+        return balances[_token][_user];
+    }
 
     function createAccount(string memory _name, string memory _bio, string memory _profilePictureURL) public {
         // Check if user doesn't alreadty exist
@@ -250,8 +285,20 @@ contract Twitter {
 
     function withdraw() external {
         require(msg.sender == owner, "Only the owner can withdraw funds");
-        owner.transfer(address(this).balance);
+        payable(owner).transfer(address(this).balance);
 
         emit FundsWithdrawn(msg.sender, address(this).balance);
+    }
+
+    function buyTweetTokens() external payable {
+        require(msg.value > 0, "You must send some MATIC to buy tokens");
+
+        uint256 tokenGet = msg.value * conversionRate;
+        require(tweetToken.balanceOf(address(this)) >= tokenGet, "Insufficient Tweet Tokens available");
+
+        tweetToken.transfer(msg.sender, tokenGet);
+        uint256 buyersNewBalance = tweetToken.balanceOf(msg.sender);
+
+        emit TweetTokenBought(msg.value, tokenGet, msg.sender, buyersNewBalance);
     }
 }

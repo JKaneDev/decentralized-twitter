@@ -14,7 +14,10 @@ import {
 	userTipped,
 	tipsLoaded,
 	likesLoaded,
-	fetchedTweetTokenBalance,
+	maticBalanceLoaded,
+	tweetTokenBalanceLoaded,
+	twitterMaticBalanceLoaded,
+	twitterTokenBalanceLoaded,
 	commentCreated,
 	commentsLoaded,
 	nftMinted,
@@ -23,11 +26,13 @@ import {
 	auctionDataLoaded,
 	highestBidIncreased,
 	auctionEnded,
+	tweetTokenBought,
 } from './actions';
 import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
+import { MATIC_ADDRESS } from './helpers';
 
 export const loadWeb3 = async (dispatch) => {
 	if (typeof window.ethereum !== 'undefined') {
@@ -177,6 +182,120 @@ export const likeTweet = async (twitter, account, dispatch, tweetId) => {
 	}
 };
 
+export const loadBalances = async (dispatch, web3, tweetToken, twitter, account) => {
+	if (typeof account !== 'undefined') {
+		// Ether balance in wallet
+		const etherBalance = await web3.eth.getBalance(account);
+		dispatch(maticBalanceLoaded(maticBalance));
+
+		// Token balance in wallet
+		const tokenBalance = await tweetToken.methods.balanceOf(account).call();
+		dispatch(tweetTokenBalanceLoaded(tokenBalance));
+
+		// Ether balance on exchange
+		const twitterMaticBalance = await twitter.methods.balanceOf(ETH_ADDRESS, account).call();
+		dispatch(twitterMaticBalanceLoaded(twitterMaticBalance));
+
+		// Token balance in wallet
+		const twitterTokenBalance = await twitter.methods.balanceOf(tweetToken.options.address, account).call();
+		dispatch(twitterTokenBalanceLoaded(twitterTokenBalance));
+
+		// Trigger all balances loaded
+		dispatch(balancesLoaded());
+	} else {
+		window.alert('Please login with MetaMask');
+	}
+};
+
+export const depositMatic = (dispatch, twitter, web3, amount, account) => {
+	twitter.methods
+		.depositMatic()
+		.send({ from: account, value: web3.utils.toWei(amount, 'ether') })
+		.on('transactionHash', (hash) => {
+			dispatch(balancesLoading());
+		})
+		.on('error', (error) => {
+			console.error(error);
+			window.alert(`There was an error!`);
+		});
+};
+
+export const withdrawMatic = (dispatch, twitter, web3, amount, account) => {
+	twitter.methods
+		.withdrawEther(web3.utils.toWei(amount, 'ether'))
+		.send({ from: account })
+		.on('transactionHash', (hash) => {
+			dispatch(balancesLoading());
+		})
+		.on('error', (error) => {
+			console.error(error);
+			window.alert(`There was an error!`);
+		});
+};
+
+export const depositTweetToken = (dispatch, twitter, tweetToken, web3, amount, account) => {
+	amount = web3.utils.toWei(amount, 'ether');
+
+	tweetToken.methods
+		.approve(twitter.options.address, amount)
+		.send({ from: account })
+		.on('transactionHash', (hash) => {
+			twitter.methods
+				.depositTweetToken(token.options.address, amount)
+				.send({ from: account })
+				.on('transactionHash', (hash) => {
+					dispatch(balancesLoading());
+				})
+				.on('error', (error) => {
+					console.error(error);
+					window.alert(`There was an error!`);
+				});
+		});
+};
+
+export const withdrawTweetToken = (dispatch, twitter, tweetToken, web3, amount, account) => {
+	twitter.methods
+		.withdrawTweetToken(tweetToken.options.address, web3.utils.toWei(amount, 'ether'))
+		.send({ from: account })
+		.on('transactionHash', (hash) => {
+			dispatch(balancesLoading());
+		})
+		.on('error', (error) => {
+			console.error(error);
+			window.alert(`There was an error!`);
+		});
+};
+
+export const buyTweetToken = (dispatch, twitter, amount, account) => {
+	twitter.methods
+		.buyTweetTokens()
+		.send({ from: account, value: amount })
+		.on('transactionHash', (hash) => {
+			dispatch(balancesLoading());
+		})
+		.on('error', (error) => {
+			console.error('Error buying tokens!', error);
+			window.alert('There was an error buying tokens');
+		});
+};
+
+export const subscribeToTwitterEvents = async (twitter, dispatch) => {
+	twitter.events.Deposit({}, (error, event) => {
+		console.log('Deposit event received: ', event);
+		dispatch(balancesLoaded());
+	});
+
+	twitter.events.Withdraw({}, (error, event) => {
+		console.log('Withdraw event received: ', event);
+		dispatch(balancesLoaded());
+	});
+
+	twitter.events.TweetTokenBought({}, (error, event) => {
+		console.log('Withdraw event received: ', event);
+		dispatch(tweetTokenBought(event.returnValues));
+	});
+};
+
 export const loadTipData = async (twitter, dispatch) => {
 	const tipStream = await twitter.getPastEvents('UserTipped', { fromBlock: 0, toBlock: 'latest' });
 	const allTipData = [];
@@ -247,16 +366,6 @@ export const createComment = async (twitter, account, dispatch, tweetId, content
 		}
 	} catch (error) {
 		console.error('Error creating comment: ', error);
-	}
-};
-
-export const getTweetTokenBalance = async (tweetToken, account, dispatch) => {
-	try {
-		const balance = await tweetToken.methods.getBalanceOf(account).call({ from: account });
-		dispatch(fetchedTweetTokenBalance(balance));
-		window.alert(`Your balance is: ${balance}`);
-	} catch (error) {
-		console.error('Error fetching balance: ', error);
 	}
 };
 

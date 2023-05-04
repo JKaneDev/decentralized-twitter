@@ -1,7 +1,8 @@
-// require('dotenv').config();
-// const { MNEMONIC, PROJECT_ID } = process.env;
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+require('dotenv').config();
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const { PROJECT_ID, PRIVATE_KEY } = process.env;
+const mumbaiRpcUrl = `https://polygon-mumbai.infura.io/v3/${PROJECT_ID}`;
 
 module.exports = {
 	networks: {
@@ -9,6 +10,13 @@ module.exports = {
 			host: '127.0.0.1',
 			port: 7545,
 			network_id: 5777,
+		},
+		mumbai: {
+			provider: () => new HDWalletProvider(PRIVATE_KEY, mumbaiRpcUrl),
+			network_id: 80001,
+			confirmations: 2,
+			timeoutBlocks: 200,
+			skipDryRun: true,
 		},
 	},
 

@@ -27,7 +27,7 @@ module.exports = async function (deployer) {
 	const twitterInstance = await Twitter.deployed();
 	const twitterAddress = twitterInstance.address;
 
-	let amount = web3.utils.toWei('1000', 'ether');
+	let amount = await tweetTokenInstance.totalSupply();
 	await tweetTokenInstance.approve(twitterAddress, amount);
 
 	await tweetNFTInstance.setTwitterContractAddress(twitterAddress);

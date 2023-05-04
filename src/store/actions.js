@@ -163,3 +163,50 @@ export function auctionEnded(nftId) {
 		nftId,
 	};
 }
+
+export function maticBalanceLoaded(balance) {
+	return {
+		type: 'MATIC_BALANCE_LOADED',
+		balance,
+	};
+}
+
+export function tweetTokenBalanceLoaded(balance) {
+	return {
+		type: 'TWEET_TOKEN_BALANCE_LOADED',
+		balance,
+	};
+}
+
+export function twitterMaticBalanceLoaded(balance) {
+	return {
+		type: 'TWITTER_MATIC_BALANCE_LOADED',
+		balance,
+	};
+}
+
+export function twitterTokenBalanceLoaded(balance) {
+	return {
+		type: 'TWITTER_TOKEN_BALANCE_LOADED',
+		balance,
+	};
+}
+
+export function balancesLoading() {
+	return {
+		type: 'BALANCES_LOADING',
+	};
+}
+
+export function balancesLoaded() {
+	return {
+		type: 'BALANCES_LOADED',
+	};
+}
+
+export function tweetTokenBought(purchaseData) {
+	return {
+		type: 'TWEET_TOKEN_BOUGHT',
+		purchaseData,
+	};
+}
