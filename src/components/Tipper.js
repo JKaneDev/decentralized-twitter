@@ -1,9 +1,9 @@
 import { tipUser } from '@components/store/interactions';
 import { tweetTokenSelector } from '@components/store/selectors';
-import { Log } from 'ethers';
-import { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTwitter } from '@fortawesome/free-brands-svg-icons';
 
 const Tipper = ({ id, setShowTipper, setTipped, amount, setAmount, account, twitter, tweetToken, onClose }) => {
 	const dispatch = useDispatch();
@@ -23,7 +23,14 @@ const Tipper = ({ id, setShowTipper, setTipped, amount, setAmount, account, twit
 				setShowTipper(false);
 			}}
 		>
-			<input type='text' onChange={(e) => setAmount(e.target.value)} />
+			<span className='tip-amount'>
+				{amount || 0} <span className='tip-text'>TWEET</span>
+				<div className='icon'>
+					<FontAwesomeIcon icon={faTwitter} size='s' />
+				</div>
+			</span>
+			<input type='text' onChange={(e) => setAmount(e.target.value)} maxLength='5' />
+
 			<div className='button-wrapper'>
 				<button className='close' onClick={closeTipper}>
 					Close
@@ -51,13 +58,13 @@ const StyledTipper = styled.form`
 	width: 120px;
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
-	padding: 0.5rem;
+	padding: 0.25rem 0.5rem 0.5rem 0.5rem;
 	border-radius: 4px;
 	transition: 0.35s all ease-in-out;
 
 	input {
 		padding: 0.25rem 0.5rem;
+		margin: 0.25rem 0 0.5rem 0;
 		width: 100%;
 		outline: none;
 	}
@@ -95,6 +102,25 @@ const StyledTipper = styled.form`
 		border: none;
 		border-radius: 4px;
 		background-color: #1da1f2;
+	}
+
+	.tip-amount {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		color: white;
+		font-size: 1.4ch;
+		margin-left: auto;
+		font-weight: bold;
+	}
+
+	.tip-text {
+		color: #1da1f2;
+	}
+
+	.icon {
+		color: #1da1f2;
+		padding-top: 0.1rem;
 	}
 `;
 

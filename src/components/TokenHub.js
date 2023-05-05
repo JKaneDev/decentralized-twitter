@@ -117,10 +117,6 @@ function mapStateToProps(state) {
 	const balancesLoading = balancesLoadingSelector(state);
 	const tokenPurchase = tokenPurchaseSelector(state);
 
-	// console.log({
-	// 	tweetTokenBalance: tweetTokenBalanceSelector(state),
-	// });
-
 	return {
 		web3: web3Selector(state),
 		account: accountSelector(state),
@@ -131,11 +127,6 @@ function mapStateToProps(state) {
 		twitterMaticBalance: twitterMaticBalanceSelector(state),
 		twitterTokenBalance: twitterTokenBalanceSelector(state),
 		balancesLoading,
-		showForm: !tokenPurchase.making,
-		maticDepositAmount: maticDepositAmountSelector(state),
-		maticWithdrawAmount: maticWithdrawAmountSelector(state),
-		tokenDepositAmount: tokenDepositAmountSelector(state),
-		tokenWithdrawAmount: tokenWithdrawAmountSelector(state),
 		tokenPurchase,
 		showPurchaseTotal: tokenPurchase.amount,
 	};
