@@ -1,18 +1,19 @@
-import { connect } from 'react-redux';
 import { useEffect, useState } from 'react';
 import styles from '@components/styles/Sidebar.module.css';
+import TokenHub from './TokenHub';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faSearch, faBell, faEnvelope, faHome, faBookmark, faCoins } from '@fortawesome/free-solid-svg-icons';
 import { faTwitter } from '@fortawesome/free-brands-svg-icons';
 import Router from 'next/router';
 
-const Sidebar = () => {
+const Sidebar = ({ showTokenHub, setShowTokenHub }) => {
+	const [showText, setShowText] = useState(false);
+
+	const sidebarClass = showTokenHub ? `${styles.sidebar} ${styles.expandedSidebar}` : styles.sidebar;
+
 	const handleNavigation = () => {
 		Router.push('/auction');
 	};
-
-	const [showText, setShowText] = useState(false);
-	const [showTokenHub, setShowTokenHub] = useState(false);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -35,8 +36,8 @@ const Sidebar = () => {
 	return (
 		<>
 			{!showTokenHub ? (
-				<section className={styles.sidebar}>
-					<div className={styles.iconWrapper} id={styles.twitterIcon}>
+				<section className={sidebarClass}>
+					<div className={styles.iconWrapper} id={styles.twitterIcon} onClick={() => setShowTokenHub(true)}>
 						<FontAwesomeIcon icon={faTwitter} size='2x' />
 					</div>
 					<div className={styles.iconWrapper}>
@@ -69,16 +70,11 @@ const Sidebar = () => {
 					</div>
 				</section>
 			) : (
-				<></>
+				// Show TokenHub
+				<TokenHub setShowTokenHub={setShowTokenHub} />
 			)}
 		</>
 	);
 };
 
-function mapStateToProps(state) {
-	return {
-		// TODO
-	};
-}
-
-export default connect(mapStateToProps)(Sidebar);
+export default Sidebar;

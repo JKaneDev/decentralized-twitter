@@ -67,8 +67,11 @@ export const allAuctionsSelector = createSelector(allAuctions, (auctions) => auc
 const bids = (state) => get(state, 'auction.allAuctions.bids', {});
 export const bidsSelector = createSelector(bids, (bids) => bids);
 
+const balancesLoading = (state) => get(state, 'twitter.balancesLoading', false);
+export const balancesLoadingSelector = createSelector(balancesLoading, (loading) => loading);
+
 const maticBalance = (state) => get(state, 'web3.balance', 0);
-export const maticBalanceSelector = createSelector(maticBalance, (balance) => balance);
+export const maticBalanceSelector = createSelector(maticBalance, (balance) => formatBalance(balance));
 
 const tweetTokenBalance = (state) => get(state, 'tweetToken.balance', 0);
 export const tweetTokenBalanceSelector = createSelector(tweetTokenBalance, (balance) => formatBalance(balance));
@@ -90,3 +93,6 @@ export const maticWithdrawAmountSelector = createSelector(maticWithdrawAmount, (
 
 const tokenWithdrawAmount = (state) => get(state, 'twitter.tokenWithdrawAmount', 0);
 export const tokenWithdrawAmountSelector = createSelector(tokenWithdrawAmount, (amount) => amount);
+
+const tokenPurchase = (state) => get(state, 'twitter.tokenPurchase', {});
+export const tokenPurchaseSelector = createSelector(tokenPurchase, (purchase) => purchase);

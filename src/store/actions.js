@@ -238,3 +238,23 @@ export function tokenWithdrawAmountChanged(amount) {
 		amount,
 	};
 }
+
+export function tokenPurchaseAmountChanged(amount) {
+	return {
+		type: 'TOKEN_PURCHASE_AMOUNT_CHANGED',
+		amount,
+	};
+}
+
+export function makingPurchase() {
+	return {
+		type: 'MAKING_PURCHASE',
+	};
+}
+
+export function madePurchase(purchaseData) {
+	return {
+		type: 'MADE_PURCHASE',
+		purchaseData,
+	};
+}

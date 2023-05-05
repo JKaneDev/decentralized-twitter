@@ -5,6 +5,10 @@
 	grid-template-columns: minmax(140px, 300px) 1fr;
 }
 
+.home.expanded {
+	grid-template-columns: minmax(290px, 300px) 1fr;
+}
+
 .sidebar {
 	grid-column: 1 / 2;
 }

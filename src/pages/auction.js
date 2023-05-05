@@ -210,12 +210,10 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 				<TabList className={styles.reactTabsTabList}>
 					<Tab className={styles.reactTabsTab}>Your Minted NFTs</Tab>
 					<Tab className={styles.reactTabsTab}>Your Active Auctions</Tab>
-					<Tab className={styles.reactTabsTab}>Sold</Tab>
 					<Tab className={styles.reactTabsTab}>Marketplace</Tab>
 				</TabList>
 				<TabPanel className={styles.tabContent}>{renderUsersNFTs(nfts, auctions)}</TabPanel>
 				<TabPanel className={styles.tabContent}>{renderUsersActiveAuctions(nfts, auctions)}</TabPanel>
-				<TabPanel className={styles.tabContent}></TabPanel>
 				<TabPanel className={styles.tabContent}>{renderMarketplace(nfts, auctions)}</TabPanel>
 			</Tabs>
 		</div>

@@ -11,6 +11,10 @@ import Feed from '@components/components/Feed';
 const Home = ({ account, users }) => {
 	const [accountCreated, setAccountCreated] = useState(false);
 	const [profilePic, setProfilePic] = useState('');
+	const [showTokenHub, setShowTokenHub] = useState(false);
+
+	const homeClass = showTokenHub ? `${styles.home} ${styles.expanded}` : styles.home;
+
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -28,6 +32,7 @@ const Home = ({ account, users }) => {
 		const tweetToken = await loadTweetToken(web3, networkId, dispatch);
 		const tweetNFT = await loadTweetNFT(web3, networkId, dispatch);
 		const twitter = await loadTwitter(web3, networkId, dispatch);
+
 		await loadProfiles(twitter, dispatch);
 	}
 
@@ -52,9 +57,9 @@ const Home = ({ account, users }) => {
 				<CreateProfile setAccountCreated={setAccountCreated} />
 			) : (
 				// Render the Home page if the account is loaded and userAddress exists in state.users
-				<div className={styles.home}>
+				<div className={homeClass}>
 					<div className={styles.sidebar}>
-						<Sidebar />
+						<Sidebar showTokenHub={showTokenHub} setShowTokenHub={setShowTokenHub} />
 					</div>
 					<div className={styles.contentWrapper}>
 						<div className={styles.content}>

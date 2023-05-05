@@ -1,3 +1,5 @@
+const { tokens } = require('../test/helpers');
+
 const Twitter = artifacts.require('Twitter');
 const TweetToken = artifacts.require('TweetToken');
 const TweetNFT = artifacts.require('TweetNFT');
@@ -27,8 +29,15 @@ module.exports = async function (deployer) {
 	const twitterInstance = await Twitter.deployed();
 	const twitterAddress = twitterInstance.address;
 
-	let amount = await tweetTokenInstance.totalSupply();
+	let amount = tokens(100000);
+	console.log('Amount to transfer:', amount.toString());
 	await tweetTokenInstance.approve(twitterAddress, amount);
+
+	let ownerBalance = await tweetTokenInstance.balanceOf(owner);
+	console.log('Owner balance before transfer:', ownerBalance.toString());
+
+	await tweetTokenInstance.transfer(twitterAddress, amount, { from: owner });
+	console.log('Owner balance after transfer:', ownerBalance.toString());
 
 	await tweetNFTInstance.setTwitterContractAddress(twitterAddress);
 };

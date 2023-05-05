@@ -1,0 +1,131 @@
+.back {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	border-bottom: 1px solid #252525;
+	padding: 1rem;
+}
+
+.backBtn {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	background-color: black;
+	border: none;
+	font-size: 1rem;
+	font-weight: lighter;
+	letter-spacing: 0.1rem;
+	transition: all 0.25s ease-in-out;
+}
+
+.backBtn:focus,
+.backBtn:active {
+	border: none;
+	outline: none;
+}
+
+.backBtn:hover {
+	cursor: pointer;
+	color: #1da1f2;
+}
+
+.container {
+	min-height: 100vh;
+	font-family: 'Helvetica', 'Arial', sans-serif;
+	z-index: 2000;
+}
+
+.hubContainers {
+	height: 250px;
+	border: 1px solid #252525;
+	padding: 1rem;
+	margin: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.containerHeader {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-bottom: 1px solid #252525;
+	width: 100%;
+	padding: 0.5rem;
+	font-weight: bolder;
+}
+
+.table {
+	letter-spacing: 0.05rem;
+}
+
+.headerCells {
+	width: 60px;
+	margin-top: 0.5rem;
+	text-align: center;
+}
+
+.tableRow {
+	display: flex;
+	align-items: center;
+	gap: 2rem;
+	border-bottom: 1px solid #252525;
+	padding-bottom: 0.5rem;
+}
+
+.formWrapper {
+	padding: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 0.5rem;
+}
+
+.inputWrapper {
+	display: flex;
+	gap: 0.75rem;
+}
+
+.inputField {
+	padding: 0.5rem 0.75rem;
+	border: 1px solid #363636;
+	transition: all 0.35s ease-in-out;
+}
+
+.inputField:active,
+.inputField:focus {
+	outline: none;
+	border: 1px solid #1da1f2;
+}
+
+.submitBtn {
+	padding: 0 0.75rem;
+	border: none;
+	font-size: 1.5ch;
+	background-color: #1da1f2;
+	transition: all 0.35s ease-in-out;
+}
+
+.submitBtn:hover {
+	cursor: pointer;
+	background-color: #0f81c7;
+}
+
+.purchaseTotal {
+	display: flex;
+	align-items: center;
+	padding: 0.75rem 0.5rem;
+	letter-spacing: 0.05rem;
+	font-size: 1.5ch;
+	text-align: center;
+}
+
+#purchaseHeader {
+	border-bottom: 1px solid #252525;
+	margin-bottom: 0.5rem;
+}
+
+#purchaseContainer {
+	height: 120px;
+}

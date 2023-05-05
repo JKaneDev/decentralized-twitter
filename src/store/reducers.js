@@ -130,14 +130,20 @@ function twitter(state = {}, action) {
 		case 'TWEET_TOKEN_BOUGHT':
 			const { buyersNewBalance } = action.purchaseData;
 			return { ...state, tweetTokenBalance: buyersNewBalance };
-		case 'ETHER_DEPOSIT_AMOUNT_CHANGED':
-			return { ...state, etherDepositAmount: action.amount };
-		case 'ETHER_WITHDRAW_AMOUNT_CHANGED':
-			return { ...state, etherWithdrawAmount: action.amount };
+		case 'MATIC_DEPOSIT_AMOUNT_CHANGED':
+			return { ...state, maticDepositAmount: action.amount };
+		case 'MATIC_WITHDRAW_AMOUNT_CHANGED':
+			return { ...state, maticWithdrawAmount: action.amount };
 		case 'TOKEN_DEPOSIT_AMOUNT_CHANGED':
 			return { ...state, tokenDepositAmount: action.amount };
 		case 'TOKEN_WITHDRAW_AMOUNT_CHANGED':
 			return { ...state, tokenWithdrawAmount: action.amount };
+		case 'TOKEN_PURCHASE_AMOUNT_CHANGED':
+			return { ...state, tokenPurchase: { ...state.tokenPurchase, amount: action.amount } };
+		case 'MAKING_PURCHASE':
+			return { ...state, tokenPurchase: { ...state.tokenPurchase, amount: null, making: true } };
+		case 'MADE_PURCHASE':
+			return { ...state, tokenPurchase: { ...state.tokenPurchase, amount: action.amount, making: false } };
 		default:
 			return state;
 	}

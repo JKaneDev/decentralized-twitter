@@ -27,6 +27,9 @@ import {
 	highestBidIncreased,
 	auctionEnded,
 	tweetTokenBought,
+	balancesLoading,
+	balancesLoaded,
+	madePurchase,
 } from './actions';
 import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
@@ -185,7 +188,7 @@ export const likeTweet = async (twitter, account, dispatch, tweetId) => {
 export const loadBalances = async (dispatch, web3, tweetToken, twitter, account) => {
 	if (typeof account !== 'undefined') {
 		// Ether balance in wallet
-		const etherBalance = await web3.eth.getBalance(account);
+		const maticBalance = await web3.eth.getBalance(account);
 		dispatch(maticBalanceLoaded(maticBalance));
 
 		// Token balance in wallet
@@ -193,7 +196,7 @@ export const loadBalances = async (dispatch, web3, tweetToken, twitter, account)
 		dispatch(tweetTokenBalanceLoaded(tokenBalance));
 
 		// Ether balance on exchange
-		const twitterMaticBalance = await twitter.methods.balanceOf(ETH_ADDRESS, account).call();
+		const twitterMaticBalance = await twitter.methods.balanceOf(MATIC_ADDRESS, account).call();
 		dispatch(twitterMaticBalanceLoaded(twitterMaticBalance));
 
 		// Token balance in wallet
@@ -268,10 +271,13 @@ export const withdrawTweetToken = (dispatch, twitter, tweetToken, web3, amount, 
 
 export const buyTweetToken = (dispatch, twitter, amount, account) => {
 	twitter.methods
-		.buyTweetTokens()
+		.buyTweetTokens(amount)
 		.send({ from: account, value: amount })
 		.on('transactionHash', (hash) => {
 			dispatch(balancesLoading());
+		})
+		.on('receipt', (receipt) => {
+			dispatch(madePurchase(amount));
 		})
 		.on('error', (error) => {
 			console.error('Error buying tokens!', error);
