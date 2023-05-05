@@ -82,17 +82,5 @@ export const twitterMaticBalanceSelector = createSelector(twitterMaticBalance, (
 const twitterTokenBalance = (state) => get(state, 'twitter.tweetTokenBalance', 0);
 export const twitterTokenBalanceSelector = createSelector(twitterTokenBalance, (balance) => formatBalance(balance));
 
-const maticDepositAmount = (state) => get(state, 'twitter.maticDepositAmount', 0);
-export const maticDepositAmountSelector = createSelector(maticDepositAmount, (amount) => amount);
-
-const tokenDepositAmount = (state) => get(state, 'twitter.tokenDepositAmount', 0);
-export const tokenDepositAmountSelector = createSelector(tokenDepositAmount, (amount) => amount);
-
-const maticWithdrawAmount = (state) => get(state, 'twitter.maticWithdrawAmount', 0);
-export const maticWithdrawAmountSelector = createSelector(maticWithdrawAmount, (amount) => amount);
-
-const tokenWithdrawAmount = (state) => get(state, 'twitter.tokenWithdrawAmount', 0);
-export const tokenWithdrawAmountSelector = createSelector(tokenWithdrawAmount, (amount) => amount);
-
 const tokenPurchase = (state) => get(state, 'twitter.tokenPurchase', {});
 export const tokenPurchaseSelector = createSelector(tokenPurchase, (purchase) => purchase);

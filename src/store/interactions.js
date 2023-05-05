@@ -210,65 +210,6 @@ export const loadBalances = async (dispatch, web3, tweetToken, twitter, account)
 	}
 };
 
-export const depositMatic = (dispatch, twitter, web3, amount, account) => {
-	twitter.methods
-		.depositMatic()
-		.send({ from: account, value: web3.utils.toWei(amount, 'ether') })
-		.on('transactionHash', (hash) => {
-			dispatch(balancesLoading());
-		})
-		.on('error', (error) => {
-			console.error(error);
-			window.alert(`There was an error!`);
-		});
-};
-
-export const withdrawMatic = (dispatch, twitter, web3, amount, account) => {
-	twitter.methods
-		.withdrawEther(web3.utils.toWei(amount, 'ether'))
-		.send({ from: account })
-		.on('transactionHash', (hash) => {
-			dispatch(balancesLoading());
-		})
-		.on('error', (error) => {
-			console.error(error);
-			window.alert(`There was an error!`);
-		});
-};
-
-export const depositTweetToken = (dispatch, twitter, tweetToken, web3, amount, account) => {
-	amount = web3.utils.toWei(amount, 'ether');
-
-	tweetToken.methods
-		.approve(twitter.options.address, amount)
-		.send({ from: account })
-		.on('transactionHash', (hash) => {
-			twitter.methods
-				.depositTweetToken(token.options.address, amount)
-				.send({ from: account })
-				.on('transactionHash', (hash) => {
-					dispatch(balancesLoading());
-				})
-				.on('error', (error) => {
-					console.error(error);
-					window.alert(`There was an error!`);
-				});
-		});
-};
-
-export const withdrawTweetToken = (dispatch, twitter, tweetToken, web3, amount, account) => {
-	twitter.methods
-		.withdrawTweetToken(tweetToken.options.address, web3.utils.toWei(amount, 'ether'))
-		.send({ from: account })
-		.on('transactionHash', (hash) => {
-			dispatch(balancesLoading());
-		})
-		.on('error', (error) => {
-			console.error(error);
-			window.alert(`There was an error!`);
-		});
-};
-
 export const buyTweetToken = (web3, dispatch, twitter, amount, account) => {
 	let tokensInWei = web3.utils.toWei(amount, 'ether');
 	let maticValue = web3.utils.toWei((parseFloat(amount) / 1000).toString(), 'ether');
