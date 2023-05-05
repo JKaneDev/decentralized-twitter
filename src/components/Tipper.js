@@ -1,5 +1,7 @@
 import { tipUser } from '@components/store/interactions';
 import { tweetTokenSelector } from '@components/store/selectors';
+import { Log } from 'ethers';
+import { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -12,16 +14,15 @@ const Tipper = ({ id, setShowTipper, setTipped, amount, setAmount, account, twit
 		}
 	};
 
-	const confirmTip = (e) => {
-		e.preventDefault();
-		const amountToInt = parseInt(amount);
-		tipUser(tweetToken, twitter, account, dispatch, id, amountToInt);
-		setTipped(true);
-		setShowTipper(false);
-	};
-
 	return (
-		<StyledTipper onSubmit={(e) => confirmTip(e)}>
+		<StyledTipper
+			onSubmit={(e) => {
+				e.preventDefault();
+				tipUser(tweetToken, twitter, account, dispatch, id, amount);
+				setTipped(true);
+				setShowTipper(false);
+			}}
+		>
 			<input type='text' onChange={(e) => setAmount(e.target.value)} />
 			<div className='button-wrapper'>
 				<button className='close' onClick={closeTipper}>

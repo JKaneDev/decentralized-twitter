@@ -32,6 +32,7 @@ import {
 	tokenDepositAmountChanged,
 	tokenWithdrawAmountChanged,
 	tokenPurchaseAmountChanged,
+	makingPurchase,
 } from '@components/store/actions';
 
 const TokenHub = ({
@@ -83,13 +84,13 @@ const TokenHub = ({
 					<tbody>
 						<tr className={styles.tableRow}>
 							<td className={styles.headerCells}>MATIC</td>
-							<td className={styles.headerCells}>{maticBalance}</td>
-							<td className={styles.headerCells}>{twitterMaticBalance}</td>
+							<td className={styles.headerCells}>{maticBalance || 0}</td>
+							<td className={styles.headerCells}>{twitterMaticBalance || 0}</td>
 						</tr>
 						<tr className={styles.tableRow}>
 							<td className={styles.headerCells}>TWEET</td>
-							<td className={styles.headerCells}>{tweetTokenBalance}</td>
-							<td className={styles.headerCells}>{twitterTokenBalance}</td>
+							<td className={styles.headerCells}>{tweetTokenBalance || 0}</td>
+							<td className={styles.headerCells}>{twitterTokenBalance || 0}</td>
 						</tr>
 					</tbody>
 				</table>
@@ -118,6 +119,7 @@ const TokenHub = ({
 						className={styles.form}
 						onSubmit={(e) => {
 							e.preventDefault();
+
 							depositTweetToken(dispatch, twitter, tweetToken, web3, tokenDepositAmount, account);
 						}}
 					>
@@ -149,13 +151,13 @@ const TokenHub = ({
 					<tbody>
 						<tr className={styles.tableRow}>
 							<td className={styles.headerCells}>MATIC</td>
-							<td className={styles.headerCells}>{maticBalance}</td>
-							<td className={styles.headerCells}>{twitterMaticBalance}</td>
+							<td className={styles.headerCells}>{maticBalance || 0}</td>
+							<td className={styles.headerCells}>{twitterMaticBalance || 0}</td>
 						</tr>
 						<tr className={styles.tableRow}>
 							<td className={styles.headerCells}>TWEET</td>
-							<td className={styles.headerCells}>{tweetTokenBalance}</td>
-							<td className={styles.headerCells}>{twitterTokenBalance}</td>
+							<td className={styles.headerCells}>{tweetTokenBalance || 0}</td>
+							<td className={styles.headerCells}>{twitterTokenBalance || 0}</td>
 						</tr>
 					</tbody>
 				</table>
@@ -210,8 +212,9 @@ const TokenHub = ({
 					className={styles.form}
 					onSubmit={(e) => {
 						e.preventDefault();
-
-						buyTweetToken(dispatch, twitter, tokenPurchase.amount, account);
+						dispatch(makingPurchase());
+						buyTweetToken(web3, dispatch, twitter, tokenPurchase.amount, account);
+						dispatch(tokenPurchaseAmountChanged(''));
 					}}
 				>
 					<div className={styles.inputWrapper}>
@@ -244,6 +247,10 @@ const TokenHub = ({
 function mapStateToProps(state) {
 	const balancesLoading = balancesLoadingSelector(state);
 	const tokenPurchase = tokenPurchaseSelector(state);
+
+	// console.log({
+	// 	tweetTokenBalance: tweetTokenBalanceSelector(state),
+	// });
 
 	return {
 		web3: web3Selector(state),

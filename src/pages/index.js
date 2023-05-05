@@ -1,7 +1,15 @@
 import styles from '@components/styles/Home.module.css';
 import { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { loadWeb3, loadAccount, loadTweetToken, loadTweetNFT, loadTwitter, loadProfiles } from '../store/interactions';
+import {
+	loadWeb3,
+	loadAccount,
+	loadTweetToken,
+	loadTweetNFT,
+	loadTwitter,
+	loadProfiles,
+	subscribeToTwitterEvents,
+} from '../store/interactions';
 import { accountSelector, allProfilesSelector } from '../store/selectors';
 import Sidebar from '../components/Sidebar';
 import CreateProfile from '@components/components/CreateProfile';
@@ -34,6 +42,7 @@ const Home = ({ account, users }) => {
 		const twitter = await loadTwitter(web3, networkId, dispatch);
 
 		await loadProfiles(twitter, dispatch);
+		await subscribeToTwitterEvents(twitter, dispatch);
 	}
 
 	const hasProfile = accountCreated || (users && users.some((profile) => profile.userAddress === account));

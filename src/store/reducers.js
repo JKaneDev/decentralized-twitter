@@ -19,6 +19,11 @@ function tweetToken(state = {}, action) {
 			return { ...state, loaded: true, tweetTokenContract: action.contract };
 		case 'TWEET_TOKEN_BALANCE_LOADED':
 			return { ...state, balance: action.balance };
+		case 'TWEET_TOKEN_BOUGHT':
+			console.log('Buyers new balance:', action.purchaseData.buyersNewBalance);
+			console.log('Token Amount Purchased:', action.purchaseData.tokenAmount);
+			const { buyersNewBalance } = action.purchaseData;
+			return { ...state, tweetToken: { ...state.tweetToken, balance: buyersNewBalance } };
 		default:
 			return state;
 	}
@@ -127,9 +132,6 @@ function twitter(state = {}, action) {
 			return { ...state, balancesLoading: true };
 		case 'BALANCES_LOADED':
 			return { ...state, balancesLoading: false };
-		case 'TWEET_TOKEN_BOUGHT':
-			const { buyersNewBalance } = action.purchaseData;
-			return { ...state, tweetTokenBalance: buyersNewBalance };
 		case 'MATIC_DEPOSIT_AMOUNT_CHANGED':
 			return { ...state, maticDepositAmount: action.amount };
 		case 'MATIC_WITHDRAW_AMOUNT_CHANGED':
@@ -142,8 +144,6 @@ function twitter(state = {}, action) {
 			return { ...state, tokenPurchase: { ...state.tokenPurchase, amount: action.amount } };
 		case 'MAKING_PURCHASE':
 			return { ...state, tokenPurchase: { ...state.tokenPurchase, amount: null, making: true } };
-		case 'MADE_PURCHASE':
-			return { ...state, tokenPurchase: { ...state.tokenPurchase, amount: action.amount, making: false } };
 		default:
 			return state;
 	}
@@ -298,6 +298,7 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 			};
 		case 'USER_TIPPED':
 			const { tip } = action;
+			console.log('Tip Action: ', tip);
 			const updatedTips = state.allTweets.data.map((tweet) => {
 				if (tweet.id === tip.tweetId) {
 					return { ...tweet, tips: [...tweet.tips, tip] };

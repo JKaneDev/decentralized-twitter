@@ -80,7 +80,9 @@ contract Twitter {
     event UserTipped(uint256 amount, uint256 tweetId, address creator, address tipper, string tipperName);
     event TwitterReceivedFunds(address contractFrom, uint256 contractFromAmount);
     event FundsWithdrawn(address destinationWallet, uint256 balance);
-    event TweetTokenBought(uint256 tokenAmount, uint256 maticValue, address buyersAddress, uint256 buyersNewBalance);
+    event TweetTokenBought(uint256 tokenAmount, uint256 maticValue, address buyersAddress, uint256 buyersBalanceBefore, uint256 buyersNewBalance);
+    event DebugValues(uint256 tokenAmount, uint256 maticValue, uint256 msgValue);
+
 
     function depositMatic() payable public {
         balances[MATIC][msg.sender] += msg.value;
@@ -272,7 +274,7 @@ contract Twitter {
 
     function tipUser(uint256 _tweetId, uint256 _amount) public {
         require(_amount > 0, "Amount should be greater than 0");
-        require(tweetToken.transferFrom(msg.sender, tweets[_tweetId].creator, _amount));
+        tweetToken.transferFrom(msg.sender, tweets[_tweetId].creator, _amount);
         tweets[_tweetId].tips.push(_amount);
 
         emit UserTipped(_amount, _tweetId, tweets[_tweetId].creator, msg.sender, users[msg.sender].name);
@@ -292,13 +294,16 @@ contract Twitter {
 
     function buyTweetTokens(uint256 tokenAmount) external payable {
         uint256 maticValue = tokenAmount / conversionRate;
-        require(msg.value > maticValue, "You must send some MATIC to buy tokens");
+
+        emit DebugValues(tokenAmount, maticValue, msg.value);
+        require(msg.value >= maticValue, "You must send some MATIC to buy tokens");
 
         require(tweetToken.balanceOf(address(this)) >= tokenAmount, "Insufficient Tweet Tokens available");
 
+        uint256 buyersBalanceBefore = tweetToken.balanceOf(msg.sender);
         tweetToken.transfer(msg.sender, tokenAmount);
         uint256 buyersNewBalance = tweetToken.balanceOf(msg.sender);
 
-        emit TweetTokenBought(tokenAmount, maticValue, msg.sender, buyersNewBalance);
+        emit TweetTokenBought(tokenAmount, maticValue, msg.sender, buyersBalanceBefore, buyersNewBalance);
     }
 }

@@ -6,7 +6,7 @@
 }
 
 .home.expanded {
-	grid-template-columns: minmax(290px, 300px) 1fr;
+	grid-template-columns: minmax(290px, 350px) 1fr;
 }
 
 .sidebar {

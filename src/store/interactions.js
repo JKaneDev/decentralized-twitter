@@ -269,15 +269,15 @@ export const withdrawTweetToken = (dispatch, twitter, tweetToken, web3, amount, 
 		});
 };
 
-export const buyTweetToken = (dispatch, twitter, amount, account) => {
+export const buyTweetToken = (web3, dispatch, twitter, amount, account) => {
+	let tokensInWei = web3.utils.toWei(amount, 'ether');
+	let maticValue = web3.utils.toWei((parseFloat(amount) / 1000).toString(), 'ether');
+	console.log('tokensInWei:', tokensInWei, 'maticValue:', maticValue);
 	twitter.methods
-		.buyTweetTokens(amount)
-		.send({ from: account, value: amount })
+		.buyTweetTokens(tokensInWei)
+		.send({ from: account, value: maticValue })
 		.on('transactionHash', (hash) => {
 			dispatch(balancesLoading());
-		})
-		.on('receipt', (receipt) => {
-			dispatch(madePurchase(amount));
 		})
 		.on('error', (error) => {
 			console.error('Error buying tokens!', error);
@@ -297,8 +297,16 @@ export const subscribeToTwitterEvents = async (twitter, dispatch) => {
 	});
 
 	twitter.events.TweetTokenBought({}, (error, event) => {
-		console.log('Withdraw event received: ', event);
+		console.log('Buy event received: ', event);
 		dispatch(tweetTokenBought(event.returnValues));
+	});
+
+	twitter.events.DebugValues({}, (error, event) => {
+		if (error) {
+			console.error('Error listening to DebugValues event:', error);
+		} else {
+			console.log('DebugValues event received:', event.returnValues);
+		}
 	});
 };
 
@@ -320,10 +328,13 @@ export const loadTipData = async (twitter, dispatch) => {
 };
 
 export const tipUser = async (tweetToken, twitter, account, dispatch, tweetId, amount) => {
+	const amountInWei = Web3.utils.toWei(amount, 'ether');
+	console.log('Amount: ', amountInWei);
 	try {
 		await tweetToken.methods.approve(twitter._address, amount).send({ from: account });
-		const receipt = await twitter.methods.tipUser(tweetId, amount).send({ from: account });
+		const receipt = await twitter.methods.tipUser(tweetId, amountInWei).send({ from: account });
 		const event = receipt.events.UserTipped.returnValues;
+		console.log('Tip Event: ', event);
 		const tip = {
 			tipper: event.tipper,
 			tipperName: event.tipperName,
