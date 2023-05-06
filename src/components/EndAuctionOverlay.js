@@ -4,6 +4,7 @@ import { connect, useDispatch } from 'react-redux';
 import Countdown from 'react-countdown';
 import { loadHighestBid, isAuctionEnded } from '@components/store/interactions';
 import { bidsSelector } from '@components/store/selectors';
+import { adjustTimeForTimezone } from '@components/store/helpers';
 
 const EndAuctionOverlay = ({
 	web3,
@@ -48,17 +49,19 @@ const EndAuctionOverlay = ({
 		setHighestBid(formatted);
 	};
 
-	const renderer = ({ hours, minutes, seconds }) => {
+	const renderer = ({ days, hours, minutes, seconds }) => {
 		return (
 			<span>
-				{hours}:{minutes}:{seconds}
+				{days}:{hours}:{minutes}:{seconds}
 			</span>
 		);
 	};
 
+	const endTimeAdjusted = adjustTimeForTimezone(endTime);
+
 	return (
 		<div className={styles.auctionCountdownOverlay}>
-			{ended ? <span>0:0:0</span> : <Countdown date={endTime} renderer={renderer} />}
+			{ended ? <span>0:0:0</span> : <Countdown date={endTimeAdjusted} renderer={renderer} />}
 
 			<span className={styles.highestBid}>Highest Bid: {highestBid} ETH</span>
 			<button
