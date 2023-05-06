@@ -20,8 +20,6 @@ function tweetToken(state = {}, action) {
 		case 'TWEET_TOKEN_BALANCE_LOADED':
 			return { ...state, balance: action.balance };
 		case 'TWEET_TOKEN_BOUGHT':
-			console.log('Buyers new balance:', action.purchaseData.buyersNewBalance);
-			console.log('Token Amount Purchased:', action.purchaseData.tokenAmount);
 			const { buyersNewBalance } = action.purchaseData;
 			return { ...state, tweetToken: { ...state.tweetToken, balance: buyersNewBalance } };
 		default:
@@ -132,11 +130,13 @@ function twitter(state = {}, action) {
 			return { ...state, balancesLoading: true };
 		case 'BALANCES_LOADED':
 			return { ...state, balancesLoading: false };
-			return { ...state, tokenWithdrawAmount: action.amount };
 		case 'TOKEN_PURCHASE_AMOUNT_CHANGED':
 			return { ...state, tokenPurchase: { ...state.tokenPurchase, amount: action.amount } };
 		case 'MAKING_PURCHASE':
 			return { ...state, tokenPurchase: { ...state.tokenPurchase, amount: null, making: true } };
+		case 'COMPLETED_PURCHASE':
+			return { ...state, tokenPurchase: { ...state.tokenPurchase, making: false } };
+
 		default:
 			return state;
 	}

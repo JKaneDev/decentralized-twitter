@@ -224,9 +224,8 @@ export function makingPurchase() {
 	};
 }
 
-export function madePurchase(purchaseData) {
+export function completedPurchase() {
 	return {
-		type: 'MADE_PURCHASE',
-		purchaseData,
+		type: 'COMPLETED_PURCHASE',
 	};
 }

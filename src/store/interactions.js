@@ -29,7 +29,7 @@ import {
 	tweetTokenBought,
 	balancesLoading,
 	balancesLoaded,
-	madePurchase,
+	completedPurchase,
 } from './actions';
 import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
@@ -220,6 +220,9 @@ export const buyTweetToken = (web3, dispatch, twitter, amount, account) => {
 		.on('transactionHash', (hash) => {
 			dispatch(balancesLoading());
 		})
+		.on('receipt', (receipt) => {
+			dispatch(completedPurchase());
+		})
 		.on('error', (error) => {
 			console.error('Error buying tokens!', error);
 			window.alert('There was an error buying tokens');
@@ -240,14 +243,6 @@ export const subscribeToTwitterEvents = async (twitter, dispatch) => {
 	twitter.events.TweetTokenBought({}, (error, event) => {
 		console.log('Buy event received: ', event);
 		dispatch(tweetTokenBought(event.returnValues));
-	});
-
-	twitter.events.DebugValues({}, (error, event) => {
-		if (error) {
-			console.error('Error listening to DebugValues event:', error);
-		} else {
-			console.log('DebugValues event received:', event.returnValues);
-		}
 	});
 };
 

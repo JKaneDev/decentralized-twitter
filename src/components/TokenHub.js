@@ -1,6 +1,7 @@
 import styles from '@components/styles/TokenHub.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { ClipLoader } from 'react-spinners';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { buyTweetToken, loadBalances } from '@components/store/interactions';
@@ -8,11 +9,7 @@ import {
 	accountSelector,
 	balancesLoadingSelector,
 	maticBalanceSelector,
-	maticDepositAmountSelector,
-	maticWithdrawAmountSelector,
-	tokenDepositAmountSelector,
 	tokenPurchaseSelector,
-	tokenWithdrawAmountSelector,
 	tweetTokenBalanceSelector,
 	tweetTokenSelector,
 	twitterMaticBalanceSelector,
@@ -33,6 +30,7 @@ const TokenHub = ({
 	setShowTokenHub,
 	tokenPurchase,
 	showPurchaseTotal,
+	showBalance,
 }) => {
 	const loadBlockchainData = async (dispatch, web3, account, twitter, tweetToken) => {
 		await loadBalances(dispatch, web3, tweetToken, twitter, account);
@@ -42,6 +40,12 @@ const TokenHub = ({
 	useEffect(() => {
 		loadBlockchainData(dispatch, web3, account, twitter, tweetToken);
 	}, []);
+
+	useEffect(() => {
+		if (showBalance) {
+			loadBlockchainData(dispatch, web3, account, twitter, tweetToken);
+		}
+	}, [showBalance]);
 
 	return (
 		<div className={styles.container}>
@@ -64,11 +68,15 @@ const TokenHub = ({
 					<tbody>
 						<tr className={styles.tableRow}>
 							<td className={styles.headerCells}>MATIC</td>
-							<td className={styles.headerCells}>{maticBalance || 0}</td>
+							<td className={styles.headerCells}>
+								{showBalance ? maticBalance || 0 : <ClipLoader color='#00BFFF' size={25} />}
+							</td>
 						</tr>
 						<tr className={styles.tableRow}>
 							<td className={styles.headerCells}>TWEET</td>
-							<td className={styles.headerCells}>{tweetTokenBalance || 0}</td>
+							<td className={styles.headerCells}>
+								{showBalance ? tweetTokenBalance || 0 : <ClipLoader color='#00BFFF' size={25} />}
+							</td>
 						</tr>
 					</tbody>
 				</table>
@@ -91,6 +99,7 @@ const TokenHub = ({
 							type='text'
 							placeholder='TWEET Quantity'
 							className={styles.inputField}
+							value={tokenPurchase.amount}
 							maxLength='4'
 							onChange={(e) => {
 								dispatch(tokenPurchaseAmountChanged(e.target.value));
@@ -126,6 +135,7 @@ function mapStateToProps(state) {
 		tweetTokenBalance: tweetTokenBalanceSelector(state),
 		twitterMaticBalance: twitterMaticBalanceSelector(state),
 		twitterTokenBalance: twitterTokenBalanceSelector(state),
+		showBalance: !tokenPurchase.making,
 		balancesLoading,
 		tokenPurchase,
 		showPurchaseTotal: tokenPurchase.amount,
