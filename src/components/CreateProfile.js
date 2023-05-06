@@ -54,20 +54,23 @@ const CreateProfile = ({ dispatch, account, twitterContract, setAccountCreated }
 					onChange={(e) => setBio(e.target.value)}
 				/>
 				<br />
-				<input
-					type='text'
-					className={styles.inputFields}
-					placeholder='IPFS Profile Picture URL'
-					value={profilePictureUrl}
-					onChange={(e) => setProfilePictureUrl(e.target.value)}
-				/>
-				<button
-					type='button'
-					className={styles.getRandomProfilePicture}
-					onClick={() => setProfilePictureUrl(getRandomProfilePicture())}
-				>
-					Random
-				</button>
+				<div className={styles.urlInputWrapper}>
+					<input
+						type='text'
+						id={styles.urlInputField}
+						className={styles.inputFields}
+						placeholder='IPFS Profile Picture URL'
+						value={profilePictureUrl}
+						onChange={(e) => setProfilePictureUrl(e.target.value)}
+					/>
+					<button
+						type='button'
+						className={styles.getRandomProfilePicture}
+						onClick={() => setProfilePictureUrl(getRandomProfilePicture())}
+					>
+						Random
+					</button>
+				</div>
 
 				<br />
 				<button type='submit' className={styles.btn}>

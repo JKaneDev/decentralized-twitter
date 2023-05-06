@@ -91,17 +91,31 @@
 	color: black;
 	font-weight: bolder;
 	letter-spacing: 0.1rem;
-	padding: 0.6rem;
-	transition: all 0.35s ease-in-out;
+	padding: 0.7rem;
+	transition: all 0.15s ease-in-out;
 	width: 100px;
-	position: relative;
-	left: 400px;
-	bottom: 38px;
+	margin-left: auto;
 }
 
 .getRandomProfilePicture:hover {
 	cursor: pointer;
 	background-color: #666666;
+}
+
+.getRandomProfilePicture:active,
+.getRandomProfilePicture:focus {
+	outline: 2px solid #1da1f2;
+}
+
+#urlInputField {
+	width: 100%;
+	background-color: black;
+}
+
+.urlInputWrapper {
+	display: flex;
+	align-items: center;
+	width: 100%;
 }
 
 @media (min-width: 800px) {

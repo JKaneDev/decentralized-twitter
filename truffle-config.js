@@ -15,6 +15,8 @@ module.exports = {
 			provider: () => new HDWalletProvider(PRIVATE_KEY, mumbaiRpcUrl),
 			network_id: 80001,
 			confirmations: 2,
+			gas: 6000000,
+			gasPrice: 20000000000,
 			timeoutBlocks: 200,
 			skipDryRun: true,
 		},
