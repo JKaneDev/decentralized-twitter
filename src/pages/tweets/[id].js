@@ -27,6 +27,8 @@ const TweetPage = ({ twitter, users, account, tweets }) => {
 	const tweet = tweets.find((tweet) => String(tweet.id) === id);
 
 	const user = users.find((user) => user.userAddress === account);
+	console.log(user);
+
 	const userProfilePic = user.profilePictureURL;
 
 	const confirmReply = (e) => {
@@ -74,7 +76,7 @@ const TweetPage = ({ twitter, users, account, tweets }) => {
 			</form>
 			{tweet.comments.map((comment, index) => (
 				<Comment
-					key={index}
+					key={`${comment.commenter}-${comment.timestamp}`}
 					comment={comment.comment}
 					commenter={comment.commenter}
 					commenterName={comment.commenterName}

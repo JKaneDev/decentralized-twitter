@@ -1,11 +1,12 @@
 import styles from '@components/styles/Comment.module.css';
 import { faComment, faRetweet, faHeart, faHandHoldingUsd } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
 
 const Comment = ({ comment, commenter, commenterName, profilePic, timestamp }) => {
 	return (
 		<div className={styles.comment}>
-			<img src={profilePic} alt='profile-pic' className={styles.profilePic} />
+			<Image src={profilePic} alt='profile-pic' className={styles.profilePic} />
 			<div className={styles.mainWrapper}>
 				<span className={styles.commentInfo}>
 					<span className={styles.name}>{commenterName}</span>

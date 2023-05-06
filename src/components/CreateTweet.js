@@ -1,7 +1,7 @@
 import { connect, useDispatch } from 'react-redux';
 import styles from '@components/styles/CreateTweet.module.css';
 import { createTweet } from '@components/store/interactions';
-import { twitterSelector, accountSelector, allTweetsSelector } from '@components/store/selectors';
+import { twitterSelector, accountSelector } from '@components/store/selectors';
 import { useState } from 'react';
 
 const CreateTweet = ({ profilePic, twitter, account }) => {
