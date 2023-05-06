@@ -44,47 +44,51 @@ const TweetPage = ({ twitter, users, account, tweets }) => {
 
 	return (
 		<div className={styles.wrapper}>
-			<div className={styles.back}>
-				<button className={styles.backBtn} onClick={backToFeed}>
-					<FontAwesomeIcon icon={faArrowLeft} size='sm' />
-					Back
-				</button>
-			</div>
-			<Tweet
-				key={tweet.id}
-				id={tweet.id}
-				name={tweet.name}
-				address={tweet.creator}
-				content={tweet.content}
-				comCount={tweet.comments.length}
-				likeCount={tweet.likes.length}
-				tipCount={tweet.tips.length}
-				profilePic={tweet.imageUrl}
-				time={tweet.timestamp}
-			/>
-			<form onSubmit={confirmReply} className={styles.commentBox}>
-				<img src={userProfilePic} alt='user-profile-pic' className={styles.profilePic} height={72} width={72} />
-				<textarea
-					type='text'
-					placeholder='Tweet your reply'
-					value={reply}
-					onChange={(e) => setReply(e.target.value)}
-					className={styles.reply}
-				/>
-				<button type='submit' value={reply} className={styles.replyBtn}>
-					Reply
-				</button>
-			</form>
-			{tweet.comments.map((comment, index) => (
-				<Comment
-					key={`${comment.commenter}-${comment.timestamp}`}
-					comment={comment.comment}
-					commenter={comment.commenter}
-					commenterName={comment.commenterName}
-					profilePic={comment.profilePic}
-					timestamp={comment.timestamp}
-				/>
-			))}
+			{user && (
+				<>
+					<div className={styles.back}>
+						<button className={styles.backBtn} onClick={backToFeed}>
+							<FontAwesomeIcon icon={faArrowLeft} size='sm' />
+							Back
+						</button>
+					</div>
+					<Tweet
+						key={tweet.id}
+						id={tweet.id}
+						name={tweet.name}
+						address={tweet.creator}
+						content={tweet.content}
+						comCount={tweet.comments.length}
+						likeCount={tweet.likes.length}
+						tipCount={tweet.tips.length}
+						profilePic={tweet.imageUrl}
+						time={tweet.timestamp}
+					/>
+					<form onSubmit={confirmReply} className={styles.commentBox}>
+						<img src={userProfilePic} alt='user-profile-pic' className={styles.profilePic} height={72} width={72} />
+						<textarea
+							type='text'
+							placeholder='Tweet your reply'
+							value={reply}
+							onChange={(e) => setReply(e.target.value)}
+							className={styles.reply}
+						/>
+						<button type='submit' value={reply} className={styles.replyBtn}>
+							Reply
+						</button>
+					</form>
+					{tweet.comments.map((comment, index) => (
+						<Comment
+							key={`${comment.commenter}-${comment.timestamp}`}
+							comment={comment.comment}
+							commenter={comment.commenter}
+							commenterName={comment.commenterName}
+							profilePic={comment.profilePic}
+							timestamp={comment.timestamp}
+						/>
+					))}
+				</>
+			)}
 		</div>
 	);
 };
