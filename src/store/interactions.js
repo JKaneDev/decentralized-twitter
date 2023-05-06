@@ -230,18 +230,7 @@ export const buyTweetToken = (web3, dispatch, twitter, amount, account) => {
 };
 
 export const subscribeToTwitterEvents = async (twitter, dispatch) => {
-	twitter.events.Deposit({}, (error, event) => {
-		console.log('Deposit event received: ', event);
-		dispatch(balancesLoaded());
-	});
-
-	twitter.events.Withdraw({}, (error, event) => {
-		console.log('Withdraw event received: ', event);
-		dispatch(balancesLoaded());
-	});
-
 	twitter.events.TweetTokenBought({}, (error, event) => {
-		console.log('Buy event received: ', event);
 		dispatch(tweetTokenBought(event.returnValues));
 	});
 };
@@ -450,10 +439,6 @@ export const subscribeToAuctionEvents = async (auction, dispatch) => {
 		const highestBid = await auction.methods.getHighestBid().call();
 		dispatch(highestBidIncreased(auction, highestBid));
 	});
-
-	auction.events.AuctionEnded({}, async (error, event) => {
-		console.log('Auction Ended Event: ', event);
-	});
 };
 
 export const placeBid = async (auction, account, amount) => {
@@ -473,7 +458,6 @@ export const isAuctionEnded = async (web3, auction) => {
 export const endAuction = async (auctionContract, account, nftId, dispatch) => {
 	try {
 		const auction = await auctionContract.methods.endAuction().send({ from: account });
-		console.log('Auction Event:', auction);
 		dispatch(auctionEnded(nftId));
 	} catch (error) {
 		console.error('Error ending auction: ', error);
