@@ -15,6 +15,7 @@ import {
 	allTweetsSelector,
 	twitterSelector,
 } from '@components/store/selectors';
+import Image from 'next/image';
 
 const TweetPage = ({ twitter, users, account, tweets }) => {
 	const dispatch = useDispatch();
@@ -62,7 +63,7 @@ const TweetPage = ({ twitter, users, account, tweets }) => {
 				time={tweet.timestamp}
 			/>
 			<form onSubmit={confirmReply} className={styles.commentBox}>
-				<img src={userProfilePic} alt='user-profile-pic' className={styles.profilePic} />
+				<img src={userProfilePic} alt='user-profile-pic' className={styles.profilePic} height={72} width={72} />
 				<textarea
 					type='text'
 					placeholder='Tweet your reply'
