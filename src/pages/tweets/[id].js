@@ -15,7 +15,6 @@ import {
 	allTweetsSelector,
 	twitterSelector,
 } from '@components/store/selectors';
-import Image from 'next/image';
 
 const TweetPage = ({ twitter, users, account, tweets }) => {
 	const dispatch = useDispatch();
