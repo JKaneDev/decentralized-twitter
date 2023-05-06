@@ -30,7 +30,7 @@ const TweetPage = ({ twitter, users, account, tweets }) => {
 	const user = users.find((user) => user.userAddress === account);
 	console.log(user);
 
-	const userProfilePic = user.profilePictureURL;
+	const userProfilePic = user ? user.profilePictureURL : '';
 
 	const confirmReply = (e) => {
 		e.preventDefault();
@@ -41,6 +41,10 @@ const TweetPage = ({ twitter, users, account, tweets }) => {
 	const backToFeed = () => {
 		router.push(`/`);
 	};
+
+	if (!user) {
+		return null;
+	}
 
 	return (
 		<div className={styles.wrapper}>
