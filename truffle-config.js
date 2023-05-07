@@ -3,6 +3,7 @@ require('dotenv').config();
 
 const { PROJECT_ID, PRIVATE_KEY } = process.env;
 const mumbaiRpcUrl = `https://polygon-mumbai.infura.io/v3/${PROJECT_ID}`;
+const sepoliaRpcUrl = `https://sepolia.infura.io/v3/${PROJECT_ID}`;
 
 module.exports = {
 	networks: {
@@ -19,6 +20,12 @@ module.exports = {
 			gasPrice: 20000000000,
 			timeoutBlocks: 200,
 			skipDryRun: true,
+		},
+		sepolia: {
+			provider: () => new HDWalletProvider(PRIVATE_KEY, sepoliaRpcUrl),
+			gas: 6000000,
+			network_id: 11155111,
+			gasPrice: 20000000000,
 		},
 	},
 
