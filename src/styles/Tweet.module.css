@@ -29,8 +29,7 @@
 	max-width: 710px;
 	position: relative;
 	overflow: hidden;
-	z-index: 2;
-	pointer-events: none;
+	z-index: 1000;
 }
 
 .loading {
