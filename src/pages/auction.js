@@ -42,15 +42,15 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 	const [auctionEnded, setAuctionEnded] = useState(false);
 
 	// LOADS MINTED NFTS AND ALL AUCTIONS
-	const loadBlockchainData = async (nftContract, dispatch) => {
-		await loadMintedNFTs(nftContract, dispatch);
+	const loadBlockchainData = async (web3, nftContract, dispatch) => {
+		await loadMintedNFTs(web3, nftContract, dispatch);
 		await loadAllAuctions(nftContract, dispatch, web3);
 	};
 
 	// ON FIRST RENDER
 	useEffect(() => {
 		if (nftContractLoaded) {
-			loadBlockchainData(nftContract, dispatch);
+			loadBlockchainData(web3, nftContract, dispatch);
 		}
 	}, []);
 
@@ -69,7 +69,7 @@ const Auction = ({ web3, nftContractLoaded, nftContract, nfts, account, auctions
 
 	// ENSURES TIMER RENDERS IMMEDIATELY AFTER AUCTION START
 	useEffect(() => {
-		loadBlockchainData(nftContract, dispatch);
+		loadBlockchainData(web3, nftContract, dispatch);
 	}, [toggleAuctionActivation]);
 
 	// CREATE NEW AUCTION INSTANCE FOR EACH AUCTION

@@ -5,12 +5,13 @@ import { connect, useDispatch } from 'react-redux';
 import { faComment, faRetweet, faHeart, faHandHoldingUsd } from '@fortawesome/free-solid-svg-icons';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { likeTweet, loadLikeData, loadCommentData, loadTipData, loadAllTweets } from '@components/store/interactions';
+import { likeTweet, loadLikeData, loadCommentData, loadTipData } from '@components/store/interactions';
 import {
 	allTweetsSelector,
 	twitterSelector,
 	accountSelector,
 	allTweetsLoadedSelector,
+	web3Selector,
 } from '@components/store/selectors';
 import { ClipLoader } from 'react-spinners';
 import html2canvas from 'html2canvas';
@@ -19,6 +20,7 @@ import CreateComment from './CreateComment';
 import MintDialog from './MintDialog';
 
 const Tweet = ({
+	web3,
 	id,
 	name,
 	address,
@@ -49,10 +51,10 @@ const Tweet = ({
 
 	const tweetWrapperClass = showCommentDialog ? `${styles.tweet} ${styles.commentDialogOpen}` : styles.tweet;
 
-	const loadBlockchainData = async (twitter, dispatch) => {
-		await loadTipData(twitter, dispatch);
-		await loadLikeData(twitter, dispatch);
-		await loadCommentData(twitter, dispatch);
+	const loadBlockchainData = async (web3, twitter, dispatch) => {
+		await loadTipData(web3, twitter, dispatch);
+		await loadLikeData(web3, twitter, dispatch);
+		await loadCommentData(web3, twitter, dispatch);
 	};
 
 	const handleShowCommentDialog = () => {
@@ -116,7 +118,7 @@ const Tweet = ({
 	};
 
 	useEffect(() => {
-		loadBlockchainData(twitter, dispatch);
+		loadBlockchainData(web3, twitter, dispatch);
 		const currentTweet = tweets.find((tweet) => tweet.id === id);
 		if (currentTweet && currentTweet.creator === account) {
 			setIsTweetUsers(true);
@@ -134,7 +136,7 @@ const Tweet = ({
 	}, [account, twitter, id, tweets]);
 
 	useEffect(() => {
-		loadBlockchainData(twitter, dispatch);
+		loadBlockchainData(web3, twitter, dispatch);
 		const getCurrentTipCount = () => {
 			const currentTweet = tweets.find((tweet) => tweet.id === id);
 			if (currentTweet) {
@@ -268,6 +270,7 @@ const Tweet = ({
 
 function mapStateToProps(state) {
 	return {
+		web3: web3Selector(state),
 		twitter: twitterSelector(state),
 		account: accountSelector(state),
 		tweetsLoaded: allTweetsLoadedSelector(state),

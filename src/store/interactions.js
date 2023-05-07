@@ -102,7 +102,7 @@ export const createAccount = async (twitterContract, name, bio, profilePictureUr
 	}
 };
 
-export const loadProfiles = async (twitter, dispatch) => {
+export const loadProfiles = async (web3, twitter, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
 	const blocksInPast = 10000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
@@ -120,8 +120,8 @@ export const loadProfiles = async (twitter, dispatch) => {
 	dispatch(profilesLoaded(profiles));
 };
 
-export const loadAllTweets = async (twitter, dispatch) => {
-	const currentBlockNumber = await Web3.eth.getBlockNumber();
+export const loadAllTweets = async (web3, twitter, dispatch) => {
+	const currentBlockNumber = await web3.eth.getBlockNumber();
 	const blocksInPast = 10000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	// Fetch all tweets with the 'TweetCreated' stream
@@ -157,7 +157,7 @@ export const createTweet = async (twitter, account, dispatch, content, profilePi
 	}
 };
 
-export const loadLikeData = async (twitter, dispatch) => {
+export const loadLikeData = async (web3, twitter, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
 	const blocksInPast = 10000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
@@ -239,7 +239,7 @@ export const subscribeToTwitterEvents = async (twitter, dispatch) => {
 	});
 };
 
-export const loadTipData = async (twitter, dispatch) => {
+export const loadTipData = async (web3, twitter, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
 	const blocksInPast = 10000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
@@ -279,7 +279,7 @@ export const tipUser = async (tweetToken, twitter, account, dispatch, tweetId, a
 	}
 };
 
-export const loadCommentData = async (twitter, dispatch) => {
+export const loadCommentData = async (web3, twitter, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
 	const blocksInPast = 10000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
@@ -320,7 +320,7 @@ export const createComment = async (twitter, account, dispatch, tweetId, content
 	}
 };
 
-export const loadMintedNFTs = async (nftContract, dispatch) => {
+export const loadMintedNFTs = async (web3, nftContract, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
 	const blocksInPast = 10000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);

@@ -10,13 +10,13 @@ import {
 	loadProfiles,
 	subscribeToTwitterEvents,
 } from '../store/interactions';
-import { accountSelector, allProfilesSelector } from '../store/selectors';
+import { accountSelector, allProfilesSelector, web3Selector } from '../store/selectors';
 import Sidebar from '../components/Sidebar';
 import CreateProfile from '@components/components/CreateProfile';
 import CreateTweet from '@components/components/CreateTweet';
 import Feed from '@components/components/Feed';
 
-const Home = ({ account, users }) => {
+const Home = ({ web3, account, users }) => {
 	const [accountCreated, setAccountCreated] = useState(false);
 	const [profilePic, setProfilePic] = useState('');
 	const [showTokenHub, setShowTokenHub] = useState(false);
@@ -42,7 +42,7 @@ const Home = ({ account, users }) => {
 		const twitter = await loadTwitter(web3, networkId, dispatch);
 
 		if (twitter && tweetToken && tweetNFT) {
-			await loadProfiles(twitter, dispatch);
+			await loadProfiles(web3, twitter, dispatch);
 			await subscribeToTwitterEvents(twitter, dispatch);
 			console.log('Profiles Loaded');
 		} else {
@@ -81,7 +81,7 @@ const Home = ({ account, users }) => {
 								<CreateTweet profilePic={profilePic} />
 							</div>
 							<div className={styles.feed}>
-								<Feed />
+								<Feed web3={web3} />
 							</div>
 						</div>
 					</div>
@@ -93,6 +93,7 @@ const Home = ({ account, users }) => {
 
 function mapStateToProps(state) {
 	return {
+		web3: web3Selector(state),
 		account: accountSelector(state),
 		users: allProfilesSelector(state),
 	};

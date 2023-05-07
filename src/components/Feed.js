@@ -5,7 +5,7 @@ import { loadAllTweets } from '@components/store/interactions';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-const Feed = ({ twitter, allTweets, allTweetsLoaded }) => {
+const Feed = ({ web3, twitter, allTweets, allTweetsLoaded }) => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -13,7 +13,7 @@ const Feed = ({ twitter, allTweets, allTweetsLoaded }) => {
 	}, []);
 
 	const loadBlockchainData = async (twitter, dispatch) => {
-		await loadAllTweets(twitter, dispatch);
+		await loadAllTweets(web3, twitter, dispatch);
 	};
 
 	return (
