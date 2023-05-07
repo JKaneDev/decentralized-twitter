@@ -57,11 +57,11 @@ const EndAuctionOverlay = ({
 		);
 	};
 
-	const endTimeAdjusted = adjustTimeForTimezone(endTime);
+	// const endTimeAdjusted = adjustTimeForTimezone(endTime);
 
 	return (
 		<div className={styles.auctionCountdownOverlay}>
-			{ended ? <span>0:0:0</span> : <Countdown date={endTimeAdjusted} renderer={renderer} />}
+			{ended ? <span>0:0:0</span> : <Countdown date={endTime} renderer={renderer} />}
 
 			<span className={styles.highestBid}>Highest Bid: {highestBid} ETH</span>
 			<button

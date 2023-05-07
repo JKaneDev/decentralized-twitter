@@ -24,11 +24,11 @@ const AuctionCountdownOverlay = ({ web3, account, id, auction, auctionEnded, set
 		}
 	};
 
-	const endTimeAdjusted = adjustTimeForTimezone(endTime);
+	// const endTimeAdjusted = adjustTimeForTimezone(endTime);
 
 	return (
 		<div className={styles.auctionCountdownOverlay}>
-			<Countdown date={endTimeAdjusted} renderer={renderer} onComplete={handleCountdownComplete} />
+			<Countdown date={endTime} renderer={renderer} onComplete={handleCountdownComplete} />
 		</div>
 	);
 };
