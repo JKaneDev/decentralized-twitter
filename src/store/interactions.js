@@ -121,7 +121,7 @@ export const loadProfiles = async (twitter, dispatch) => {
 };
 
 export const loadAllTweets = async (twitter, dispatch) => {
-	const currentBlockNumber = await web3.eth.getBlockNumber();
+	const currentBlockNumber = await Web3.eth.getBlockNumber();
 	const blocksInPast = 10000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	// Fetch all tweets with the 'TweetCreated' stream
@@ -137,6 +137,7 @@ export const createTweet = async (twitter, account, dispatch, content, profilePi
 	try {
 		const receipt = await twitter.methods.createTweet(content, profilePic).send({ from: account });
 		const event = receipt.events.TweetCreated;
+		console.log('Tweet Created:', event.returnValues);
 		if (event) {
 			const newTweet = {
 				id: event.returnValues.id,
@@ -177,6 +178,7 @@ export const likeTweet = async (twitter, account, dispatch, tweetId) => {
 	try {
 		const receipt = await twitter.methods.likeTweet(tweetId).send({ from: account });
 		const event = receipt.events.TweetLiked.returnValues;
+		console.log('Tweet Liked:', event);
 		const likeData = {
 			tweetId: event.tweetId,
 			liker: event.liker,
@@ -233,6 +235,7 @@ export const buyTweetToken = (web3, dispatch, twitter, amount, account) => {
 export const subscribeToTwitterEvents = async (twitter, dispatch) => {
 	twitter.events.TweetTokenBought({}, (error, event) => {
 		dispatch(tweetTokenBought(event.returnValues));
+		console.log('Tweet Token Bought:', event);
 	});
 };
 
@@ -258,7 +261,6 @@ export const loadTipData = async (twitter, dispatch) => {
 
 export const tipUser = async (tweetToken, twitter, account, dispatch, tweetId, amount) => {
 	const amountInWei = Web3.utils.toWei(amount, 'ether');
-	console.log('Amount: ', amountInWei);
 	try {
 		await tweetToken.methods.approve(twitter._address, amount).send({ from: account });
 		const receipt = await twitter.methods.tipUser(tweetId, amountInWei).send({ from: account });
@@ -301,7 +303,7 @@ export const createComment = async (twitter, account, dispatch, tweetId, content
 	try {
 		const comment = await twitter.methods.createComment(tweetId, content).send({ from: account });
 		const event = comment.events.CommentAdded.returnValues;
-
+		console.log('Comment Created:', event);
 		if (event) {
 			const commentData = {
 				tweetId: event.tweetId,
@@ -349,6 +351,7 @@ export const mintNFT = async (nftContract, account, tweetId, metadataURI, imageU
 			.mintTweetNFT(account, tweetId, metadataURI, imageURI, htmlURI)
 			.send({ from: account });
 		const event = mint.events.NFTMinted.returnValues;
+		console.log('NFT Minted:', event);
 		if (event) {
 			const mintData = {
 				id: event.nftId,
@@ -407,6 +410,7 @@ export const startAuction = async (nftContract, account, dispatch, nftId, starti
 			.createAuction(nftId, startingPrice, auctionDuration)
 			.send({ from: account });
 		const event = auction.events.AuctionCreated.returnValues;
+		console.log('Auction Started:', event);
 		if (event) {
 			const auctionData = {
 				originalOwner: event.originalOwner,
@@ -451,6 +455,7 @@ export const subscribeToAuctionEvents = async (auction, dispatch) => {
 	auction.events.HighestBidIncreased({}, async (error, event) => {
 		const highestBid = await auction.methods.getHighestBid().call();
 		dispatch(highestBidIncreased(auction, highestBid));
+		console.log('Bid Placed:', event);
 	});
 };
 
@@ -471,6 +476,8 @@ export const isAuctionEnded = async (web3, auction) => {
 export const endAuction = async (auctionContract, account, nftId, dispatch) => {
 	try {
 		const auction = await auctionContract.methods.endAuction().send({ from: account });
+		const event = auction.events.AuctionEnded.returnValues;
+		console.log('Auction Ended:', event);
 		dispatch(auctionEnded(nftId));
 	} catch (error) {
 		console.error('Error ending auction: ', error);
