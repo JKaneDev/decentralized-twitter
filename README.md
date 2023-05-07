@@ -1,6 +1,6 @@
 ## Decentralized Twitter
 
-[https://twitter-ethereum.herokuapp.com/](Live Site Link - Download Metamask - Switch To 'Sepolia Test Network')
+[Live Site](https://twitter-ethereum.herokuapp.com/)
 
 ### Summary
 
@@ -10,13 +10,17 @@ This clone of Twitter is a decentralized application (dApp) built on the Polygon
 
 To interact with the app on the Sepolia testnet, you will need some Sepolia Test ETH. You can obtain these tokens from a Sepolia ETH Faucet, or by sending me a private message on Twitter at [https://twitter.com/\_jtkane](@_jtkane)
 
-### Home Page
+### Create Profile Page
 
-![Create Profile Page](https://www.dropbox.com/s/5eup2ckwoq2jik3/CreateProfile.png?dl=0)
+![Create Profile Page](https://dl.dropboxusercontent.com/s/5eup2ckwoq2jik3/CreateProfile.png)
 
-![Feed Page](https://www.dropbox.com/s/fpemcm8rszfw3fc/Feed.png?dl=0)
+### Feed Page
 
-![Auction Page](https://www.dropbox.com/s/3ybxjoovxgyzvnh/Auction.png?dl=0)
+![Feed Page](https://dl.dropboxusercontent.com/s/fpemcm8rszfw3fc/Feed.png)
+
+### Auction Page
+
+![Auction Page](https://dl.dropboxusercontent.com/s/3ybxjoovxgyzvnh/Auction.png)
 
 ### Walkthrough
 
