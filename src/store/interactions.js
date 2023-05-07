@@ -475,9 +475,7 @@ export const isAuctionEnded = async (web3, auction) => {
 
 export const endAuction = async (auctionContract, account, nftId, dispatch) => {
 	try {
-		const auction = await auctionContract.methods.endAuction().send({ from: account });
-		const event = auction.events.AuctionEnded.returnValues;
-		console.log('Auction Ended:', event);
+		await auctionContract.methods.endAuction().send({ from: account });
 		dispatch(auctionEnded(nftId));
 	} catch (error) {
 		console.error('Error ending auction: ', error);
