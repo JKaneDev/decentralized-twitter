@@ -8,10 +8,10 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Twitter {
 
-    address constant MATIC = address(0);    
+    address constant ETH = address(0);    
     address payable public owner;    
     TweetToken public tweetToken;    
-    uint256 private constant conversionRate = 1000; // 1 MATIC = 1000 TWEET
+    uint256 private constant conversionRate = 1000; // 1 ETH = 1000 TWEET
     TweetNFT public tweetNFT;    
     string public baseURI;    
     mapping(address => User) public users;    
@@ -80,25 +80,25 @@ contract Twitter {
     event UserTipped(uint256 amount, uint256 tweetId, address creator, address tipper, string tipperName);
     event TwitterReceivedFunds(address contractFrom, uint256 contractFromAmount);
     event FundsWithdrawn(address destinationWallet, uint256 balance);
-    event TweetTokenBought(uint256 tokenAmount, uint256 maticValue, address buyersAddress, uint256 buyersBalanceBefore, uint256 buyersNewBalance);
-    event DebugValues(uint256 tokenAmount, uint256 maticValue, uint256 msgValue);
+    event TweetTokenBought(uint256 tokenAmount, uint256 ethValue, address buyersAddress, uint256 buyersBalanceBefore, uint256 buyersNewBalance);
+    event DebugValues(uint256 tokenAmount, uint256 ethValue, uint256 msgValue);
 
 
-    function depositMatic() payable public {
-        balances[MATIC][msg.sender] += msg.value;
-        emit Deposit(MATIC, msg.sender, msg.value, balances[MATIC][msg.sender]);
+    function depositETH() payable public {
+        balances[ETH][msg.sender] += msg.value;
+        emit Deposit(ETH, msg.sender, msg.value, balances[ETH][msg.sender]);
     }
 
-    function withdrawMatic(uint _amount) public {
-        require(balances[MATIC][msg.sender] >= _amount);
-        balances[MATIC][msg.sender] -= _amount;
+    function withdrawETH(uint _amount) public {
+        require(balances[ETH][msg.sender] >= _amount);
+        balances[ETH][msg.sender] -= _amount;
         (bool success, ) = msg.sender.call{value: _amount}("");
         require(success, "Transfer failed.");
-        emit Withdraw(MATIC, msg.sender, _amount, balances[MATIC][msg.sender]);
+        emit Withdraw(ETH, msg.sender, _amount, balances[ETH][msg.sender]);
     }
 
     function depositTweetToken(address _token, uint256 _amount) public {
-        require(_token != MATIC);
+        require(_token != ETH);
         require(TweetToken(_token).transferFrom(msg.sender, address(this), _amount));
         balances[_token][msg.sender] += _amount; 
         emit Deposit(_token, msg.sender, _amount, balances[_token][msg.sender]);
@@ -293,10 +293,10 @@ contract Twitter {
     }
 
     function buyTweetTokens(uint256 tokenAmount) external payable {
-        uint256 maticValue = tokenAmount / conversionRate;
+        uint256 ethValue = tokenAmount / conversionRate;
 
-        emit DebugValues(tokenAmount, maticValue, msg.value);
-        require(msg.value >= maticValue, "You must send some MATIC to buy tokens");
+        emit DebugValues(tokenAmount, ethValue, msg.value);
+        require(msg.value >= ethValue, "You must send some ETH to buy tokens");
 
         require(tweetToken.balanceOf(address(this)) >= tokenAmount, "Insufficient Tweet Tokens available");
 
@@ -304,6 +304,6 @@ contract Twitter {
         tweetToken.transfer(msg.sender, tokenAmount);
         uint256 buyersNewBalance = tweetToken.balanceOf(msg.sender);
 
-        emit TweetTokenBought(tokenAmount, maticValue, msg.sender, buyersBalanceBefore, buyersNewBalance);
+        emit TweetTokenBought(tokenAmount, ethValue, msg.sender, buyersBalanceBefore, buyersNewBalance);
     }
 }

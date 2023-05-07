@@ -8,11 +8,10 @@ import { buyTweetToken, loadBalances } from '@components/store/interactions';
 import {
 	accountSelector,
 	balancesLoadingSelector,
-	maticBalanceSelector,
+	etherBalanceSelector,
 	tokenPurchaseSelector,
 	tweetTokenBalanceSelector,
 	tweetTokenSelector,
-	twitterMaticBalanceSelector,
 	twitterSelector,
 	twitterTokenBalanceSelector,
 	web3Selector,
@@ -25,7 +24,7 @@ const TokenHub = ({
 	account,
 	twitter,
 	tweetToken,
-	maticBalance,
+	etherBalance,
 	tweetTokenBalance,
 	setShowTokenHub,
 	tokenPurchase,
@@ -67,9 +66,9 @@ const TokenHub = ({
 					</thead>
 					<tbody>
 						<tr className={styles.tableRow}>
-							<td className={styles.headerCells}>MATIC</td>
+							<td className={styles.headerCells}>ETH</td>
 							<td className={styles.headerCells}>
-								{showBalance ? maticBalance || 0 : <ClipLoader color='#00BFFF' size={25} />}
+								{showBalance ? etherBalance || 0 : <ClipLoader color='#00BFFF' size={25} />}
 							</td>
 						</tr>
 						<tr className={styles.tableRow}>
@@ -131,9 +130,8 @@ function mapStateToProps(state) {
 		account: accountSelector(state),
 		twitter: twitterSelector(state),
 		tweetToken: tweetTokenSelector(state),
-		maticBalance: maticBalanceSelector(state),
 		tweetTokenBalance: tweetTokenBalanceSelector(state),
-		twitterMaticBalance: twitterMaticBalanceSelector(state),
+		etherBalance: etherBalanceSelector(state),
 		twitterTokenBalance: twitterTokenBalanceSelector(state),
 		showBalance: !tokenPurchase.making,
 		balancesLoading,

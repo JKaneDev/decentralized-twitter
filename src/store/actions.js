@@ -164,9 +164,9 @@ export function auctionEnded(nftId) {
 	};
 }
 
-export function maticBalanceLoaded(balance) {
+export function etherBalanceLoaded(balance) {
 	return {
-		type: 'MATIC_BALANCE_LOADED',
+		type: 'ETHER_BALANCE_LOADED',
 		balance,
 	};
 }
@@ -178,9 +178,9 @@ export function tweetTokenBalanceLoaded(balance) {
 	};
 }
 
-export function twitterMaticBalanceLoaded(balance) {
+export function twitterEtherBalanceLoaded(balance) {
 	return {
-		type: 'TWITTER_MATIC_BALANCE_LOADED',
+		type: 'TWITTER_ETHER_BALANCE_LOADED',
 		balance,
 	};
 }

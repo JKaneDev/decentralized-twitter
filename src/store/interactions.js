@@ -5,7 +5,6 @@ import {
 	tweetTokenLoaded,
 	NFTLoaded,
 	twitterLoaded,
-	auctionLoaded,
 	allTweetsLoaded,
 	profilesLoaded,
 	accountCreated,
@@ -14,9 +13,9 @@ import {
 	userTipped,
 	tipsLoaded,
 	likesLoaded,
-	maticBalanceLoaded,
+	etherBalanceLoaded,
 	tweetTokenBalanceLoaded,
-	twitterMaticBalanceLoaded,
+	twitterEtherBalanceLoaded,
 	twitterTokenBalanceLoaded,
 	commentCreated,
 	commentsLoaded,
@@ -35,7 +34,7 @@ import TweetToken from '../abis/TweetToken.json';
 import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
-import { MATIC_ADDRESS } from './helpers';
+import { ETHER_ADDRESS } from './helpers';
 import { web3 } from '@openzeppelin/test-helpers/src/setup';
 
 export const loadWeb3 = async (dispatch) => {
@@ -87,22 +86,9 @@ export const loadTwitter = async (web3, networkId, dispatch) => {
 		const twitter = new web3.eth.Contract(Twitter.abi, Twitter.networks[networkId].address);
 		dispatch(twitterLoaded(twitter));
 		console.log('Twitter Contract Loaded');
-		const events = twitter.getPastEvents('AllEvents', { fromBlock: 0, toBlock: 'latest' });
-		console.log('Twitter contract events:', events);
 		return twitter;
 	} catch (error) {
 		console.log('Twitter Contract not deployed to the current network. Please select another network with Metamask.');
-		return null;
-	}
-};
-
-export const loadAuction = async (web3, networkId, dispatch) => {
-	try {
-		const auction = new web3.eth.Contract(Auction.abi, Auction.networks[networkId].address);
-		dispatch(auctionLoaded(auction));
-		return auction;
-	} catch (error) {
-		console.log('Auction Contract not deployed to the current network. Please select another network with Metamask.');
 		return null;
 	}
 };
@@ -119,7 +105,6 @@ export const createAccount = async (twitterContract, name, bio, profilePictureUr
 
 export const loadProfiles = async (twitter, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
-	console.log('Current Block Number:', currentBlockNumber);
 	const blocksInPast = 10000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	// Fetch all accounts from the 'AccountCreated' stream
@@ -127,8 +112,6 @@ export const loadProfiles = async (twitter, dispatch) => {
 		fromBlock: fromBlock,
 		toBlock: 'latest',
 	});
-
-	console.log('Profile Stream:', profileStream);
 
 	// Format profiles
 	const profiles = profileStream.map((e) => e.returnValues);
@@ -138,10 +121,14 @@ export const loadProfiles = async (twitter, dispatch) => {
 };
 
 export const loadAllTweets = async (twitter, dispatch) => {
+	const currentBlockNumber = await web3.eth.getBlockNumber();
+	const blocksInPast = 10000;
+	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	// Fetch all tweets with the 'TweetCreated' stream
-	const tweetStream = await twitter.getPastEvents('TweetCreated', { fromBlock: 0, toBlock: 'latest' });
+	const tweetStream = await twitter.getPastEvents('TweetCreated', { fromBlock: fromBlock, toBlock: 'latest' });
 	// Format tweets
 	const tweets = tweetStream.map((e) => e.returnValues);
+	console.log('Tweet:', tweets);
 	// Add tweets to redux store
 	dispatch(allTweetsLoaded(tweets));
 };
@@ -170,7 +157,10 @@ export const createTweet = async (twitter, account, dispatch, content, profilePi
 };
 
 export const loadLikeData = async (twitter, dispatch) => {
-	const likeStream = await twitter.getPastEvents('TweetLiked', { fromBlock: 0, toBlock: 'latest' });
+	const currentBlockNumber = await web3.eth.getBlockNumber();
+	const blocksInPast = 10000;
+	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
+	const likeStream = await twitter.getPastEvents('TweetLiked', { fromBlock: fromBlock, toBlock: 'latest' });
 	const allLikesData = [];
 
 	likeStream.forEach((like) => {
@@ -200,16 +190,16 @@ export const likeTweet = async (twitter, account, dispatch, tweetId) => {
 export const loadBalances = async (dispatch, web3, tweetToken, twitter, account) => {
 	if (typeof account !== 'undefined') {
 		// Ether balance in wallet
-		const maticBalance = await web3.eth.getBalance(account);
-		dispatch(maticBalanceLoaded(maticBalance));
+		const etherBalance = await web3.eth.getBalance(account);
+		dispatch(etherBalanceLoaded(etherBalance));
 
 		// Token balance in wallet
 		const tokenBalance = await tweetToken.methods.balanceOf(account).call();
 		dispatch(tweetTokenBalanceLoaded(tokenBalance));
 
 		// Ether balance on exchange
-		const twitterMaticBalance = await twitter.methods.balanceOf(MATIC_ADDRESS, account).call();
-		dispatch(twitterMaticBalanceLoaded(twitterMaticBalance));
+		const twitterEtherBalance = await twitter.methods.balanceOf(ETHER_ADDRESS, account).call();
+		dispatch(twitterEtherBalanceLoaded(twitterEtherBalance));
 
 		// Token balance in wallet
 		const twitterTokenBalance = await twitter.methods.balanceOf(tweetToken.options.address, account).call();
@@ -224,11 +214,11 @@ export const loadBalances = async (dispatch, web3, tweetToken, twitter, account)
 
 export const buyTweetToken = (web3, dispatch, twitter, amount, account) => {
 	let tokensInWei = web3.utils.toWei(amount, 'ether');
-	let maticValue = web3.utils.toWei((parseFloat(amount) / 1000).toString(), 'ether');
-	console.log('tokensInWei:', tokensInWei, 'maticValue:', maticValue);
+	let etherValue = web3.utils.toWei((parseFloat(amount) / 1000).toString(), 'ether');
+	console.log('tokensInWei:', tokensInWei, 'etherValue:', etherValue);
 	twitter.methods
 		.buyTweetTokens(tokensInWei)
-		.send({ from: account, value: maticValue })
+		.send({ from: account, value: etherValue })
 		.on('transactionHash', (hash) => {
 			dispatch(balancesLoading());
 		})
@@ -248,7 +238,10 @@ export const subscribeToTwitterEvents = async (twitter, dispatch) => {
 };
 
 export const loadTipData = async (twitter, dispatch) => {
-	const tipStream = await twitter.getPastEvents('UserTipped', { fromBlock: 0, toBlock: 'latest' });
+	const currentBlockNumber = await web3.eth.getBlockNumber();
+	const blocksInPast = 10000;
+	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
+	const tipStream = await twitter.getPastEvents('UserTipped', { fromBlock: fromBlock, toBlock: 'latest' });
 	const allTipData = [];
 
 	tipStream.forEach((tip) => {
@@ -286,7 +279,10 @@ export const tipUser = async (tweetToken, twitter, account, dispatch, tweetId, a
 };
 
 export const loadCommentData = async (twitter, dispatch) => {
-	const commentStream = await twitter.getPastEvents('CommentAdded', { fromBlock: 0, toBlock: 'latest' });
+	const currentBlockNumber = await web3.eth.getBlockNumber();
+	const blocksInPast = 10000;
+	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
+	const commentStream = await twitter.getPastEvents('CommentAdded', { fromBlock: fromBlock, toBlock: 'latest' });
 	const allCommentsData = [];
 	commentStream.forEach((com) => {
 		const commentData = {
@@ -324,7 +320,10 @@ export const createComment = async (twitter, account, dispatch, tweetId, content
 };
 
 export const loadMintedNFTs = async (nftContract, dispatch) => {
-	const mintStream = await nftContract.getPastEvents('NFTMinted', { fromBlock: 0, toBlock: 'latest' });
+	const currentBlockNumber = await web3.eth.getBlockNumber();
+	const blocksInPast = 10000;
+	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
+	const mintStream = await nftContract.getPastEvents('NFTMinted', { fromBlock: fromBlock, toBlock: 'latest' });
 	const allMintData = [];
 	mintStream.forEach(async (mint) => {
 		const nftId = mint.returnValues.nftId;
@@ -369,7 +368,10 @@ export const mintNFT = async (nftContract, account, tweetId, metadataURI, imageU
 };
 
 export const loadAllAuctions = async (nftContract, dispatch, web3) => {
-	const auctionStream = await nftContract.getPastEvents('AuctionCreated', { fromBlock: 0, toBlock: 'latest' });
+	const currentBlockNumber = await web3.eth.getBlockNumber();
+	const blocksInPast = 10000;
+	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
+	const auctionStream = await nftContract.getPastEvents('AuctionCreated', { fromBlock: fromBlock, toBlock: 'latest' });
 	const allAuctionData = [];
 
 	(async () => {

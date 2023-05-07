@@ -6,7 +6,7 @@ const ether = (n) => {
 
 const tokens = (n) => ether(n);
 
-const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
+const ETHER_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 const EVM_REVERT = 'VM Exception while processing transaction: revert';
 
@@ -18,7 +18,7 @@ const wait = (seconds) => {
 module.exports = {
 	ether,
 	tokens,
-	ETH_ADDRESS,
+	ETHER_ADDRESS,
 	EVM_REVERT,
 	wait,
 };

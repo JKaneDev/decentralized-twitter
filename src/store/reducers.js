@@ -6,7 +6,7 @@ function web3(state = {}, action) {
 			return { ...state, loaded: true, connection: action.connection };
 		case 'WEB3_ACCOUNT_LOADED':
 			return { ...state, loaded: true, account: action.account };
-		case 'MATIC_BALANCE_LOADED':
+		case 'ETHER_BALANCE_LOADED':
 			return { ...state, balance: action.balance };
 		default:
 			return state;
@@ -124,8 +124,8 @@ function twitter(state = {}, action) {
 			return { ...state, loaded: true, twitterContract: action.contract };
 		case 'TWITTER_TOKEN_BALANCE_LOADED':
 			return { ...state, tweetTokenBalance: action.balance };
-		case 'TWITTER_MATIC_BALANCE_LOADED':
-			return { ...state, maticBalance: action.balance };
+		case 'TWITTER_ETHER_BALANCE_LOADED':
+			return { ...state, etherBalance: action.balance };
 		case 'BALANCES_LOADING':
 			return { ...state, balancesLoading: true };
 		case 'BALANCES_LOADED':

@@ -70,14 +70,14 @@ export const bidsSelector = createSelector(bids, (bids) => bids);
 const balancesLoading = (state) => get(state, 'twitter.balancesLoading', false);
 export const balancesLoadingSelector = createSelector(balancesLoading, (loading) => loading);
 
-const maticBalance = (state) => get(state, 'web3.balance', 0);
-export const maticBalanceSelector = createSelector(maticBalance, (balance) => formatBalance(balance));
+const etherBalance = (state) => get(state, 'web3.balance', 0);
+export const etherBalanceSelector = createSelector(etherBalance, (balance) => formatBalance(balance));
 
 const tweetTokenBalance = (state) => get(state, 'tweetToken.balance', 0);
 export const tweetTokenBalanceSelector = createSelector(tweetTokenBalance, (balance) => formatBalance(balance));
 
-const twitterMaticBalance = (state) => get(state, 'twitter.maticBalance', 0);
-export const twitterMaticBalanceSelector = createSelector(twitterMaticBalance, (balance) => formatBalance(balance));
+const twitterEtherBalance = (state) => get(state, 'twitter.etherBalance', 0);
+export const twitterEtherBalanceSelector = createSelector(twitterEtherBalance, (balance) => formatBalance(balance));
 
 const twitterTokenBalance = (state) => get(state, 'twitter.tweetTokenBalance', 0);
 export const twitterTokenBalanceSelector = createSelector(twitterTokenBalance, (balance) => formatBalance(balance));
