@@ -36,6 +36,7 @@ import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
 import { MATIC_ADDRESS } from './helpers';
+import { web3 } from '@openzeppelin/test-helpers/src/setup';
 
 export const loadWeb3 = async (dispatch) => {
 	if (typeof window.ethereum !== 'undefined') {
@@ -117,9 +118,13 @@ export const createAccount = async (twitterContract, name, bio, profilePictureUr
 };
 
 export const loadProfiles = async (twitter, dispatch) => {
+	const currentBlockNumber = await web3.eth.getBlockNumber();
+	console.log('Current Block Number:', currentBlockNumber);
+	const blocksInPast = 10000;
+	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	// Fetch all accounts from the 'AccountCreated' stream
 	const profileStream = await twitter.getPastEvents('AccountCreated', {
-		fromBlock: 0,
+		fromBlock: fromBlock,
 		toBlock: 'latest',
 	});
 
