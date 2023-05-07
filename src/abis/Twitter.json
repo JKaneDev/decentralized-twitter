@@ -43225,10 +43225,16 @@
       "links": {},
       "address": "0x5aF8FcF04c936cC70Ce2130462Ce6482aE4a5A6D",
       "transactionHash": "0x0ce12f3420b9b89d83402e5054e426edcfad86e835e497f00726be9fc3f2ddd5"
+    },
+    "11155111": {
+      "events": {},
+      "links": {},
+      "address": "0x5B3ecBb092c137EAF2a3EDeBc053F1B1832B1E09",
+      "transactionHash": "0x58f8dc75702c33978f24174421189f9c27be9f3b88e7e9b27f1a9960a3bcd63a"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-05-06T14:57:33.828Z",
+  "updatedAt": "2023-05-07T08:34:25.477Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

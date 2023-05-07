@@ -8333,10 +8333,67 @@
       "links": {},
       "address": "0x498f593ECAFaa3D16825ccC1209C967aeFf3b6a0",
       "transactionHash": "0xacdd75741d90bf2cb316ced8ebf76f58a8b550c4e6ff50661be9f800a1011504"
+    },
+    "11155111": {
+      "events": {
+        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Approval",
+          "type": "event"
+        },
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Transfer",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x4D2Eb324CeBa45A59d487951F5a5439806AF6d65",
+      "transactionHash": "0xef95a093bbe57ab1cb6a4136414d67ce6b9ba6c7e26e691f155d4e5821f0cd83"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-05-06T14:57:33.840Z",
+  "updatedAt": "2023-05-07T08:34:25.492Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

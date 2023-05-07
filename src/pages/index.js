@@ -41,8 +41,12 @@ const Home = ({ account, users }) => {
 		const tweetNFT = await loadTweetNFT(web3, networkId, dispatch);
 		const twitter = await loadTwitter(web3, networkId, dispatch);
 
-		await loadProfiles(twitter, dispatch);
-		await subscribeToTwitterEvents(twitter, dispatch);
+		if (twitter && tweetToken && tweetNFT) {
+			await loadProfiles(twitter, dispatch);
+			await subscribeToTwitterEvents(twitter, dispatch);
+		} else {
+			console.log('Smart contracts unavailable, unable to load profiles or subscribe to events');
+		}
 	}
 
 	const hasProfile = accountCreated || (users && users.some((profile) => profile.userAddress === account));

@@ -61,6 +61,7 @@ export const loadTweetToken = async (web3, networkId, dispatch) => {
 	try {
 		const token = new web3.eth.Contract(TweetToken.abi, TweetToken.networks[networkId].address);
 		dispatch(tweetTokenLoaded(token));
+		console.log('Tweet Token Contract Loaded');
 		return token;
 	} catch (error) {
 		console.log('Tweet Token not deployed to the current network. Please select another network with Metamask.');
@@ -72,6 +73,7 @@ export const loadTweetNFT = async (web3, networkId, dispatch) => {
 	try {
 		const nft = new web3.eth.Contract(TweetNFT.abi, TweetNFT.networks[networkId].address);
 		dispatch(NFTLoaded(nft));
+		console.log('Tweet NFT Contract Loaded');
 		return nft;
 	} catch (error) {
 		console.log('Tweet NFT not deployed to the current network. Please select another network with Metamask.');
@@ -83,6 +85,7 @@ export const loadTwitter = async (web3, networkId, dispatch) => {
 	try {
 		const twitter = new web3.eth.Contract(Twitter.abi, Twitter.networks[networkId].address);
 		dispatch(twitterLoaded(twitter));
+		console.log('Twitter Contract Loaded');
 		return twitter;
 	} catch (error) {
 		console.log('Twitter Contract not deployed to the current network. Please select another network with Metamask.');
