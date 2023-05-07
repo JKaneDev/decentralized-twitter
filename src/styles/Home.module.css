@@ -5,6 +5,14 @@
 	grid-template-columns: minmax(140px, 300px) 1fr;
 }
 
+.loaderWrapper {
+	min-height: 100vh;
+	width: 100vw;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .home.expanded {
 	grid-template-columns: minmax(290px, 350px) 1fr;
 }

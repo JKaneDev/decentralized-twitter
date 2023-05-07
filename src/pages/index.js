@@ -15,6 +15,7 @@ import Sidebar from '../components/Sidebar';
 import CreateProfile from '@components/components/CreateProfile';
 import CreateTweet from '@components/components/CreateTweet';
 import Feed from '@components/components/Feed';
+import { ClipLoader } from 'react-spinners';
 
 const Home = ({ web3, account, users }) => {
 	const [accountCreated, setAccountCreated] = useState(false);
@@ -65,7 +66,9 @@ const Home = ({ web3, account, users }) => {
 		<>
 			{!account ? (
 				// Show a loading indicator or message while waiting for the account to load
-				<div>Loading...</div>
+				<div className={styles.loaderWrapper}>
+					<ClipLoader color='#00BFFF' size={100} />
+				</div>
 			) : !hasProfile ? (
 				// Render the CreateProfile component if the account is loaded and userAddress is not in state.users
 				<CreateProfile setAccountCreated={setAccountCreated} />
