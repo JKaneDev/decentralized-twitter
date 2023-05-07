@@ -1,16 +1,22 @@
 ## Decentralized Twitter
 
+[https://twitter-ethereum.herokuapp.com/](Live Site Link - Download Metamask - Switch To 'Sepolia Test Network')
+
 ### Summary
 
 This clone of Twitter is a decentralized application (dApp) built on the Polygon network. The app incorporates some of the main functionality of Twitter, but also allows users to mint, buy, and sell unique non-fungible tokens (NFTs) representing tweets. Users can create NFTs of their favorite tweets, sell them at auction or participate in auctions for minted Tweet NFTs created by other users. The platform utilizes four smart contracts to handle TweetToken/NFT creation & ownership, NFT auctions, and the common native functionality of the Twitter application as we know it.
 
 ### Obtaining Test MATIC
 
-To interact with the app on the Polygon testnet, you will need some test MATIC tokens. You can obtain these tokens from the Polygon Faucet. Visit the Polygon Faucet and follow the instructions to receive test MATIC tokens in your wallet.
+To interact with the app on the Sepolia testnet, you will need some Sepolia Test ETH. You can obtain these tokens from a Sepolia ETH Faucet, or by sending me a private message on Twitter at [https://twitter.com/\_jtkane](@_jtkane)
 
 ### Home Page
 
-<embed your screenshot link here>
+![Create Profile Page](https://dl.dropboxusercontent.com/s/543s6jzize3405c/Twitter%20Screenshot%20%28Create%20Profile%20Page%29.pdf?dl=0)
+
+![Feed Page](https://dl.dropboxusercontent.com/s/u0vwfcfn4480xz6/Twitter%20Screenshot%20%28Feed%29.pdf?dl=0)
+
+![Auction Page](https://dl.dropboxusercontent.com/s/oca9skcwl1fwsot/Twitter%20Screenshot%20%28Auction%20Page%29.pdf?dl=0)
 
 ### Walkthrough
 
