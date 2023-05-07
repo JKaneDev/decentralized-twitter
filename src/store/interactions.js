@@ -35,7 +35,6 @@ import TweetNFT from '../abis/TweetNFT.json';
 import Twitter from '../abis/Twitter.json';
 import Auction from '../abis/Auction.json';
 import { ETHER_ADDRESS } from './helpers';
-import { web3 } from '@openzeppelin/test-helpers/src/setup';
 
 export const loadWeb3 = async (dispatch) => {
 	if (typeof window.ethereum !== 'undefined') {
@@ -115,6 +114,7 @@ export const loadProfiles = async (twitter, dispatch) => {
 
 	// Format profiles
 	const profiles = profileStream.map((e) => e.returnValues);
+	console.log('Profiles:', profiles);
 
 	// Add profiles to redux store
 	dispatch(profilesLoaded(profiles));
@@ -215,7 +215,6 @@ export const loadBalances = async (dispatch, web3, tweetToken, twitter, account)
 export const buyTweetToken = (web3, dispatch, twitter, amount, account) => {
 	let tokensInWei = web3.utils.toWei(amount, 'ether');
 	let etherValue = web3.utils.toWei((parseFloat(amount) / 1000).toString(), 'ether');
-	console.log('tokensInWei:', tokensInWei, 'etherValue:', etherValue);
 	twitter.methods
 		.buyTweetTokens(tokensInWei)
 		.send({ from: account, value: etherValue })

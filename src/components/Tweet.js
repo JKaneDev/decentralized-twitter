@@ -47,6 +47,8 @@ const Tweet = ({
 	const [tweetImage, setTweetImage] = useState('');
 	const [tipCount, setTipCount] = useState(0);
 
+	const tweetWrapperClass = showCommentDialog ? `${styles.tweet} ${styles.commentDialogOpen}` : styles.tweet;
+
 	const loadBlockchainData = async (twitter, dispatch) => {
 		await loadTipData(twitter, dispatch);
 		await loadLikeData(twitter, dispatch);
@@ -150,7 +152,7 @@ const Tweet = ({
 					<ClipLoader color='#00BFFF' size={50} />
 				</div>
 			) : (
-				<div className={styles.tweet} ref={tweetRef}>
+				<div className={tweetWrapperClass} ref={tweetRef}>
 					<img src={profilePic} alt='profile-pic' className={styles.profilePic} />
 					<div className={styles.mainWrapper}>
 						<span className={styles.tweetInfo}>

@@ -22,6 +22,7 @@ const EndAuctionOverlay = ({
 
 	const [highestBid, setHighestBid] = useState(null);
 	const [ended, setEnded] = useState(false);
+	const [loading, setLoading] = useState(false);
 
 	// SET HIGHEST BID ON FIRST COMPONENT RENDER
 	useEffect(() => {
@@ -60,22 +61,30 @@ const EndAuctionOverlay = ({
 	// const endTimeAdjusted = adjustTimeForTimezone(endTime);
 
 	return (
-		<div className={styles.auctionCountdownOverlay}>
-			{ended ? <span>0:0:0</span> : <Countdown date={endTime} renderer={renderer} />}
+		<>
+			{loading ? (
+				<ClipLoader color='#00BFFF' size={50} />
+			) : (
+				<div className={styles.auctionCountdownOverlay}>
+					{ended ? <span>0:0:0</span> : <Countdown date={endTime} renderer={renderer} />}
 
-			<span className={styles.highestBid}>Highest Bid: {highestBid} ETH</span>
-			<button
-				className={styles.endAuctionBtn}
-				onClick={async () => {
-					await endAuction(auctionContract, account, id, dispatch);
-					setAuctionEnded(!auctionEnded);
-				}}
-				disabled={ended}
-				style={{ backgroundColor: ended ? 'rgb(55, 0, 0)' : 'rgb(135, 0, 0)' }}
-			>
-				End Auction
-			</button>
-		</div>
+					<span className={styles.highestBid}>Highest Bid: {highestBid} ETH</span>
+					<button
+						className={styles.endAuctionBtn}
+						onClick={async () => {
+							setLoading(true);
+							await endAuction(auctionContract, account, id, dispatch);
+							setAuctionEnded(!auctionEnded);
+							setLoading(false);
+						}}
+						disabled={ended}
+						style={{ backgroundColor: ended ? 'rgb(55, 0, 0)' : 'rgb(135, 0, 0)' }}
+					>
+						End Auction
+					</button>
+				</div>
+			)}
+		</>
 	);
 };
 

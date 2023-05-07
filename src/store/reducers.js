@@ -291,7 +291,6 @@ function tweets(state = { allTweets: { loaded: false, data: [] } }, action) {
 			};
 		case 'USER_TIPPED':
 			const { tip } = action;
-			console.log('Tip Action: ', tip);
 			const updatedTips = state.allTweets.data.map((tweet) => {
 				if (tweet.id === tip.tweetId) {
 					return { ...tweet, tips: [...tweet.tips, tip] };

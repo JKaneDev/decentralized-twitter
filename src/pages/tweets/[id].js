@@ -27,7 +27,6 @@ const TweetPage = ({ twitter, users, account, tweets }) => {
 	const tweet = tweets.find((tweet) => String(tweet.id) === id);
 
 	const user = users.find((user) => user.userAddress === account);
-	console.log(user);
 
 	const userProfilePic = user ? user.profilePictureURL : '';
 
