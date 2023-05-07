@@ -86,6 +86,8 @@ export const loadTwitter = async (web3, networkId, dispatch) => {
 		const twitter = new web3.eth.Contract(Twitter.abi, Twitter.networks[networkId].address);
 		dispatch(twitterLoaded(twitter));
 		console.log('Twitter Contract Loaded');
+		const events = twitter.getPastEvents('AllEvents', { fromBlock: 0, toBlock: 'latest' });
+		console.log('Twitter contract events:', events);
 		return twitter;
 	} catch (error) {
 		console.log('Twitter Contract not deployed to the current network. Please select another network with Metamask.');
