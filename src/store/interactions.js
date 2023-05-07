@@ -121,6 +121,8 @@ export const loadProfiles = async (twitter, dispatch) => {
 		toBlock: 'latest',
 	});
 
+	console.log('Profile Stream:', profileStream);
+
 	// Format profiles
 	const profiles = profileStream.map((e) => e.returnValues);
 
