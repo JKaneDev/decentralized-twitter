@@ -5,6 +5,7 @@ import Countdown from 'react-countdown';
 import { loadHighestBid, isAuctionEnded } from '@components/store/interactions';
 import { bidsSelector } from '@components/store/selectors';
 import { adjustTimeForTimezone } from '@components/store/helpers';
+import { ClipLoader } from 'react-spinners';
 
 const EndAuctionOverlay = ({
 	web3,
