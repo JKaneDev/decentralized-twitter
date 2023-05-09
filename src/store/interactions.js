@@ -104,7 +104,7 @@ export const createAccount = async (twitterContract, name, bio, profilePictureUr
 
 export const loadProfiles = async (web3, twitter, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
-	const blocksInPast = 10000;
+	const blocksInPast = 10000000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	// Fetch all accounts from the 'AccountCreated' stream
 	const profileStream = await twitter.getPastEvents('AccountCreated', {
@@ -122,7 +122,7 @@ export const loadProfiles = async (web3, twitter, dispatch) => {
 
 export const loadAllTweets = async (web3, twitter, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
-	const blocksInPast = 10000;
+	const blocksInPast = 10000000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	// Fetch all tweets with the 'TweetCreated' stream
 	const tweetStream = await twitter.getPastEvents('TweetCreated', { fromBlock: fromBlock, toBlock: 'latest' });
@@ -159,7 +159,7 @@ export const createTweet = async (twitter, account, dispatch, content, profilePi
 
 export const loadLikeData = async (web3, twitter, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
-	const blocksInPast = 10000;
+	const blocksInPast = 10000000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	const likeStream = await twitter.getPastEvents('TweetLiked', { fromBlock: fromBlock, toBlock: 'latest' });
 	const allLikesData = [];
@@ -241,7 +241,7 @@ export const subscribeToTwitterEvents = async (twitter, dispatch) => {
 
 export const loadTipData = async (web3, twitter, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
-	const blocksInPast = 10000;
+	const blocksInPast = 10000000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	const tipStream = await twitter.getPastEvents('UserTipped', { fromBlock: fromBlock, toBlock: 'latest' });
 	const allTipData = [];
@@ -281,7 +281,7 @@ export const tipUser = async (tweetToken, twitter, account, dispatch, tweetId, a
 
 export const loadCommentData = async (web3, twitter, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
-	const blocksInPast = 10000;
+	const blocksInPast = 10000000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	const commentStream = await twitter.getPastEvents('CommentAdded', { fromBlock: fromBlock, toBlock: 'latest' });
 	const allCommentsData = [];
@@ -322,7 +322,7 @@ export const createComment = async (twitter, account, dispatch, tweetId, content
 
 export const loadMintedNFTs = async (web3, nftContract, dispatch) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
-	const blocksInPast = 10000;
+	const blocksInPast = 10000000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	const mintStream = await nftContract.getPastEvents('NFTMinted', { fromBlock: fromBlock, toBlock: 'latest' });
 	const allMintData = [];
@@ -371,7 +371,7 @@ export const mintNFT = async (nftContract, account, tweetId, metadataURI, imageU
 
 export const loadAllAuctions = async (nftContract, dispatch, web3) => {
 	const currentBlockNumber = await web3.eth.getBlockNumber();
-	const blocksInPast = 10000;
+	const blocksInPast = 10000000;
 	const fromBlock = Math.max(0, currentBlockNumber - blocksInPast);
 	const auctionStream = await nftContract.getPastEvents('AuctionCreated', { fromBlock: fromBlock, toBlock: 'latest' });
 	const allAuctionData = [];
