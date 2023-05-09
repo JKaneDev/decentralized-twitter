@@ -50,6 +50,7 @@ const Tweet = ({
 	const [tipCount, setTipCount] = useState(0);
 
 	const tweetWrapperClass = showCommentDialog ? `${styles.tweet} ${styles.commentDialogOpen}` : styles.tweet;
+	const overlayClass = showCommentDialog ? `${styles.dialogOpenOverlay}` : styles.navigateOverlay;
 
 	const loadBlockchainData = async (web3, twitter, dispatch) => {
 		await loadTipData(web3, twitter, dispatch);
@@ -258,7 +259,7 @@ const Tweet = ({
 						)}
 					</div>
 					<div
-						className={styles.navigateOverlay}
+						className={overlayClass}
 						onClick={handleNavigation}
 						style={{ backgroundColor: showMintDialog ? 'rgba(0,0,0, 0.8)' : '' }}
 					></div>
