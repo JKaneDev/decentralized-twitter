@@ -199,14 +199,6 @@ export const loadBalances = async (dispatch, web3, tweetToken, twitter, account)
 		const tokenBalance = await tweetToken.methods.balanceOf(account).call();
 		dispatch(tweetTokenBalanceLoaded(tokenBalance));
 
-		// Ether balance on exchange
-		const twitterEtherBalance = await twitter.methods.balanceOf(ETHER_ADDRESS, account).call();
-		dispatch(twitterEtherBalanceLoaded(twitterEtherBalance));
-
-		// Token balance in wallet
-		const twitterTokenBalance = await twitter.methods.balanceOf(tweetToken.options.address, account).call();
-		dispatch(twitterTokenBalanceLoaded(twitterTokenBalance));
-
 		// Trigger all balances loaded
 		dispatch(balancesLoaded());
 	} else {

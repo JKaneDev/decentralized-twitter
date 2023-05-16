@@ -76,11 +76,5 @@ export const etherBalanceSelector = createSelector(etherBalance, (balance) => fo
 const tweetTokenBalance = (state) => get(state, 'tweetToken.balance', 0);
 export const tweetTokenBalanceSelector = createSelector(tweetTokenBalance, (balance) => formatBalance(balance));
 
-const twitterEtherBalance = (state) => get(state, 'twitter.etherBalance', 0);
-export const twitterEtherBalanceSelector = createSelector(twitterEtherBalance, (balance) => formatBalance(balance));
-
-const twitterTokenBalance = (state) => get(state, 'twitter.tweetTokenBalance', 0);
-export const twitterTokenBalanceSelector = createSelector(twitterTokenBalance, (balance) => formatBalance(balance));
-
 const tokenPurchase = (state) => get(state, 'twitter.tokenPurchase', {});
 export const tokenPurchaseSelector = createSelector(tokenPurchase, (purchase) => purchase);

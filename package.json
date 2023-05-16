@@ -10,7 +10,9 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"predeploy": "npm run build",
+		"deploy": "gh-pages -d build"
 	},
 	"dependencies": {
 		"@babel/cli": "^7.21.0",
@@ -53,6 +55,7 @@
 		"chai-as-promised": "^7.1.1",
 		"chai-bn": "^0.3.1",
 		"dotenv": "^16.0.3",
+		"gh-pages": "^5.0.0",
 		"lodash": "^4.17.21",
 		"moment": "^2.29.4",
 		"openzeppelin-solidity": "^3.4.2",

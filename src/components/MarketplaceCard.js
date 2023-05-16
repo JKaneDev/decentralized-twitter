@@ -1,8 +1,8 @@
 import styles from '@components/styles/Auction.module.css';
 import Countdown from 'react-countdown';
-import { useDispatch, connect } from 'react-redux';
+import { connect } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { loadHighestBid, placeBid, isAuctionEnded } from '@components/store/interactions';
+import { loadHighestBid, placeBid } from '@components/store/interactions';
 import { bidsSelector } from '@components/store/selectors';
 import { ClipLoader } from 'react-spinners';
 

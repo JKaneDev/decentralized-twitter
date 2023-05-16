@@ -122,10 +122,6 @@ function twitter(state = {}, action) {
 	switch (action.type) {
 		case 'TWITTER_LOADED':
 			return { ...state, loaded: true, twitterContract: action.contract };
-		case 'TWITTER_TOKEN_BALANCE_LOADED':
-			return { ...state, tweetTokenBalance: action.balance };
-		case 'TWITTER_ETHER_BALANCE_LOADED':
-			return { ...state, etherBalance: action.balance };
 		case 'BALANCES_LOADING':
 			return { ...state, balancesLoading: true };
 		case 'BALANCES_LOADED':

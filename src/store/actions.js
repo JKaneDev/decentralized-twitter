@@ -178,20 +178,6 @@ export function tweetTokenBalanceLoaded(balance) {
 	};
 }
 
-export function twitterEtherBalanceLoaded(balance) {
-	return {
-		type: 'TWITTER_ETHER_BALANCE_LOADED',
-		balance,
-	};
-}
-
-export function twitterTokenBalanceLoaded(balance) {
-	return {
-		type: 'TWITTER_TOKEN_BALANCE_LOADED',
-		balance,
-	};
-}
-
 export function balancesLoading() {
 	return {
 		type: 'BALANCES_LOADING',
