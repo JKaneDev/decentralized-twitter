@@ -41,11 +41,6 @@ contract('Twitter', (accounts) => {
 			const result = await twitter.tweetNFT();
 			result.should.equal(nft.address);
 		});
-
-		it('nft baseURI is IPFS URL', async () => {
-			const result = await twitter.baseURI();
-			result.should.equal('https://ipfs.io/ipfs/');
-		});
 	});
 
 	describe('Creating, Removing & Editing User Accounts', () => {
@@ -92,138 +87,6 @@ contract('Twitter', (accounts) => {
 			event.profilePictureURL.should.equal(
 				'https://www.dreamstime.com/businessman-icon-image-male-avatar-profile-vector-glasses-beard-hairstyle-image179728610',
 			);
-		});
-
-		it('Deletes a users account', async () => {
-			let result = await twitter.removeUser({ from: user1 });
-			let log = result.logs[0];
-			let event = log.args;
-		});
-	});
-
-	describe('Adding, Removing & Fetching Followers', () => {
-		let user1Account;
-		let user2Account;
-		let user1Log;
-		let user1Event;
-		let user2Log;
-		let user2Event;
-
-		beforeEach(async () => {
-			// Create First Account
-			user1Account = await twitter.createAccount(
-				'jtkanedev',
-				'26 Year Old Ethereum DApp Developer From The UK.',
-				'https://www.dreamstime.com/businessman-icon-image-male-avatar-profile-vector-glasses-beard-hairstyle-image179728610',
-				{ from: user1 },
-			);
-			user1Log = user1Account.logs[0];
-			user1Event = user1Log.args;
-
-			// Create Second Account
-			user2Account = await twitter.createAccount(
-				'Heraclitus',
-				'Greek Philosopher from the 5th - 6th Century BC. "You Cannot Step Into The Same River Twice"',
-				'https://www.dreamstime.com/businessman-icon-image-male-avatar-profile-vector-glasses-beard-hairstyle-image179728610',
-				{ from: user2 },
-			);
-			user2Log = user2Account.logs[0];
-			user2Event = user2Log.args;
-		});
-
-		describe('Success', () => {
-			describe('Becoming Follower', () => {
-				it('Allows user to follow another user', async () => {
-					await twitter.becomeFollower(user1, user2, { from: user2 });
-					const user1Followers = await twitter.followers(user1, 0);
-					assert.include(user1Followers, user2);
-				});
-
-				it('updates following status to true', async () => {
-					await twitter.becomeFollower(user1, user2, { from: user2 });
-					const followingStatus = await twitter.isFollowing(user1, user2);
-					assert.isTrue(followingStatus);
-				});
-
-				it('stores the index of the follower for a specific user', async () => {
-					await twitter.becomeFollower(user1, user2, { from: user2 });
-					const followerIndex = await twitter.getFollowerIndex(user1, user2);
-					followerIndex.toString().should.equal('0');
-				});
-
-				it('emits follower added event', async () => {
-					const followerAdded = await twitter.becomeFollower(user1, user2, { from: user2 });
-					const followerAddedLog = followerAdded.logs[0];
-					const followerAddedEvent = followerAddedLog.args;
-					followerAddedEvent.userAddress.toString().should.equal(user1.toString());
-					followerAddedEvent.user.toString().should.equal('jtkanedev');
-					followerAddedEvent.followerAddress.toString().should.equal(user2.toString());
-					followerAddedEvent.follower.toString().should.equal('Heraclitus');
-				});
-			});
-
-			describe('Unfollow', () => {
-				it('allows user to unfollow another user', async () => {
-					await twitter.becomeFollower(user1, user2, { from: user2 });
-					await twitter.unfollow(user1, user2, { from: user2 });
-					const user1Followers = await twitter.getFollowerAddresses(user1);
-					user1Followers.toString().should.equal('');
-					const followingStatus = await twitter.isFollowing(user1, user2);
-					assert.isFalse(followingStatus);
-					const followerIndex = await twitter.getFollowerIndex(user1, user2);
-					followerIndex.toString().should.equal('0');
-				});
-
-				it('emits unfollow event', async () => {
-					await twitter.becomeFollower(user1, user2, { from: user2 });
-					const unfollowed = await twitter.unfollow(user1, user2, { from: user2 });
-					const log = unfollowed.logs[0];
-					const event = log.args;
-					event.user.should.equal('jtkanedev');
-					event.follower.should.equal('Heraclitus');
-				});
-			});
-		});
-
-		describe('Failure', () => {
-			beforeEach(async () => {
-				await twitter.becomeFollower(user1, user2, { from: user2 });
-			});
-
-			describe('Become Follower', () => {
-				it('Only user who wants to follow can call function', async () => {
-					await twitter.becomeFollower(user1, user2, { from: user1 }).should.be.rejectedWith(helpers.EVM_REVERT);
-				});
-
-				it('Disallows user who does not have an account from following', async () => {
-					await twitter.becomeFollower(user1, owner, { from: owner }).should.be.rejectedWith(helpers.EVM_REVERT);
-				});
-
-				it('Disallows user who is already a follower from calling follow again', async () => {
-					await twitter.becomeFollower(user1, user2, { from: user2 }).should.be.rejectedWith(helpers.EVM_REVERT);
-				});
-			});
-
-			describe('Unfollow', () => {
-				it('Disallows user who is not the followed or follower from toggling follow status', async () => {
-					await twitter.unfollow(user1, user2, { from: owner }).should.be.rejectedWith(helpers.EVM_REVERT);
-				});
-
-				it('Only follower can unfollow', async () => {
-					await twitter.unfollow(user1, user2, { from: user1 }).should.be.rejectedWith(helpers.EVM_REVERT);
-				});
-
-				it('Disallows user who does not have an account from calling unfollow', async () => {
-					await twitter.unfollow(user1, owner, { from: owner }).should.be.rejectedWith(helpers.EVM_REVERT);
-				});
-
-				it('function caller must already be a follower to unfollow', async () => {
-					await twitter.createAccount('user3', 'miscellaneous bio', 'https://profilepic.com', { from: owner });
-					const followStatus = await twitter.isFollowing(user1, user2);
-					assert.isTrue(followStatus);
-					await twitter.unfollow(user1, user2, { from: owner }).should.be.rejectedWith(helpers.EVM_REVERT);
-				});
-			});
 		});
 	});
 
@@ -307,30 +170,6 @@ contract('Twitter', (accounts) => {
 				likeEvent.tweetId.toString().should.equal(id.toString());
 				likeEvent.liker.toString().should.equal(user1.toString());
 			});
-
-			// it('allows user to retweet', async () => {
-			// 	let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
-			// 		from: user1,
-			// 	});
-			// 	let id = result.logs[0].args.id;
-			// 	await twitter.retweet(id, { from: user2 });
-			// 	let tweet = await twitter.getTweet(id);
-			// 	tweet.retweetCount.toString().should.equal('1');
-			// });
-
-			// it('emits a Retweeted event', async () => {
-			// 	let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
-			// 		from: user1,
-			// 	});
-			// 	let log = result.logs[0];
-			// 	let event = log.args;
-			// 	let id = event.id;
-			// 	let retweet = await twitter.retweet(id, { from: user2 });
-			// 	let retweetLog = retweet.logs[0];
-			// 	let retweetEvent = retweetLog.args;
-			// 	retweetEvent.tweetId.toString().should.equal(id.toString());
-			// 	retweetEvent.retweetCount.toString().should.equal('1');
-			// });
 		});
 
 		describe('Failure', () => {
@@ -352,16 +191,6 @@ contract('Twitter', (accounts) => {
 				let like = await twitter.likeTweet(id);
 				await twitter.likeTweet(id).should.be.rejectedWith(helpers.EVM_REVERT);
 			});
-
-			// it('does not allow non-users to retweet', async () => {
-			// 	let result = await twitter.createTweet('Hello everyone! Good to be here :)', 'https://tweetimageurl.com', {
-			// 		from: user1,
-			// 	});
-			// 	let log = result.logs[0];
-			// 	let event = log.args;
-			// 	let id = event.id;
-			// 	await twitter.retweet(id, { from: owner }).should.be.rejectedWith(helpers.EVM_REVERT);
-			// });
 		});
 	});
 

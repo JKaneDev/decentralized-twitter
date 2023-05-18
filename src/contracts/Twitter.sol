@@ -13,12 +13,9 @@ contract Twitter {
     TweetToken public tweetToken;    
     uint256 private constant conversionRate = 1000; // 1 ETH = 1000 TWEET
     TweetNFT public tweetNFT;    
-    string public baseURI;    
+
     mapping(address => User) public users;    
     mapping(address => mapping(address => uint256)) public balances; 
-    mapping(address => address[]) public followers;     
-    mapping(address => mapping(address => bool)) public following;     
-    mapping(address => mapping(address => uint256)) private followerIndices;     
     uint256 private nextTweetId = 1;    
     mapping(uint256 => Tweet) public tweets;    
     mapping(address => mapping(uint256 => bool)) private likedTweets;    
@@ -31,7 +28,6 @@ contract Twitter {
         owner = _owner;
         tweetToken = TweetToken(_tweetTokenAddress);
         tweetNFT = TweetNFT(_nftAddress);
-        baseURI = "https://ipfs.io/ipfs/";
     }
     
     modifier onlyOwner {
@@ -65,15 +61,7 @@ contract Twitter {
         uint256 timestamp;
     }
 
-    event Deposit(address token, address user, uint256 amount, uint256 balance);
-    event Withdraw(address token, address user, uint256 amount, uint256 balance);
     event AccountCreated(address userAddress, uint256 id, string name, string bio, string profilePictureURL, bool exists);
-    event NameUpdated(address indexed user, string newName);
-    event BioUpdated(address indexed user, string newBio);
-    event ProfilePictureUpdated(address indexed user, string url);
-    event AccountDeleted(string name, address user);
-    event FollowerAdded(address userAddress, string user, string follower, address followerAddress);
-    event Unfollowed(string user, string follower);
     event TweetCreated(uint256 id, address creator, string name, string content, string[] comments, address[] likes, uint256[] tips, bool exists, string imageUrl, uint256 timestamp);
     event CommentAdded(uint256 tweetId, string comment, address commenter, string commenterName, string profilePic, uint256 timestamp);
     event TweetLiked(uint256 tweetId, address liker);
@@ -106,84 +94,6 @@ contract Twitter {
         accountIds.increment();
     }
 
-    function updateName(string memory _name) public {
-        require(users[msg.sender].exists, "User does not exist");
-        users[msg.sender].name = _name;
-
-        emit NameUpdated(msg.sender, _name);
-    }
-
-    function updateBio(string memory _bio) public {
-        require(users[msg.sender].exists, "User does not exist");
-        users[msg.sender].bio = _bio;
-
-        emit BioUpdated(msg.sender, _bio);
-    }
-
-    function updateProfilePicture(string memory _url) public {
-        require(users[msg.sender].exists, "User does not exist");
-        users[msg.sender].profilePictureURL = _url;
-
-        emit ProfilePictureUpdated(msg.sender, _url);
-    }
-
-    function removeUser() public {
-        require(users[msg.sender].exists, "User does not exist");
-        delete users[msg.sender];
-
-        emit AccountDeleted(users[msg.sender].name, msg.sender);
-    }
-
-    function isFollowing(address user, address follower) public view returns (bool) {
-        return following[follower][user];
-    }
-
-    function getFollowerIndex(address user, address follower) public view returns (uint) {
-        return followerIndices[user][follower];
-    }
-
-    function becomeFollower(address user, address follower) public {
-        require(msg.sender == follower, "User Cannot Force Followers");
-        require(users[user].exists, "User does not exist");
-        require(users[follower].exists, "Follower does not exist");
-        require(!following[follower][user], "Not following");
-
-        followers[user].push(follower); // add follower to followers array for that user
-        uint256 index = followers[user].length - 1; // get index for follower
-        following[follower][user] = true; // set following status to true
-        followerIndices[user][follower] = index; // store index for follower
-
-        emit FollowerAdded(users[user].userAddress, users[user].name, users[follower].name, users[follower].userAddress);
-    }
-
-    function unfollow(address _user, address _follower) public {
-        require(msg.sender == _follower, "Only the follower can remove themselves");
-        require(following[_follower][_user], "Not following");
-
-        uint256 index = followerIndices[_user][_follower];
-        uint256 lastIndex = followers[_user].length - 1;
-
-        // Move the last follower to the index of the follower being removed
-        followers[_user][index] = followers[_user][lastIndex];
-
-        // Update the index of the moved follower
-        followerIndices[_user][followers[_user][index]] = index;
-
-        // Remove the last follower and update the following mapping
-        followers[_user].pop();
-        following[_follower][_user] = false;
-        delete followerIndices[_user][_follower];
-
-        require(!following[_user][_follower], "Failed to remove the follower");
-
-
-        emit Unfollowed(users[_user].name, users[_follower].name);
-    }
-
-    function getFollowerAddresses(address user) public view returns (address[] memory) {
-        require(users[user].exists, "User does not exist");
-        return followers[user];
-    }
 
     function getTweet(uint256 id) public view returns (Tweet memory) {
         Tweet memory tweet = tweets[id];
