@@ -81,36 +81,6 @@ contract Twitter {
     event TwitterReceivedFunds(address contractFrom, uint256 contractFromAmount);
     event FundsWithdrawn(address destinationWallet, uint256 balance);
     event TweetTokenBought(uint256 tokenAmount, uint256 ethValue, address buyersAddress, uint256 buyersBalanceBefore, uint256 buyersNewBalance);
-    event DebugValues(uint256 tokenAmount, uint256 ethValue, uint256 msgValue);
-
-
-    function depositETH() payable public {
-        balances[ETH][msg.sender] += msg.value;
-        emit Deposit(ETH, msg.sender, msg.value, balances[ETH][msg.sender]);
-    }
-
-    function withdrawETH(uint _amount) public {
-        require(balances[ETH][msg.sender] >= _amount);
-        balances[ETH][msg.sender] -= _amount;
-        (bool success, ) = msg.sender.call{value: _amount}("");
-        require(success, "Transfer failed.");
-        emit Withdraw(ETH, msg.sender, _amount, balances[ETH][msg.sender]);
-    }
-
-    function depositTweetToken(address _token, uint256 _amount) public {
-        require(_token != ETH);
-        require(TweetToken(_token).transferFrom(msg.sender, address(this), _amount));
-        balances[_token][msg.sender] += _amount; 
-        emit Deposit(_token, msg.sender, _amount, balances[_token][msg.sender]);
-    }
-
-    function withdrawTweetToken(address _token, uint256 _amount) public {
-        require(_token != address(0));
-        require(balances[_token][msg.sender] >= _amount);
-        balances[_token][msg.sender] -= _amount;
-        require(TweetToken(_token).transfer(msg.sender, _amount));
-        emit Withdraw(_token, msg.sender, _amount, balances[_token][msg.sender]);
-    }
 
     function balanceOf(address _token, address _user) public view returns (uint256) {
         return balances[_token][_user];
@@ -295,7 +265,6 @@ contract Twitter {
     function buyTweetTokens(uint256 tokenAmount) external payable {
         uint256 ethValue = tokenAmount / conversionRate;
 
-        emit DebugValues(tokenAmount, ethValue, msg.value);
         require(msg.value >= ethValue, "You must send some ETH to buy tokens");
 
         require(tweetToken.balanceOf(address(this)) >= tokenAmount, "Insufficient Tweet Tokens available");
