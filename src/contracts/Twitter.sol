@@ -15,7 +15,6 @@ contract Twitter {
     TweetNFT public tweetNFT;    
 
     mapping(address => User) public users;    
-    mapping(address => mapping(address => uint256)) public balances; 
     uint256 private nextTweetId = 1;    
     mapping(uint256 => Tweet) public tweets;    
     mapping(address => mapping(uint256 => bool)) private likedTweets;    
@@ -70,9 +69,6 @@ contract Twitter {
     event FundsWithdrawn(address destinationWallet, uint256 balance);
     event TweetTokenBought(uint256 tokenAmount, uint256 ethValue, address buyersAddress, uint256 buyersBalanceBefore, uint256 buyersNewBalance);
 
-    function balanceOf(address _token, address _user) public view returns (uint256) {
-        return balances[_token][_user];
-    }
 
     function createAccount(string memory _name, string memory _bio, string memory _profilePictureURL) public {
         // Check if user doesn't alreadty exist
