@@ -91,7 +91,6 @@ const CreateProfile = ({ dispatch, account, twitterContract, setAccountCreated }
 };
 
 function mapStateToProps(state) {
-	// console.log('Users: ', state.users);
 	return {
 		web3: state.web3.connection,
 		account: state.web3.account,

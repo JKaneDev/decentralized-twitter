@@ -163,9 +163,10 @@ contract Twitter {
 
     function withdraw() external {
         require(msg.sender == owner, "Only the owner can withdraw funds");
+        uint256 balance = address(this).balance;
         payable(owner).transfer(address(this).balance);
 
-        emit FundsWithdrawn(msg.sender, address(this).balance);
+        emit FundsWithdrawn(msg.sender, balance);
     }
 
     function buyTweetTokens(uint256 tokenAmount) external payable {

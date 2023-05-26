@@ -95,7 +95,6 @@ export const loadTwitter = async (web3, networkId, dispatch) => {
 export const createAccount = async (twitterContract, name, bio, profilePictureUrl, account, dispatch) => {
 	try {
 		await twitterContract.methods.createAccount(name, bio, profilePictureUrl).send({ from: account });
-		// dispatch an action to update redux store
 		dispatch(accountCreated(account, name, bio, profilePictureUrl));
 	} catch (error) {
 		console.error('Error creating account: ', error);
